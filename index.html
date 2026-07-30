@@ -14,15 +14,18 @@
       <img src="images/wuyi-logo.png" alt="中華武醫國際交流發展總會">
       <span>．北部支分會</span>
     </a>
-    <nav>
+    <button class="nav-toggle" id="navToggle" aria-label="選單" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <nav id="siteNav">
       <ul>
         <li><a href="about.html">關於我們</a></li>
         <li><a href="what-we-do.html">我們在做什麼</a></li>
         <li><a href="events.html">義整活動</a></li>
         <li><a href="contact.html">聯絡我們</a></li>
       </ul>
+      <a class="nav-cta" href="https://line.me/R/ti/p/@strxhunter">加官方 LINE</a>
     </nav>
-    <a class="nav-cta" href="https://line.me/R/ti/p/@strxhunter">加官方 LINE</a>
   </div>
 </header>
 
@@ -30,7 +33,7 @@
   <div class="hero-text">
     <span class="eyebrow">中華武醫國際交流發展總會・北區支分會</span>
     <h1>先把自己照顧好，<br>才有力氣<span class="accent">照顧別人</span></h1>
-    <p>我們是一群免費走進社區、運動現場與公益團體，提供身體結構平衡體驗的夥伴。不收費、不推銷，只希望更多人先把自己的身體照顧好，再把這份力量傳出去。</p>
+    <p>長期站在社區與公益最前線、照顧著別人的你，這份辛苦，我們看見了。我們是一群夥伴，不定期、無償走進社區、運動現場與公益團體，分享讓身體回到平衡的心法。沒有收費、沒有推銷，只想讓更多人先照顧好自己，再把這份力量傳給身邊的人。</p>
     <div class="hero-actions">
       <a class="btn-primary" href="https://line.me/R/ti/p/@strxhunter">加入官方 LINE，看最新場次</a>
       <span class="line-id">掃碼或搜尋 LINE ID：<b>@strxhunter</b></span>
@@ -46,34 +49,13 @@
     <div class="section-eyebrow">近期義整活動</div>
     <h2 class="section-title">我們最近會出現在這裡</h2>
 
-    <div class="events-grid">
-      <div class="event-card">
-        <span class="event-tag">社區大健康</span>
-        <div class="event-date">2026年8月15日（六）</div>
-        <div class="event-title">大健康體驗會</div>
-        <p class="event-desc">現場免費提供足部檢測與結構平衡調理體驗，不收費、不推銷，帶您常穿的鞋子來體驗最有感。</p>
-        <div class="event-location">📍 板橋・結構X獵人場域</div>
-      </div>
-
-      <div class="event-more">
-        <span class="event-tag">陸續公布</span>
-        <p>接下來我們也會走進更多社區、運動現場與公益團體，提供免費的身體結構平衡體驗。實際場次與時間，第一手都在官方 LINE 公布。</p>
-        <a class="btn-outline" href="https://line.me/R/ti/p/@strxhunter">加官方 LINE 看場次</a>
-      </div>
-    </div>
+    <div class="events-grid" id="upcoming-events"></div>
   </div>
 </section>
 
 <section class="gallery">
   <div class="section-eyebrow">活動花絮</div>
-  <h2 class="section-title">7/18 董氏第四代聚會・分享會與體驗會</h2>
-  <p class="gallery-caption">我們受邀在董氏第四代的聚會中，分享身體結構平衡的觀念，並現場提供徒手調理體驗。</p>
-  <div class="gallery-grid">
-    <a href="images/gallery-3.jpg" target="_blank"><img src="images/gallery-3.jpg" alt="7/18 現場徒手調理體驗"></a>
-    <a href="images/gallery-1.jpg" target="_blank"><img src="images/gallery-1.jpg" alt="7/18 分享會現場交流"></a>
-    <a href="images/gallery-2.jpg" target="_blank"><img src="images/gallery-2.jpg" alt="7/18 足部結構觀念分享"></a>
-    <a href="images/gallery-4.jpg" target="_blank"><img src="images/gallery-4.jpg" alt="7/18 現場調理示範"></a>
-  </div>
+  <div id="event-gallery" data-mode="home"></div>
 </section>
 
 <section class="intro">
@@ -84,7 +66,7 @@
     <div class="intro-card about">
       <span class="card-label">認識我們</span>
       <h3>中華武醫國際交流發展總會・北區支分會</h3>
-      <p>我們是總會底下的北區支分會，長期在板橋、三重一帶的社區與公益團體之間，提供完全免費的義整服務，希望讓更多人認識這套照顧身體的方式。</p>
+      <p>我們是總會底下的北區支分會，不定期走進各地的社區與公益團體，無償提供義整服務，希望讓更多人認識這套照顧身體的方式。</p>
       <a class="card-link" href="about.html">深入了解我們 →</a>
     </div>
 
@@ -103,7 +85,7 @@
       <div class="brand">武醫北區支分會
         <small>中華武醫國際交流發展總會</small>
       </div>
-      <p>我們免費走進社區、運動現場與公益團體，提供身體結構平衡體驗。先照顧好自己，才有力氣照顧別人。</p>
+      <p>我們是一群夥伴，不定期、無償走進社區、運動現場與公益團體，分享讓身體回到平衡的心法。先照顧好自己，才有力氣照顧別人。</p>
     </div>
     <div class="footer-col">
       <h4>快速連結</h4>
@@ -128,5 +110,10 @@
   </div>
 </footer>
 
+<script src="nav-toggle.js"></script>
+<script src="upcoming-events-config.js"></script>
+<script src="upcoming-events.js"></script>
+<script src="events-config.js"></script>
+<script src="events-carousel.js"></script>
 </body>
 </html>

@@ -28,6 +28,7 @@
     max-width:1120px;margin:0 auto;
     display:flex;align-items:center;justify-content:space-between;
     padding:18px 24px;
+    position:relative;
   }
   .brand{
     font-size:17px;font-weight:800;letter-spacing:0.5px;
@@ -36,6 +37,7 @@
     display:block;font-weight:500;font-size:12px;color:var(--fg-soft);
     letter-spacing:1px;margin-top:2px;
   }
+  nav{display:flex;align-items:center;gap:28px;}
   nav ul{
     list-style:none;display:flex;gap:28px;
   }
@@ -109,7 +111,31 @@
   }
 
   @media (max-width:860px){
-    nav ul, .nav-cta{display:none;}
+    .nav-toggle{
+      display:flex;flex-direction:column;justify-content:center;gap:5px;
+      width:40px;height:36px;background:none;border:none;cursor:pointer;padding:0;
+    }
+    .nav-toggle span{
+      display:block;width:100%;height:2px;background:var(--fg);border-radius:2px;
+      transition:transform .2s, opacity .2s;
+    }
+    nav{
+      display:none;
+      position:absolute;top:100%;left:0;right:0;
+      background:var(--bg);border-bottom:1px solid var(--line);
+      flex-direction:column;align-items:stretch;gap:0;
+      padding:8px 24px 20px;
+      box-shadow:0 12px 20px rgba(0,0,0,0.06);
+    }
+    .nav-wrap.open nav{display:flex;}
+    nav ul{flex-direction:column;gap:0;}
+    nav ul li{width:100%;}
+    nav a{
+      display:block;padding:14px 4px;border-bottom:1px solid var(--line);
+      font-size:16px;
+    }
+    .nav-cta{margin-top:16px;text-align:center;display:block;}
+
     .hero{flex-direction:column;padding:56px 24px 64px;text-align:center;}
     .hero-text p{margin-left:auto;margin-right:auto;}
     .hero-actions{justify-content:center;}
@@ -179,34 +205,68 @@
     max-width:1120px;margin:0 auto;
     padding:88px 24px 0;
   }
-  .gallery-caption{
-    margin-top:12px;font-size:15px;color:var(--fg-soft);
+
+  /* Event gallery carousel (events-carousel.js) */
+  .eg-desc{
+    margin-top:12px;font-size:15px;color:var(--fg-soft);max-width:680px;
   }
-  .gallery-grid{
-    margin-top:36px;
-    display:grid;grid-template-columns:1.4fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:16px;
-    height:480px;
+  .eg-tabs{
+    margin-top:28px;display:flex;flex-wrap:wrap;gap:10px;
   }
-  .gallery-grid a{
-    display:block;min-height:0;min-width:0;overflow:hidden;
-    border-radius:16px;border:1px solid var(--line);
+  .eg-tab{
+    font-size:14px;font-weight:700;color:var(--fg-soft);
+    background:var(--paper);border:1px solid var(--line);
+    padding:10px 20px;border-radius:999px;
   }
-  .gallery-grid img{
-    display:block;width:100%;height:100%;object-fit:cover;
+  .eg-tab:hover{color:var(--accent-dark);border-color:var(--accent);}
+  .eg-tab.active{background:var(--accent);color:#FFF7EC;border-color:var(--accent);}
+
+  .eg-carousel{
+    margin-top:28px;display:flex;align-items:center;gap:16px;
   }
-  .gallery-grid a:nth-child(1){grid-column:1; grid-row:1 / 3;}
-  .gallery-grid a:nth-child(2){grid-column:2 / 4; grid-row:1;}
-  .gallery-grid a:nth-child(3){grid-column:2; grid-row:2;}
-  .gallery-grid a:nth-child(4){grid-column:3; grid-row:2;}
+  .eg-viewport{
+    flex:1;min-width:0;overflow:hidden;border-radius:20px;border:1px solid var(--line);
+    background:#15120E;
+  }
+  .eg-track{
+    display:flex;transition:transform .35s ease;
+  }
+  .eg-slide{
+    flex:0 0 100%;height:480px;
+  }
+  .eg-slide .eg-zoom{
+    display:block;width:100%;height:100%;cursor:zoom-in;
+    border:none;background:none;padding:0;
+  }
+  .eg-slide img, .eg-slide video{
+    display:block;width:100%;height:100%;object-fit:contain;background:#15120E;
+  }
+  .eg-nav{
+    flex:0 0 auto;width:44px;height:44px;border-radius:999px;
+    background:var(--paper);border:1px solid var(--line);
+    font-size:20px;color:var(--fg);line-height:1;
+  }
+  .eg-nav:hover{background:var(--accent);color:#FFF7EC;border-color:var(--accent);}
+
+  .eg-dots{
+    margin-top:18px;display:flex;justify-content:center;gap:8px;
+  }
+  .eg-dot{
+    width:9px;height:9px;border-radius:999px;background:var(--line);padding:0;
+  }
+  .eg-dot.active{background:var(--accent);}
+  .eg-loading, .eg-empty{
+    width:100%;height:480px;display:flex;align-items:center;justify-content:center;
+    color:var(--fg-soft);font-size:15px;
+  }
+  @media (max-width:860px){
+    .eg-loading, .eg-empty{height:280px;}
+  }
 
   @media (max-width:860px){
     .gallery{padding:64px 20px 0;}
-    .gallery-grid{grid-template-columns:1fr 1fr;grid-template-rows:auto auto auto;height:auto;}
-    .gallery-grid a:nth-child(1){grid-column:1 / 3;grid-row:auto;}
-    .gallery-grid a:nth-child(2){grid-column:1 / 3;grid-row:auto;}
-    .gallery-grid a:nth-child(3){grid-column:1;grid-row:auto;}
-    .gallery-grid a:nth-child(4){grid-column:2;grid-row:auto;}
-    .gallery-grid img{height:220px;}
+    .eg-slide{height:280px;}
+    .eg-nav{width:38px;height:38px;font-size:17px;}
   }
 
   /* Intro / Join quick entry */
@@ -319,7 +379,7 @@
   }
   .mission-grid{
     margin-top:44px;
-    display:grid;grid-template-columns:repeat(4,1fr);gap:20px;
+    display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
   }
   .mission-card{
     background:var(--bg);border:1px solid var(--line);border-radius:16px;
@@ -337,7 +397,7 @@
 
   @media (max-width:860px){
     .about-mission{padding:56px 20px;}
-    .mission-grid{grid-template-columns:1fr 1fr;}
+    .mission-grid{grid-template-columns:1fr;}
   }
 
   /* About: org */
@@ -561,3 +621,23 @@
     font-size:14px;font-weight:800;letter-spacing:0.5px;color:var(--fg);
   }
   .brand-link:hover{opacity:0.85;}
+
+  /* Event gallery lightbox */
+  .eg-lightbox{
+    position:fixed;inset:0;z-index:1000;
+    background:rgba(15,12,9,0.92);
+    display:none;align-items:center;justify-content:center;
+    padding:40px;
+  }
+  .eg-lightbox.open{display:flex;}
+  .eg-lightbox img{
+    max-width:100%;max-height:100%;object-fit:contain;
+    border-radius:8px;
+  }
+  .eg-lightbox-close{
+    position:absolute;top:20px;right:24px;
+    width:44px;height:44px;border-radius:999px;
+    background:rgba(255,255,255,0.12);color:#FFF7EC;
+    font-size:24px;line-height:1;border:1px solid rgba(255,255,255,0.3);
+  }
+  .eg-lightbox-close:hover{background:rgba(255,255,255,0.24);}
