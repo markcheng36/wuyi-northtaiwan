@@ -89,7 +89,8 @@ function egProbeFile(url, kind) {
 }
 
 // 依 folder + mediatype，從編號 1 開始一路試探，抓不到就停止
-async function egBuildMedia(ev) {
+// limit：找到這麼多張就提早停止（首頁只需要少量張數時用，可省去後面不會顯示的探測）
+async function egBuildMedia(ev, limit) {
   var exts = (ev.mediatype || "jpg")
     .split(",")
     .map(function (s) { return s.trim(); })
@@ -100,6 +101,7 @@ async function egBuildMedia(ev) {
   var SAFETY_MAX = 300; // 避免設定錯誤造成無限迴圈
 
   while (i <= SAFETY_MAX) {
+    if (limit && media.length >= limit) break;
     var matched = null;
     for (var k = 0; k < exts.length; k++) {
       var ext = exts[k];
@@ -252,10 +254,16 @@ function renderEventGallery(container) {
     dotsEl.style.display = "none";
     dotsEl.innerHTML = "";
 
-    var media = await egBuildMedia(ev);
+    // 首頁只放前 5 張，避免載入太多張、也讓版面精簡；完整花絮導去「義整活動」頁看
+    var homeLimit = mode === "home" ? 5 : null;
+    var media = await egBuildMedia(ev, homeLimit);
 
     // 使用者可能在載入中途切換頁籤，這裡確認還是同一場才畫面更新
     if (events[activeIndex] !== ev) return;
+
+    if (mode === "home" && media.length > 0) {
+      media = media.concat([{ type: "cta" }]);
+    }
 
     trackEl.innerHTML = "";
     if (media.length === 0) {
@@ -279,6 +287,14 @@ function renderEventGallery(container) {
         video.setAttribute("controlsList", "nodownload noplaybackrate nofullscreen");
         video.style.pointerEvents = "none"; // 不能點擊開啟/全螢幕，純播放
         slide.appendChild(video);
+      } else if (m.type === "cta") {
+        var ctaLink = document.createElement("a");
+        ctaLink.className = "eg-cta-link";
+        ctaLink.href = "events.html";
+        ctaLink.innerHTML =
+          '<span class="eg-cta-text">查看更多義整活動</span>' +
+          '<span class="eg-cta-arrow">→</span>';
+        slide.appendChild(ctaLink);
       } else {
         // 圖片包一層按鈕，點擊用 Lightbox 彈出大圖（同一頁彈窗，不另開分頁）
         var trigger = document.createElement("button");
