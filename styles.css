@@ -417,8 +417,15 @@
   .about-org > p{
     margin-top:20px;font-size:15px;color:var(--fg-soft);
   }
-  .org-list{
+  .org-list-top{
     margin-top:40px;
+    display:flex;justify-content:center;flex-wrap:wrap;gap:20px;
+  }
+  .org-list-top .org-card{
+    flex:0 1 260px;
+  }
+  .org-list{
+    margin-top:20px;
     display:grid;grid-template-columns:repeat(4,1fr);gap:20px;
   }
   .org-card{
