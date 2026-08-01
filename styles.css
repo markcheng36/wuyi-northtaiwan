@@ -495,6 +495,26 @@
     .service-grid{grid-template-columns:1fr;}
   }
 
+  /* What We Do: shoe belief */
+  .shoe-belief{
+    max-width:1120px;margin:0 auto;
+    padding:80px 24px;
+  }
+  .shoe-belief-lead{
+    margin-top:20px;font-size:16px;color:var(--fg-soft);max-width:680px;
+  }
+  .shoe-belief-philosophy{
+    margin-top:36px;
+    background:var(--paper);border:1px solid var(--line);border-radius:20px;
+    padding:32px 36px;
+  }
+  .shoe-belief-philosophy h4{font-size:16px;font-weight:800;color:var(--accent-dark);}
+  .shoe-belief-philosophy p{margin-top:10px;font-size:15px;color:var(--fg-soft);}
+
+  @media (max-width:860px){
+    .shoe-belief{padding:56px 20px;}
+  }
+
   /* What We Do: occasions */
   .occasions{
     max-width:1120px;margin:0 auto;
@@ -518,6 +538,89 @@
   @media (max-width:860px){
     .occasions{padding:56px 20px;}
     .occasion-grid{grid-template-columns:1fr;}
+  }
+
+  /* Events: testimonials carousel (standalone, seen before registering) */
+  .testimonials-showcase{
+    max-width:1120px;margin:0 auto;
+    padding:88px 24px 0;
+  }
+  .tc-carousel{
+    margin-top:36px;display:flex;align-items:center;gap:16px;
+  }
+  .tc-viewport{
+    flex:1;min-width:0;overflow:hidden;
+  }
+  .tc-track{
+    display:flex;transition:transform .35s ease;
+  }
+  .tc-slide{
+    flex:0 0 100%;
+  }
+  .testimonials-page{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:24px;
+  }
+  .tc-nav{
+    flex:0 0 auto;width:44px;height:44px;border-radius:999px;
+    background:var(--paper);border:1px solid var(--line);
+    font-size:20px;color:var(--fg);line-height:1;
+  }
+  .tc-nav:hover{background:var(--accent);color:#FFF7EC;border-color:var(--accent);}
+  .tc-dots{
+    margin-top:18px;display:flex;justify-content:center;gap:8px;
+  }
+  .tc-dot{
+    width:9px;height:9px;border-radius:999px;background:var(--line);padding:0;
+  }
+  .tc-dot.active{background:var(--accent);}
+
+  .testimonial-card{
+    background:var(--paper);border:1px solid var(--line);border-radius:20px;
+    padding:32px;display:flex;flex-direction:column;gap:18px;
+  }
+  .testimonial-quote{
+    font-size:15px;color:var(--fg);line-height:1.7;flex:1;
+  }
+  .testimonial-meta{
+    font-size:13px;font-weight:700;color:var(--accent-dark);
+  }
+  @media (max-width:860px){
+    .testimonials-showcase{padding:64px 20px 0;}
+    .testimonials-page{grid-template-columns:1fr;gap:16px;}
+    .tc-nav{width:38px;height:38px;font-size:17px;}
+  }
+
+  /* Events: registration + feedback, collapsed behind a CTA until opened */
+  .register, .feedback{
+    max-width:1120px;margin:0 auto;
+    padding:88px 24px 0;
+  }
+  .register-desc, .feedback-desc{
+    margin-top:16px;font-size:16px;color:var(--fg-soft);max-width:640px;
+  }
+  .accordion-toggle{
+    margin-top:28px;
+    background:var(--accent);color:#FFF7EC;border:none;cursor:pointer;font-family:inherit;
+    padding:16px 32px;border-radius:999px;
+    font-size:16px;font-weight:800;
+    display:inline-flex;align-items:center;gap:10px;
+    box-shadow:0 8px 20px rgba(139,111,78,0.25);
+  }
+  .accordion-toggle:hover{background:var(--accent-dark);}
+  .accordion-toggle::after{content:"▾";font-size:13px;transition:transform .2s;}
+  .accordion-toggle.open::after{transform:rotate(180deg);}
+  .accordion-panel[hidden]{display:none;}
+  .register-form-wrap, .feedback-form-wrap{
+    margin-top:28px;
+    background:var(--paper);border:1px solid var(--line);border-radius:20px;
+    overflow:hidden;
+  }
+  .register-form-wrap iframe, .feedback-form-wrap iframe{
+    display:block;width:100%;height:1400px;border:none;
+  }
+  @media (max-width:860px){
+    .register, .feedback{padding:64px 20px 0;}
+    .register-form-wrap iframe, .feedback-form-wrap iframe{height:1600px;}
   }
 
   /* What We Do: referral banner */

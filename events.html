@@ -50,14 +50,40 @@
   <div id="event-gallery" data-mode="full"></div>
 </section>
 
+<section class="testimonials-showcase testimonials-block">
+  <div class="section-eyebrow">學員怎麼說</div>
+  <h2 class="section-title">來體驗過的人怎麼說</h2>
+  <div class="testimonials-list" id="testimonials-list"></div>
+</section>
+
+<section class="register">
+  <div class="section-eyebrow">現場報名</div>
+  <h2 class="section-title">準備好了嗎？</h2>
+  <p class="register-desc">選好想參加的場次，填一下基本資料就完成了，不用另外跳轉頁面。</p>
+  <button type="button" class="accordion-toggle" data-target="register-panel">我要參加</button>
+  <div class="accordion-panel register-form-wrap" id="register-panel" hidden>
+    <iframe data-src="https://forms.gle/2fC6gbtkCNk7Web16?embedded=true" title="義整活動報名表單" loading="lazy">載入中…</iframe>
+  </div>
+</section>
+
+<section class="feedback">
+  <div class="section-eyebrow">參加過的朋友</div>
+  <h2 class="section-title">來說說你的心得吧</h2>
+  <p class="feedback-desc">不管是想稱讚還是給建議，都想聽聽你的想法。填寫時你可以自己選擇，這則心得要不要公開在網站上。</p>
+  <button type="button" class="accordion-toggle" data-target="feedback-panel">滿意度填寫</button>
+  <div class="accordion-panel feedback-form-wrap" id="feedback-panel" hidden>
+    <iframe data-src="https://forms.gle/5cUWTZpLu1xZ2Mrc8?embedded=true" title="義整活動心得回饋表單" loading="lazy">載入中…</iframe>
+  </div>
+</section>
+
 <section class="referral">
   <div class="referral-box">
     <div class="referral-text">
       <span class="card-label">不錯過任何場次</span>
       <h4>下一場，我們可能就辦在你家附近</h4>
-      <p>加入官方 LINE，第一手掌握最新的義整活動地點與時間，直接在 LINE 上完成報名。</p>
+      <p>加入官方 LINE，第一手掌握最新的義整活動地點與時間，也可以直接在 LINE 上詢問報名。</p>
     </div>
-    <a class="btn-primary" href="https://line.me/R/ti/p/@strxhunter">加官方 LINE 報名 →</a>
+    <a class="btn-primary" href="https://line.me/R/ti/p/@strxhunter">加官方 LINE →</a>
   </div>
 </section>
 
@@ -97,5 +123,8 @@
 <script src="upcoming-events.js"></script>
 <script src="events-config.js"></script>
 <script src="events-carousel.js"></script>
+<script src="testimonials-config.js"></script>
+<script src="testimonials.js"></script>
+<script src="accordion.js"></script>
 </body>
 </html>
