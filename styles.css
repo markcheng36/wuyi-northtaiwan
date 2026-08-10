@@ -47,6 +47,8 @@
     transition:color .15s, border-color .15s;
   }
   nav a:hover{color:var(--accent-dark);border-color:var(--accent);}
+  nav a.nav-external{color:#3F7A52;font-weight:800;}
+  nav a.nav-external:hover{color:#2E5C3E;border-color:#3F7A52;}
   .nav-cta{
     background:var(--accent);color:#FFF7EC;
     padding:10px 20px;border-radius:999px;
@@ -134,6 +136,7 @@
       display:block;padding:14px 4px;border-bottom:1px solid var(--line);
       font-size:16px;
     }
+    nav a.nav-external{color:#3F7A52;font-weight:800;}
     .nav-cta{margin-top:16px;text-align:center;display:block;}
 
     .hero{flex-direction:column;padding:56px 24px 64px;text-align:center;}
@@ -317,6 +320,11 @@
   .intro-card.about .card-link{color:var(--accent-dark);}
   .intro-card.join .card-link{color:#FFF7EC;}
 
+  .intro-footnote{
+    max-width:1120px;margin:32px auto 0;text-align:center;font-size:14px;color:var(--fg-soft);
+  }
+  .intro-footnote a{text-decoration:underline;font-weight:700;color:var(--accent-dark);}
+
   @media (max-width:860px){
     .intro-grid{grid-template-columns:1fr;}
     .intro{padding:64px 20px 72px;}
@@ -468,6 +476,7 @@
   .assoc-box p{margin-top:8px;font-size:14px;color:var(--fg-soft);}
   .assoc-box .assoc-detail{font-size:13px;color:var(--fg-soft);}
   .assoc-box .assoc-detail div{margin-top:4px;}
+  .assoc-box .assoc-detail a{text-decoration:underline;font-weight:700;color:var(--accent-dark);}
 
   /* What We Do: services */
   .services{
@@ -645,6 +654,8 @@
   .referral-box .card-label{font-size:13px;font-weight:700;color:#E9DCC8;letter-spacing:1px;}
   .referral-box h4{margin-top:12px;font-size:20px;font-weight:800;}
   .referral-box p{margin-top:10px;font-size:14.5px;color:#F2E9DA;}
+  .referral-footnote{margin-top:14px;font-size:13px;color:#F2E9DA;}
+  .referral-footnote a{text-decoration:underline;font-weight:700;color:#FFF7EC;}
   .referral-box .btn-primary{background:#FFF7EC;color:var(--accent-dark);box-shadow:none;}
   .referral-box .btn-primary:hover{background:#EFE6D6;}
 
