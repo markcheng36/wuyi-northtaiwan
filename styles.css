@@ -163,7 +163,7 @@
   }
   .events-grid{
     margin-top:48px;
-    display:grid;grid-template-columns:1.3fr 1fr;gap:28px;
+    display:grid;grid-template-columns:1fr 1fr;gap:28px;
   }
   .event-card{
     background:var(--bg);border:1px solid var(--line);border-radius:20px;
@@ -186,6 +186,7 @@
     margin-top:18px;font-size:14px;color:var(--fg);font-weight:600;
   }
   .event-more{
+    grid-column:1 / -1;
     background:#FFFFFF;border:1px dashed var(--line);border-radius:20px;
     padding:36px;
     display:flex;flex-direction:column;justify-content:center;align-items:flex-start;

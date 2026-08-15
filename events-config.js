@@ -26,7 +26,7 @@
 
 const EVENTS_CONFIG = [
   {
-    order: 1,
+    order: 3,
     featured: false,
     name: "6/14 北醫匹克球場，足部健檢",
     description: "我們受邀在北醫匹球場，透過體驗足部力學壓力圖及分享正確鞋款結構，並提供徒手調理體驗。",
@@ -36,10 +36,18 @@ const EVENTS_CONFIG = [
 
   ,{
     order: 2,
-    featured: true,
+    featured: false,
     name: "7/18 董氏第四代聚會・分享會與體驗會",
     description: "我們受邀在董氏第四代的聚會中，分享身體結構平衡的觀念，並現場提供徒手調理體驗。",
     folder: "images/events/0718-dongshi",
+    mediatype: "jpg,MOV,mp4"
+  }
+  ,{
+    order: 1,
+    featured: true,
+    name: "8/15 原始點志工身體保養日・新手法體驗會",
+    description: "一群日常都在幫助別人身體恢復平衡的志工們，身體也是很需要被保養的。",
+    folder: "images/events/0815-yuanshi",
     mediatype: "jpg,MOV,mp4"
   }
 
