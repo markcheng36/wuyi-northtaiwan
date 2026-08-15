@@ -45,7 +45,7 @@ const EVENTS_CONFIG = [
   ,{
     order: 1,
     featured: true,
-    name: "8/15 原始點志工身體保養日・新手法體驗會",
+    name: "8/15 台灣健康久久協會志工身體保養日・新手法體驗會",
     description: "一群日常都在幫助別人身體恢復平衡的志工們，身體也是很需要被保養的。",
     folder: "images/events/0815-yuanshi",
     mediatype: "jpg,MOV,mp4"
