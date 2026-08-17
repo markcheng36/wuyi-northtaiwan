@@ -48,6 +48,6 @@ document.addEventListener("DOMContentLoaded", function () {
   moreCard.innerHTML =
     '<span class="event-tag">陸續公布</span>' +
     '<p>接下來我們也會走進更多社區、運動現場與公益團體，無償分享這份心法。實際場次與時間，第一手都在官方 LINE 公布。</p>' +
-    '<a class="btn-outline" href="https://line.me/R/ti/p/@strxhunter">加官方 LINE 看場次</a>';
+    '<a class="btn-outline" href="https://line.me/R/ti/p/@strxhunter">私訊官方 LINE 了解活動細節</a>';
   container.appendChild(moreCard);
 });

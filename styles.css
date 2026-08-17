@@ -567,7 +567,7 @@
   /* Events: testimonials carousel (standalone, seen before registering) */
   .testimonials-showcase{
     max-width:1120px;margin:0 auto;
-    padding:88px 24px 0;
+    padding:88px 24px 96px;
   }
   .tc-carousel{
     margin-top:36px;display:flex;align-items:center;gap:16px;
@@ -609,7 +609,7 @@
     font-size:13px;font-weight:700;color:var(--accent-dark);
   }
   @media (max-width:860px){
-    .testimonials-showcase{padding:64px 20px 0;}
+    .testimonials-showcase{padding:64px 20px 64px;}
     .testimonials-page{grid-template-columns:1fr;gap:16px;}
     .tc-nav{width:38px;height:38px;font-size:17px;}
   }
@@ -617,7 +617,7 @@
   /* What We Do: referral banner */
   .referral{
     background:var(--bg);border-top:1px solid var(--line);
-    padding:0 24px 96px;
+    padding:64px 24px 96px;
   }
   .referral-box{
     max-width:1120px;margin:0 auto;
@@ -629,13 +629,11 @@
   .referral-box .card-label{font-size:13px;font-weight:700;color:#E9DCC8;letter-spacing:1px;}
   .referral-box h4{margin-top:12px;font-size:20px;font-weight:800;}
   .referral-box p{margin-top:10px;font-size:14.5px;color:#F2E9DA;}
-  .referral-footnote{margin-top:14px;font-size:13px;color:#F2E9DA;}
-  .referral-footnote a{text-decoration:underline;font-weight:700;color:#FFF7EC;}
   .referral-box .btn-primary{background:#FFF7EC;color:var(--accent-dark);box-shadow:none;}
   .referral-box .btn-primary:hover{background:#EFE6D6;}
 
   @media (max-width:860px){
-    .referral{padding:0 20px 64px;}
+    .referral{padding:48px 20px 64px;}
     .referral-box{padding:32px 28px;}
   }
 
