@@ -17,20 +17,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
   container.innerHTML = "";
 
-  events.forEach(function (ev) {
+  events.forEach(function (ev, i) {
     var card = document.createElement("div");
     card.className = "event-card";
+    // 場次數是單數時，最後一張卡片撐滿整行，不要落單留空白（跟「陸續公布」卡片同樣邏輯）
+    if (events.length % 2 === 1 && i === events.length - 1) {
+      card.classList.add("event-card-wide");
+    }
     card.innerHTML =
       '<span class="event-tag"></span>' +
       '<div class="event-date"></div>' +
       '<div class="event-title"></div>' +
       '<p class="event-desc"></p>' +
-      '<div class="event-location"></div>';
+      '<div class="event-location"></div>' +
+      '<div class="event-price"></div>' +
+      '<a class="btn-primary event-cta" target="_blank" rel="noopener">立即報名 →</a>';
     card.querySelector(".event-tag").textContent = ev.tag;
     card.querySelector(".event-date").textContent = ev.date;
     card.querySelector(".event-title").textContent = ev.title;
     card.querySelector(".event-desc").textContent = ev.description;
     card.querySelector(".event-location").textContent = "📍 " + ev.location;
+    card.querySelector(".event-price").textContent = "💰 " + ev.price;
+    card.querySelector(".event-cta").href = ev.formUrl;
     container.appendChild(card);
   });
 

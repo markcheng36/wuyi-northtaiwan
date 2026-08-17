@@ -9,10 +9,12 @@
 //   tag         活動類型標籤，例如「社區大健康」
 //   date        日期（含星期），例如 "2026年8月15日（六）"
 //   title       活動標題，例如 "大健康體驗會"
-//   description 一句話說明活動內容——收費與否務必寫清楚，
-//               不同場次可能不一樣（有的全免費，有的可能有報名費/加購），
-//               不要照抄其他場次的說法
+//   description 一句話說明活動內容，重點放在活動亮點/贈品即可，
+//               收費與否已經改由下面的 price 欄位獨立呈現，這裡不用再重複寫
 //   location    地點
+//   price       費用，以「每人」為單位計算，例如 "NT$500 / 人"；
+//               完全免費就寫 "免費"
+//   formUrl     這場的 Google 表單報名連結，會做成按鈕、點了另開新分頁
 //
 // ============================================================
 
@@ -21,26 +23,42 @@ const UPCOMING_EVENTS_CONFIG = [
     order: 1,
     tag: "足部大健康",
     date: "2026年8月30日（日）",
-    title: "大健康體驗會",
-    description: "現場免費提供足部檢測與結構平衡調理體驗，不收費、不推銷，帶您常穿的鞋子來體驗最有感。",
-    location: "板橋・結構X獵人場域"
+    title: "大健康體驗會(新北板橋場)",
+    description: "現場提供足部檢測與結構平衡調理體驗，不推銷，帶您常穿的鞋子來體驗最有感。",
+    location: "板橋・結構X獵人",
+    price: "免費",
+    formUrl: "https://forms.gle/X3XtpyBBd4VR8uJV7"
   }
   ,{
     order: 2,
     tag: "足部大健康",
     date: "2026年9月14日（一）",
-    title: "大健康體驗會",
-    description: "現場免費提供足部檢測與結構平衡調理體驗，不收費、不推銷，帶您常穿的鞋子來體驗最有感。",
-    location: "板橋・結構X獵人場域"
+    title: "大健康體驗會(新北板橋場)",
+    description: "現場提供足部檢測與結構平衡調理體驗，不推銷，帶您常穿的鞋子來體驗最有感。",
+    location: "板橋・結構X獵人",
+    price: "免費",
+    formUrl: "https://forms.gle/kSBLeXzU5DeEbgxb8"
+  }
+  ,{
+    order: 3,
+    tag: "足部大健康",
+    date: "2026年9月19日（六）",
+    title: "大健康體驗會(台中南屯場)",
+    description: "「好好走路，從一雙對的鞋開始」，凡報名者贈送價值$380八合一遠紅外線除臭襪。",
+    location: "台中・好願飛行種子探索空間",
+    price: "$600 / 人",
+    formUrl: "https://forms.gle/WpEJRYbBajxgWzrf9"
   }
 
   // 範例：之後要新增場次，複製下面這段、拿掉最前面的 // 、改內容即可
   // ,{
-  //   order: 2,
+  //   order: 4,
   //   tag: "社區大健康",
   //   date: "2026年9月某日（六）",
   //   title: "大健康體驗會",
-  //   description: "現場提供足部檢測與結構調理體驗，酌收報名費，現場備有超值贈品，也可加購。",
-  //   location: "地點"
+  //   description: "現場提供足部檢測與結構調理體驗，現場備有超值贈品，也可加購。",
+  //   location: "地點",
+  //   price: "NT$500 / 人",
+  //   formUrl: "https://forms.gle/xxxxxxxxxxxxx"
   // }
 ];
