@@ -26,7 +26,7 @@
 
 const EVENTS_CONFIG = [
   {
-    order: 3,
+    order: 4,
     featured: false,
     name: "6/14 北醫匹克球場，足部健檢",
     description: "我們受邀在北醫匹球場，透過體驗足部力學壓力圖及分享正確鞋款結構，並提供徒手調理體驗。",
@@ -35,7 +35,7 @@ const EVENTS_CONFIG = [
   }
 
   ,{
-    order: 2,
+    order: 3,
     featured: false,
     name: "7/18 董氏第四代聚會・分享會與體驗會",
     description: "我們受邀在董氏第四代的聚會中，分享身體結構平衡的觀念，並現場提供徒手調理體驗。",
@@ -43,14 +43,21 @@ const EVENTS_CONFIG = [
     mediatype: "jpg,MOV,mp4"
   }
   ,{
-    order: 1,
-    featured: true,
-    name: "8/15 台灣健康久久協會志工身體保養日・新手法體驗會",
+    order: 2,
+    featured: false,
+    name: "8/15 台灣健康久久協會志工身體保養日・新手法體驗會-第 1 場",
     description: "一群日常都在幫助別人身體恢復平衡的志工們，身體也是很需要被保養的。",
     folder: "images/events/0815-yuanshi",
     mediatype: "jpg,MOV,mp4"
   }
-
+  ,{
+    order: 1,
+    featured: true,
+    name: "8/30 台灣健康久久協會志工身體保養日・新手法體驗會-第 2 場",
+    description: "上次辦第1場後，很多沒參加到的志工們，也想來體驗看看，因此有了第 2 場的體驗會。",
+    folder: "images/events/0830-health",
+    mediatype: "jpg,MOV,mp4"
+  }
   // 範例：之後要新增活動，複製下面這段、拿掉最前面的 // 、改內容即可
   // ,{
   //   order: 0,
