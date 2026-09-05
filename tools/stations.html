@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>現場時間流程 · 武醫義整</title>
+<title>現場三站 · 大健康體驗會</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -151,7 +151,7 @@
     margin-bottom:10px;
   }
   h1.headline{
-    font-size:44px;
+    font-size:46px;
     font-weight:900;
     line-height:1.35;
     color:var(--ink);
@@ -161,64 +161,60 @@
     font-size:19px;
     color:var(--text);
     line-height:1.7;
-    margin:0 0 40px;
+    margin:0 0 44px;
     max-width:820px;
   }
 
-  .section-block{ margin-bottom:44px; }
-  .section-head{
+  .stations{
     display:flex;
-    align-items:baseline;
-    gap:14px;
-    margin-bottom:20px;
+    flex-direction:column;
+    gap:24px;
+    margin-bottom:44px;
   }
-  .section-title{
+  .station-card{
+    display:flex;
+    align-items:center;
+    gap:32px;
+    background:var(--card);
+    border-radius:24px;
+    padding:36px 40px;
+  }
+  .station-card:nth-child(even){
+    flex-direction:row-reverse;
+  }
+  .station-badge{
+    flex-shrink:0;
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    background:var(--brown);
+    color:#fff;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    line-height:1.2;
+  }
+  .station-badge .num{
+    font-size:14px;
+    font-weight:700;
+    letter-spacing:2px;
+    opacity:0.85;
+  }
+  .station-badge .icon{
+    font-size:40px;
+  }
+  .station-body{ flex:1; }
+  .station-title{
     font-size:26px;
     font-weight:900;
     color:var(--ink);
-    margin:0;
+    margin-bottom:10px;
   }
-  .section-note{
-    font-size:14px;
-    color:#8a8378;
-  }
-
-  .flow-card{
-    background:var(--card);
-    border-radius:20px;
-    overflow:hidden;
-  }
-  .flow-item{
-    display:flex;
-    align-items:flex-start;
-    gap:24px;
-    padding:22px 32px;
-    border-bottom:1px solid #e2d5b8;
-  }
-  .flow-item:last-child{ border-bottom:none; }
-  .flow-time{
-    flex-shrink:0;
-    width:150px;
-    background:var(--brown);
-    color:#fff;
-    font-size:16px;
-    font-weight:900;
-    text-align:center;
-    padding:8px 10px;
-    border-radius:10px;
-    white-space:nowrap;
-  }
-  .flow-body{ padding-top:4px; }
-  .flow-title{
-    font-size:19px;
-    font-weight:700;
-    color:var(--ink);
-    margin-bottom:4px;
-  }
-  .flow-desc{
-    font-size:14.5px;
+  .station-desc{
+    font-size:16.5px;
     color:#6b6558;
-    line-height:1.6;
+    line-height:1.75;
   }
 
   .cta-card{
@@ -240,17 +236,6 @@
   .cta-left .cta-desc{
     font-size:15px;
     color:#f0e6d4;
-  }
-  .cta-btn{
-    background:#fff;
-    color:var(--brown-dark);
-    font-size:19px;
-    font-weight:900;
-    padding:16px 34px;
-    border-radius:12px;
-    white-space:nowrap;
-    text-decoration:none;
-    display:inline-block;
   }
   .cta-qr-box{
     flex-shrink:0;
@@ -292,16 +277,16 @@
       <div class="site-nav-links">
         <a href="dm.html">DM 產生器</a>
         <a href="flow-experience.html">大健康體驗會流程</a>
-        <a href="flow-charity.html" class="active">武醫義整流程</a>
-        <a href="stations.html">現場三站</a>
+        <a href="flow-charity.html">武醫義整流程</a>
+        <a href="stations.html" class="active">現場三站</a>
       </div>
     </div>
   </div>
 
   <div class="panel">
     <div>
-      <h1>武醫義整・現場流程</h1>
-      <p>下方海報可直接下載成圖片，供現場輸出或投影使用。</p>
+      <h1>現場三站・大健康體驗會</h1>
+      <p>下方海報可直接下載成圖片，適合用於社群貼文或現場輸出。</p>
     </div>
     <div>
       <button class="btn-download" id="downloadBtn">⬇ 下載 PNG</button>
@@ -315,60 +300,44 @@
 
         <div class="brand-row">
           <div class="brand-lockup">結構X獵人 ｜ 武醫北區支分會</div>
-          <div class="tag-pill">現場流程總覽</div>
+          <div class="tag-pill">大健康體驗會</div>
         </div>
 
-        <div class="eyebrow">當天怎麼進行</div>
-        <h1 class="headline">武醫義整，<br>無償分享這份心法</h1>
-        <p class="sub">以下為現場流程，時間如有異動將於現場另行公告。</p>
+        <div class="eyebrow">現場三站・親身體驗</div>
+        <h1 class="headline">不是聽講，<br>是走一趟「闖關」</h1>
+        <p class="sub">帶著身體來，不用帶基礎。三站走完，帶走你對自己身體的重新認識。</p>
 
-        <div class="section-block">
-          <div class="section-head">
-            <div class="section-title">武醫義整・現場流程</div>
-            <div class="section-note">13:00–15:50</div>
+        <div class="stations">
+          <div class="station-card">
+            <div class="station-badge">
+              <div class="num">站①</div>
+              <div class="icon">🦶</div>
+            </div>
+            <div class="station-body">
+              <div class="station-title">足部檢測站</div>
+              <div class="station-desc">足弓拓印 ✕ 鞋底磨損判讀。一張紙，看出你的腳型與受力；舊鞋的磨痕，會說出你走路的秘密。</div>
+            </div>
           </div>
-          <div class="flow-card">
-            <div class="flow-item">
-              <div class="flow-time">13:00–13:30</div>
-              <div class="flow-body">
-                <div class="flow-title">報到</div>
-                <div class="flow-desc">領取號碼、簡單填寫身體狀況表。</div>
-              </div>
+
+          <div class="station-card">
+            <div class="station-badge">
+              <div class="num">站②</div>
+              <div class="icon">👟</div>
             </div>
-            <div class="flow-item">
-              <div class="flow-time">13:30–14:20</div>
-              <div class="flow-body">
-                <div class="flow-title">一對一身體調整・上半場</div>
-                <div class="flow-desc">依報到順序分批進行，無償提供結構調整。</div>
-              </div>
+            <div class="station-body">
+              <div class="station-title">選鞋站</div>
+              <div class="station-desc">選鞋三原則 ✕ 現場試走。你穿的鞋，正在悄悄改變你的體態。學會怎麼挑，下一雙不再買錯。</div>
             </div>
-            <div class="flow-item">
-              <div class="flow-time">14:20–14:40</div>
-              <div class="flow-body">
-                <div class="flow-title">Q&amp;A、休息時間</div>
-                <div class="flow-desc">開放提問，稍作休息。</div>
-              </div>
+          </div>
+
+          <div class="station-card">
+            <div class="station-badge">
+              <div class="num">站③</div>
+              <div class="icon">🤲</div>
             </div>
-            <div class="flow-item">
-              <div class="flow-time">14:40–15:30</div>
-              <div class="flow-body">
-                <div class="flow-title">一對一身體調整・下半場</div>
-                <div class="flow-desc">依報到順序分批進行，無償提供結構調整。</div>
-              </div>
-            </div>
-            <div class="flow-item">
-              <div class="flow-time">15:30–15:50</div>
-              <div class="flow-body">
-                <div class="flow-title">Q&amp;A、休息時間</div>
-                <div class="flow-desc">開放提問，稍作休息。</div>
-              </div>
-            </div>
-            <div class="flow-item">
-              <div class="flow-time">15:50–</div>
-              <div class="flow-body">
-                <div class="flow-title">賦歸・場地復原</div>
-                <div class="flow-desc">感謝參與，收拾場地。</div>
-              </div>
+            <div class="station-body">
+              <div class="station-title">結構手法體驗站</div>
+              <div class="station-desc">徒手結構調整・當場感受差別。肩頸緊、腰痠、身體累——來被「調」一次，柔性無痛，前後對比自己評。</div>
             </div>
           </div>
         </div>
@@ -402,7 +371,7 @@
       const poster = document.getElementById('poster');
       const canvas = await html2canvas(poster, { scale: 2, backgroundColor: '#FAF7F1', useCORS: true });
       const link = document.createElement('a');
-      link.download = '武醫義整_現場流程.png';
+      link.download = '現場三站_大健康體驗會.png';
       link.href = canvas.toDataURL('image/png');
       link.click();
       statusText.textContent = '下載完成！';
