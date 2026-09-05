@@ -174,7 +174,7 @@
   .station-card{
     display:flex;
     align-items:center;
-    gap:32px;
+    gap:40px;
     background:var(--card);
     border-radius:24px;
     padding:36px 40px;
@@ -182,27 +182,33 @@
   .station-card:nth-child(even){
     flex-direction:row-reverse;
   }
-  .station-badge{
+  .station-illustration{
     flex-shrink:0;
-    width:120px;
-    height:120px;
-    border-radius:50%;
-    background:var(--brown);
-    color:#fff;
+    width:280px;
+    height:220px;
+    background:#fff;
+    border-radius:20px;
+    position:relative;
     display:flex;
-    flex-direction:column;
     align-items:center;
     justify-content:center;
-    line-height:1.2;
+    padding:14px;
   }
-  .station-badge .num{
-    font-size:14px;
+  .station-illustration svg{
+    width:100%;
+    height:100%;
+  }
+  .station-illustration .num-tag{
+    position:absolute;
+    top:14px;
+    left:14px;
+    background:var(--brown);
+    color:#fff;
+    font-size:13px;
     font-weight:700;
-    letter-spacing:2px;
-    opacity:0.85;
-  }
-  .station-badge .icon{
-    font-size:40px;
+    letter-spacing:1px;
+    padding:5px 14px;
+    border-radius:999px;
   }
   .station-body{ flex:1; }
   .station-title{
@@ -309,9 +315,23 @@
 
         <div class="stations">
           <div class="station-card">
-            <div class="station-badge">
-              <div class="num">站①</div>
-              <div class="icon">🦶</div>
+            <div class="station-illustration">
+              <div class="num-tag">站①</div>
+              <svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
+                <path d="M100,14 C124,14 138,34 140,58 C142,82 132,98 134,122 C136,146 140,168 128,196 C118,216 108,228 100,230 C92,228 82,216 72,196 C60,168 64,146 66,122 C68,98 58,82 60,58 C62,34 76,14 100,14 Z"
+                      fill="#F1E9D8" stroke="#997B57" stroke-width="3"/>
+                <ellipse cx="72" cy="150" rx="17" ry="34" fill="#C5B290" opacity="0.55"/>
+                <circle cx="72" cy="26" r="9" fill="#997B57"/>
+                <circle cx="86" cy="17" r="10" fill="#997B57"/>
+                <circle cx="100" cy="14" r="10" fill="#997B57"/>
+                <circle cx="114" cy="17" r="10" fill="#997B57"/>
+                <circle cx="128" cy="26" r="9" fill="#997B57"/>
+                <circle cx="85" cy="82" r="10" fill="#6E5A3E" opacity="0.5"/>
+                <circle cx="118" cy="82" r="10" fill="#6E5A3E" opacity="0.5"/>
+                <circle cx="100" cy="205" r="14" fill="#6E5A3E" opacity="0.5"/>
+                <line x1="52" y1="150" x2="92" y2="150" stroke="#997B57" stroke-width="2" stroke-dasharray="4 4"/>
+                <text x="52" y="145" font-size="12" font-weight="700" fill="#6E5A3E">足弓</text>
+              </svg>
             </div>
             <div class="station-body">
               <div class="station-title">足部檢測站</div>
@@ -320,9 +340,25 @@
           </div>
 
           <div class="station-card">
-            <div class="station-badge">
-              <div class="num">站②</div>
-              <div class="icon">👟</div>
+            <div class="station-illustration">
+              <div class="num-tag">站②</div>
+              <svg viewBox="0 0 280 210" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20,140 C18,120 28,108 45,106 C55,85 78,68 105,62 C140,54 175,56 205,66 C225,73 240,84 250,98 C258,108 256,120 246,126 C220,138 60,140 20,140 Z"
+                      fill="#F1E9D8" stroke="#997B57" stroke-width="3"/>
+                <rect x="15" y="138" width="240" height="14" rx="7" fill="#997B57"/>
+                <line x1="112" y1="68" x2="128" y2="80" stroke="#997B57" stroke-width="2.5"/>
+                <line x1="122" y1="64" x2="138" y2="77" stroke="#997B57" stroke-width="2.5"/>
+                <line x1="132" y1="61" x2="148" y2="74" stroke="#997B57" stroke-width="2.5"/>
+                <circle cx="45" cy="100" r="7" fill="#fff" stroke="#997B57" stroke-width="2.5"/>
+                <line x1="45" y1="107" x2="45" y2="170" stroke="#C5B290" stroke-width="2" stroke-dasharray="3 3"/>
+                <text x="45" y="188" font-size="12" font-weight="700" fill="#6E5A3E" text-anchor="middle">①包覆穩定</text>
+                <circle cx="150" cy="125" r="7" fill="#fff" stroke="#997B57" stroke-width="2.5"/>
+                <line x1="150" y1="132" x2="150" y2="170" stroke="#C5B290" stroke-width="2" stroke-dasharray="3 3"/>
+                <text x="150" y="188" font-size="12" font-weight="700" fill="#6E5A3E" text-anchor="middle">②彎折點</text>
+                <circle cx="235" cy="95" r="7" fill="#fff" stroke="#997B57" stroke-width="2.5"/>
+                <line x1="235" y1="102" x2="235" y2="170" stroke="#C5B290" stroke-width="2" stroke-dasharray="3 3"/>
+                <text x="235" y="188" font-size="12" font-weight="700" fill="#6E5A3E" text-anchor="middle">③楦頭空間</text>
+              </svg>
             </div>
             <div class="station-body">
               <div class="station-title">選鞋站</div>
@@ -331,9 +367,33 @@
           </div>
 
           <div class="station-card">
-            <div class="station-badge">
-              <div class="num">站③</div>
-              <div class="icon">🤲</div>
+            <div class="station-illustration">
+              <div class="num-tag">站③</div>
+              <svg viewBox="0 0 280 210" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="78" cy="38" r="15" fill="none" stroke="#997B57" stroke-width="3.5"/>
+                <path d="M78,53 C58,66 52,66 48,76" fill="none" stroke="#997B57" stroke-width="3.5" stroke-linecap="round"/>
+                <path d="M78,53 C64,90 55,120 62,150" fill="none" stroke="#997B57" stroke-width="3.5" stroke-linecap="round"/>
+                <line x1="48" y1="76" x2="42" y2="110" stroke="#997B57" stroke-width="3.5" stroke-linecap="round"/>
+                <line x1="62" y1="150" x2="52" y2="192" stroke="#997B57" stroke-width="3.5" stroke-linecap="round"/>
+                <line x1="62" y1="150" x2="74" y2="192" stroke="#997B57" stroke-width="3.5" stroke-linecap="round"/>
+                <text x="65" y="207" font-size="13" font-weight="700" fill="#b5482f" text-anchor="middle">調整前</text>
+
+                <path d="M120,100 L165,100" stroke="#C5B290" stroke-width="3" marker-end="url(#arrowhead)"/>
+                <defs>
+                  <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 Z" fill="#C5B290"/>
+                  </marker>
+                </defs>
+
+                <circle cx="210" cy="34" r="15" fill="none" stroke="#997B57" stroke-width="3.5"/>
+                <line x1="210" y1="49" x2="210" y2="150" stroke="#997B57" stroke-width="3.5" stroke-linecap="round"/>
+                <line x1="210" y1="60" x2="188" y2="66" stroke="#997B57" stroke-width="3.5" stroke-linecap="round"/>
+                <line x1="210" y1="60" x2="232" y2="66" stroke="#997B57" stroke-width="3.5" stroke-linecap="round"/>
+                <line x1="188" y1="66" x2="184" y2="105" stroke="#997B57" stroke-width="3.5" stroke-linecap="round"/>
+                <line x1="210" y1="150" x2="198" y2="192" stroke="#997B57" stroke-width="3.5" stroke-linecap="round"/>
+                <line x1="210" y1="150" x2="222" y2="192" stroke="#997B57" stroke-width="3.5" stroke-linecap="round"/>
+                <text x="210" y="207" font-size="13" font-weight="700" fill="#5c8a5c" text-anchor="middle">調整後</text>
+              </svg>
             </div>
             <div class="station-body">
               <div class="station-title">結構手法體驗站</div>
@@ -348,7 +408,7 @@
             <div class="cta-desc">歡迎加官方 LINE 直接詢問｜LINE ID：@strxhunter</div>
           </div>
           <a class="cta-qr-box" href="https://line.me/R/ti/p/@strxhunter" target="_blank" rel="noopener">
-            <img src="line-qr.png" alt="結構X獵人 官方 LINE QR Code">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAAB9UlEQVR4nO1aQWrDMBCclQU92pAH5CnyD/rW/sB6Sh5QsI4FmS27khtCKemhbiRFcxCWGPCgrFej3RDjPrz5BQnorB2dVQErUMYMgGZsBD8B+6otW33FLAtgiPpICBNYBnIrALfIajgVrN40wKIU3gkDA0GmIX8LpauvlWW/L23ECI/WZZ6NNUbQPDLXqb5SFjOnnI90zM6jTEdmXipQXzNrS4YGCC8Md9FUbwGvq9PjdN1H3Swr4Y0MzfJjBPtzBFeg3lTNAvM6sALqLGXv0+D4K/GUqt604HP8DLH2OlgNeYanB+oyTxL3kBgXd7NbHF6g30LMTz3uj9p71h3PiSeloOU2I/W9P6yeY8GLWHuapJRzllS/yuX26vQLVt/GWcuSX3TbedET9jqUqt40cNaSe5sk6Us5AeJuAsmpq4ON5ao3TdRzxmi1hCmFywinyWZ8t+TWXsc8NucgQV29mvwESUGajEpVb6q/18b9Dis1BUC/gFPU0j2Xrd6007ca49cPoB0sgVbyC1bfSt9K4F+jPA3pmptLDKWqN031rUiinRetbaambY/7/2FtBHfRTqEes1pTOPaNz8yyN7OBSdymtskZ2Cy6xzx67znPtmTy0+Bn7Zr/9RtNZ/3Ut/LaqBI4/qAK1N9HqSzq/wnM6Kwdz8D6BJYD8A1EtfEuAAAAAElFTkSuQmCC" alt="結構X獵人 官方 LINE QR Code">
           </a>
         </div>
 
