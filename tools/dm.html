@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大健康體驗會 DM 產生器</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="html2canvas.min.js"></script>
+<style>
+  :root{
+    --cream:#FAF7F1;
+    --card:#F1E9D8;
+    --tan:#C5B290;
+    --brown:#997B57;
+    --brown-dark:#6E5A3E;
+    --ink:#151514;
+    --text:#39352E;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"Noto Sans TC","PingFang TC",sans-serif;
+    background:#e9e4d8;
+    color:var(--text);
+    padding:24px 16px 60px;
+  }
+
+  /* ---- 控制面板 ---- */
+  .panel{
+    max-width:1080px;
+    margin:0 auto 28px;
+    background:#fff;
+    border-radius:16px;
+    box-shadow:0 4px 18px rgba(0,0,0,0.08);
+    padding:20px 24px;
+  }
+  .panel h1{
+    font-size:18px;
+    margin:0 0 4px;
+    color:var(--ink);
+  }
+  .panel p.hint{
+    margin:0 0 16px;
+    font-size:13px;
+    color:#8a8378;
+  }
+  .fields{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
+    gap:14px;
+  }
+  .field label{
+    display:block;
+    font-size:13px;
+    font-weight:700;
+    color:var(--brown-dark);
+    margin-bottom:6px;
+  }
+  .field input{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid #d8d1c2;
+    border-radius:8px;
+    font-size:14px;
+    font-family:inherit;
+    background:#fdfcfa;
+    color:var(--text);
+  }
+  .field input:focus{
+    outline:none;
+    border-color:var(--brown);
+  }
+  .actions{
+    margin-top:18px;
+    display:flex;
+    gap:12px;
+    align-items:center;
+    flex-wrap:wrap;
+  }
+  .btn-download{
+    background:var(--brown);
+    color:#fff;
+    border:none;
+    padding:12px 28px;
+    border-radius:8px;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    font-family:inherit;
+  }
+  .btn-download:hover{ background:var(--brown-dark); }
+  .status{
+    font-size:13px;
+    color:#8a8378;
+  }
+
+  /* ---- 海報預覽外框 ---- */
+  .stage-wrap{
+    max-width:1080px;
+    margin:0 auto;
+    display:flex;
+    justify-content:center;
+  }
+  #poster{
+    width:1080px;
+    background:var(--cream);
+    position:relative;
+    overflow:hidden;
+    transform-origin:top center;
+  }
+
+  /* ---- 海報內容 ---- */
+  .p-inner{ padding:56px 64px 48px; }
+
+  .brand-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:36px;
+  }
+  .brand-lockup{
+    font-size:20px;
+    font-weight:900;
+    color:var(--ink);
+    letter-spacing:1px;
+  }
+  .brand-lockup span{ color:var(--brown); }
+  .tag-pill{
+    background:var(--card);
+    color:var(--brown-dark);
+    font-size:14px;
+    font-weight:700;
+    padding:8px 18px;
+    border-radius:999px;
+  }
+
+  .eyebrow{
+    color:var(--brown);
+    font-size:20px;
+    font-weight:700;
+    letter-spacing:2px;
+    margin-bottom:10px;
+  }
+  h1.headline{
+    font-size:52px;
+    font-weight:900;
+    line-height:1.35;
+    color:var(--ink);
+    margin:0 0 18px;
+  }
+  p.sub{
+    font-size:21px;
+    color:var(--text);
+    line-height:1.7;
+    margin:0 0 34px;
+    max-width:820px;
+  }
+
+  /* 資訊卡 */
+  .info-card{
+    background:var(--card);
+    border-radius:20px;
+    padding:32px 36px;
+    margin-bottom:38px;
+  }
+  .info-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:24px;
+  }
+  .info-item{ display:flex; gap:14px; align-items:flex-start; }
+  .info-icon{
+    font-size:26px;
+    line-height:1;
+    flex-shrink:0;
+    width:34px;
+    height:34px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .info-label{
+    font-size:15px;
+    font-weight:700;
+    color:var(--brown-dark);
+    margin-bottom:4px;
+  }
+  .info-value{
+    font-size:22px;
+    font-weight:700;
+    color:var(--ink);
+    line-height:1.4;
+    word-break:break-word;
+  }
+  .info-item.price .info-value{ color:#b5482f; }
+  .info-grid .info-value{ white-space:nowrap; }
+
+  /* 三站流程 */
+  .section-title{
+    font-size:26px;
+    font-weight:900;
+    color:var(--ink);
+    margin:0 0 22px;
+  }
+  .stations{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+    margin-bottom:38px;
+  }
+  .station{
+    background:#fff;
+    border:1px solid #ecE4d4;
+    border-radius:16px;
+    padding:22px 20px;
+  }
+  .station .num{
+    display:inline-block;
+    background:var(--brown);
+    color:#fff;
+    font-size:13px;
+    font-weight:700;
+    padding:3px 12px;
+    border-radius:999px;
+    margin-bottom:12px;
+  }
+  .station .name{
+    font-size:19px;
+    font-weight:700;
+    color:var(--ink);
+    margin-bottom:8px;
+  }
+  .station .desc{
+    font-size:14.5px;
+    color:#6b6558;
+    line-height:1.6;
+  }
+
+  /* 適合對象 */
+  .audience-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-bottom:40px;
+  }
+  .audience-chip{
+    background:#fff;
+    border:1.5px solid var(--tan);
+    color:var(--brown-dark);
+    font-size:15px;
+    font-weight:700;
+    padding:9px 20px;
+    border-radius:999px;
+  }
+
+  /* CTA */
+  .cta-card{
+    background:var(--brown);
+    border-radius:20px;
+    padding:34px 40px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    flex-wrap:wrap;
+  }
+  .cta-left .cta-title{
+    font-size:24px;
+    font-weight:900;
+    color:#fff;
+    margin-bottom:6px;
+  }
+  .cta-left .cta-desc{
+    font-size:15px;
+    color:#f0e6d4;
+  }
+  .cta-qr-box{
+    width:150px;
+    height:150px;
+    flex-shrink:0;
+    background:#fff;
+    border-radius:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+  .cta-qr-box img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    display:none;
+  }
+  .cta-qr-box .qr-placeholder{
+    font-size:13px;
+    font-weight:700;
+    color:#c7bda4;
+    text-align:center;
+    line-height:1.6;
+    padding:10px;
+  }
+
+  .footer-row{
+    margin-top:34px;
+    padding-top:26px;
+    border-top:1px solid #e2d9c4;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+    font-size:14px;
+    color:#8a8378;
+  }
+  .footer-row b{ color:var(--brown-dark); }
+</style>
+</head>
+<body>
+
+  <div class="panel">
+    <h1>大健康體驗會 DM 產生器</h1>
+    <p class="hint">調整下方欄位，海報內容會即時更新，完成後按「下載 PNG」即可存檔（不含此控制面板）。</p>
+    <div class="fields">
+      <div class="field">
+        <label for="in-brand">合作夥伴品牌</label>
+        <input id="in-brand" type="text" value="結構X獵人">
+      </div>
+      <div class="field">
+        <label for="in-date">日期</label>
+        <input id="in-date" type="text" value="2026年9月19日（六）">
+      </div>
+      <div class="field">
+        <label for="in-time">時間</label>
+        <input id="in-time" type="text" value="14:00–17:00">
+      </div>
+      <div class="field">
+        <label for="in-place">地點</label>
+        <input id="in-place" type="text" value="台中・好願飛行種子探索空間">
+      </div>
+      <div class="field">
+        <label for="in-price">金額</label>
+        <input id="in-price" type="text" value="$600 / 人">
+      </div>
+      <div class="field">
+        <label for="in-badge">右上角標籤</label>
+        <input id="in-badge" type="text" value="無償提供・免收費">
+      </div>
+      <div class="field">
+        <label for="in-deadline">報名截止時間</label>
+        <input id="in-deadline" type="text" value="額滿為止">
+      </div>
+      <div class="field">
+        <label for="in-qr">上傳報名 QR Code 圖片</label>
+        <input id="in-qr" type="file" accept="image/*">
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn-download" id="downloadBtn">⬇ 下載 PNG</button>
+      <span class="status" id="statusText"></span>
+    </div>
+  </div>
+
+  <div class="stage-wrap">
+    <div id="poster">
+      <div class="p-inner">
+
+        <div class="brand-row">
+          <div class="brand-lockup"><span id="out-brand">結構X獵人</span> ｜ 武醫北區支分會</div>
+          <div class="tag-pill" id="out-badge">無償提供・免收費</div>
+        </div>
+
+        <div class="eyebrow">限額・大健康體驗會</div>
+        <h1 class="headline">痠・緊・累，<br>來被身體「調整」一次</h1>
+        <p class="sub">現場提供足部檢測與結構平衡調理體驗，不推銷，帶您常穿的鞋子來體驗最有感。一場，從腳底重新認識你的身體。</p>
+
+        <div class="info-card">
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-icon">📅</div>
+              <div>
+                <div class="info-label">日期</div>
+                <div class="info-value" id="out-date">2026年9月19日（六）</div>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon">⏰</div>
+              <div>
+                <div class="info-label">時間</div>
+                <div class="info-value" id="out-time">14:00–17:00</div>
+              </div>
+            </div>
+            <div class="info-item price">
+              <div class="info-icon">💰</div>
+              <div>
+                <div class="info-label">費用</div>
+                <div class="info-value" id="out-price">$600 / 人</div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:22px; padding-top:22px; border-top:1px solid #e2d5b8; display:flex; align-items:center; gap:14px;">
+            <div class="info-icon">📍</div>
+            <div class="info-item">
+              <div>
+                <div class="info-label">地點</div>
+                <div class="info-value" id="out-place">台中・好願飛行種子探索空間</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-title">現場三站・親身體驗</div>
+        <div class="stations">
+          <div class="station">
+            <div class="num">站 ①</div>
+            <div class="name">足部檢測站</div>
+            <div class="desc">足弓拓印 ✕ 鞋底磨損判讀，一張紙看出你的腳型與受力。</div>
+          </div>
+          <div class="station">
+            <div class="num">站 ②</div>
+            <div class="name">選鞋站</div>
+            <div class="desc">選鞋三原則 ✕ 現場試走，學會怎麼挑，下一雙不再買錯。</div>
+          </div>
+          <div class="station">
+            <div class="num">站 ③</div>
+            <div class="name">結構手法體驗站</div>
+            <div class="desc">徒手結構調整，柔性無痛，當場感受前後差別。</div>
+          </div>
+        </div>
+
+        <div class="section-title">這場，特別適合你</div>
+        <div class="audience-row">
+          <div class="audience-chip">久站久坐上班族</div>
+          <div class="audience-chip">痠緊累長期困擾者</div>
+          <div class="audience-chip">運動愛好者</div>
+          <div class="audience-chip">銀髮長輩・照顧者</div>
+        </div>
+
+        <div class="cta-card">
+          <div class="cta-left">
+            <div class="cta-title">掃描 QR Code 完成報名</div>
+            <div class="cta-desc">請掃描右方 QR Code 填寫線上報名表單，名額有限<br>報名截止：<span id="out-deadline">額滿為止</span></div>
+          </div>
+          <div class="cta-qr-box" id="qr-box">
+            <div class="qr-placeholder" id="qr-placeholder">尚未上傳<br>報名 QR Code</div>
+            <img id="out-qr" alt="報名 QR Code">
+          </div>
+        </div>
+
+        <div class="footer-row">
+          <div>中華武醫國際交流發展總會・北區支分會　｜　合作夥伴：<b id="out-partner">結構X獵人</b></div>
+          <div>先照顧好自己，才有力氣照顧別人</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+<script>
+  const map = [
+    ['in-date','out-date'],
+    ['in-time','out-time'],
+    ['in-place','out-place'],
+    ['in-price','out-price'],
+    ['in-badge','out-badge'],
+    ['in-deadline','out-deadline'],
+  ];
+  const brandInput = document.getElementById('in-brand');
+  const brandOutputs = [document.getElementById('out-brand'), document.getElementById('out-partner')];
+  brandInput.addEventListener('input', ()=>{
+    brandOutputs.forEach(out => out.textContent = brandInput.value);
+  });
+
+  map.forEach(([inputId, outId])=>{
+    const input = document.getElementById(inputId);
+    const out = document.getElementById(outId);
+    input.addEventListener('input', ()=>{ out.textContent = input.value; });
+  });
+
+  document.getElementById('in-qr').addEventListener('change', (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev)=>{
+      const img = document.getElementById('out-qr');
+      img.src = ev.target.result;
+      img.style.display = 'block';
+      document.getElementById('qr-placeholder').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  document.getElementById('downloadBtn').addEventListener('click', async ()=>{
+    const statusText = document.getElementById('statusText');
+    const btn = document.getElementById('downloadBtn');
+    btn.disabled = true;
+    statusText.textContent = '產生圖片中...';
+    try{
+      const poster = document.getElementById('poster');
+      const canvas = await html2canvas(poster, { scale: 2, backgroundColor: '#FAF7F1', useCORS: true });
+      const link = document.createElement('a');
+      const dateVal = document.getElementById('in-date').value.replace(/[^\d]/g,'').slice(0,8) || 'DM';
+      link.download = `大健康體驗會DM_${dateVal}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      statusText.textContent = '下載完成！';
+    }catch(e){
+      statusText.textContent = '發生錯誤：' + e.message;
+      console.error(e);
+    }finally{
+      btn.disabled = false;
+    }
+  });
+</script>
+
+</body>
+</html>
