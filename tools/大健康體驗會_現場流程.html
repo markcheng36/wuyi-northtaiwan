@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>現場時間流程 · 大健康體驗會</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="html2canvas.min.js"></script>
+<style>
+  :root{
+    --cream:#FAF7F1;
+    --card:#F1E9D8;
+    --tan:#C5B290;
+    --brown:#997B57;
+    --brown-dark:#6E5A3E;
+    --ink:#151514;
+    --text:#39352E;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"Noto Sans TC","PingFang TC",sans-serif;
+    background:#e9e4d8;
+    color:var(--text);
+    padding:24px 16px 60px;
+  }
+
+  /* ---- 共用導覽列 ---- */
+  .site-nav{
+    max-width:1080px;
+    margin:0 auto 20px;
+    background:var(--ink);
+    border-radius:16px;
+    padding:14px 24px;
+  }
+  .site-nav-inner{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .site-nav-brand{
+    color:#fff;
+    font-weight:900;
+    font-size:15px;
+    letter-spacing:1px;
+    white-space:nowrap;
+  }
+  .site-nav-links{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .site-nav-links a{
+    color:#d8cdb8;
+    text-decoration:none;
+    font-size:14px;
+    font-weight:700;
+    padding:8px 16px;
+    border-radius:999px;
+    transition:background .15s,color .15s;
+  }
+  .site-nav-links a:hover{ background:rgba(255,255,255,0.1); color:#fff; }
+  .site-nav-links a.active{ background:var(--brown); color:#fff; }
+
+  .panel{
+    max-width:1080px;
+    margin:0 auto 28px;
+    background:#fff;
+    border-radius:16px;
+    box-shadow:0 4px 18px rgba(0,0,0,0.08);
+    padding:20px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .panel h1{
+    font-size:18px;
+    margin:0 0 4px;
+    color:var(--ink);
+  }
+  .panel p{
+    margin:0;
+    font-size:13px;
+    color:#8a8378;
+  }
+  .btn-download{
+    background:var(--brown);
+    color:#fff;
+    border:none;
+    padding:12px 28px;
+    border-radius:8px;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    font-family:inherit;
+    white-space:nowrap;
+  }
+  .btn-download:hover{ background:var(--brown-dark); }
+  .status{
+    font-size:13px;
+    color:#8a8378;
+    margin-left:10px;
+  }
+
+  .stage-wrap{
+    max-width:1080px;
+    margin:0 auto;
+    display:flex;
+    justify-content:center;
+  }
+  #poster{
+    width:1080px;
+    background:var(--cream);
+    position:relative;
+    overflow:hidden;
+  }
+  .p-inner{ padding:56px 64px 48px; }
+
+  .brand-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:36px;
+  }
+  .brand-lockup{
+    font-size:20px;
+    font-weight:900;
+    color:var(--ink);
+    letter-spacing:1px;
+  }
+  .tag-pill{
+    background:var(--card);
+    color:var(--brown-dark);
+    font-size:14px;
+    font-weight:700;
+    padding:8px 18px;
+    border-radius:999px;
+  }
+
+  .eyebrow{
+    color:var(--brown);
+    font-size:20px;
+    font-weight:700;
+    letter-spacing:2px;
+    margin-bottom:10px;
+  }
+  h1.headline{
+    font-size:44px;
+    font-weight:900;
+    line-height:1.35;
+    color:var(--ink);
+    margin:0 0 18px;
+  }
+  p.sub{
+    font-size:19px;
+    color:var(--text);
+    line-height:1.7;
+    margin:0 0 40px;
+    max-width:820px;
+  }
+
+  .section-block{ margin-bottom:44px; }
+  .section-head{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    margin-bottom:20px;
+  }
+  .section-title{
+    font-size:26px;
+    font-weight:900;
+    color:var(--ink);
+    margin:0;
+  }
+  .section-note{
+    font-size:14px;
+    color:#8a8378;
+  }
+
+  .flow-card{
+    background:var(--card);
+    border-radius:20px;
+    overflow:hidden;
+  }
+  .flow-item{
+    display:flex;
+    align-items:flex-start;
+    gap:24px;
+    padding:22px 32px;
+    border-bottom:1px solid #e2d5b8;
+  }
+  .flow-item:last-child{ border-bottom:none; }
+  .flow-time{
+    flex-shrink:0;
+    width:150px;
+    background:var(--brown);
+    color:#fff;
+    font-size:16px;
+    font-weight:900;
+    text-align:center;
+    padding:8px 10px;
+    border-radius:10px;
+    white-space:nowrap;
+  }
+  .flow-body{ padding-top:4px; }
+  .flow-title{
+    font-size:19px;
+    font-weight:700;
+    color:var(--ink);
+    margin-bottom:4px;
+  }
+  .flow-desc{
+    font-size:14.5px;
+    color:#6b6558;
+    line-height:1.6;
+  }
+
+  .cta-card{
+    background:var(--brown);
+    border-radius:20px;
+    padding:34px 40px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    flex-wrap:wrap;
+  }
+  .cta-left .cta-title{
+    font-size:24px;
+    font-weight:900;
+    color:#fff;
+    margin-bottom:6px;
+  }
+  .cta-left .cta-desc{
+    font-size:15px;
+    color:#f0e6d4;
+  }
+  .cta-btn{
+    background:#fff;
+    color:var(--brown-dark);
+    font-size:19px;
+    font-weight:900;
+    padding:16px 34px;
+    border-radius:12px;
+    white-space:nowrap;
+    text-decoration:none;
+    display:inline-block;
+  }
+  .cta-qr-box{
+    flex-shrink:0;
+    width:150px;
+    height:150px;
+    background:#fff;
+    border-radius:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:10px;
+  }
+  .cta-qr-box img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+  }
+
+  .footer-row{
+    margin-top:34px;
+    padding-top:26px;
+    border-top:1px solid #e2d9c4;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+    font-size:14px;
+    color:#8a8378;
+  }
+  .footer-row b{ color:var(--brown-dark); }
+</style>
+</head>
+<body>
+
+  <div class="site-nav">
+    <div class="site-nav-inner">
+      <div class="site-nav-brand">結構X獵人 ｜ 武醫工具站</div>
+      <div class="site-nav-links">
+        <a href="大健康體驗會DM.html">DM 產生器</a>
+        <a href="大健康體驗會_現場流程.html" class="active">大健康體驗會流程</a>
+        <a href="武醫義整_現場流程.html">武醫義整流程</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div>
+      <h1>大健康體驗會・現場流程</h1>
+      <p>下方海報可直接下載成圖片，供現場輸出或投影使用。</p>
+    </div>
+    <div>
+      <button class="btn-download" id="downloadBtn">⬇ 下載 PNG</button>
+      <span class="status" id="statusText"></span>
+    </div>
+  </div>
+
+  <div class="stage-wrap">
+    <div id="poster">
+      <div class="p-inner">
+
+        <div class="brand-row">
+          <div class="brand-lockup">結構X獵人 ｜ 武醫北區支分會</div>
+          <div class="tag-pill">現場流程總覽</div>
+        </div>
+
+        <div class="eyebrow">當天怎麼進行</div>
+        <h1 class="headline">大健康體驗會，<br>從報到到賦歸</h1>
+        <p class="sub">以下為現場流程，時間如有異動將於現場另行公告。</p>
+
+        <div class="section-block">
+          <div class="section-head">
+            <div class="section-title">大健康體驗會・現場流程</div>
+            <div class="section-note">13:00–15:50</div>
+          </div>
+          <div class="flow-card">
+            <div class="flow-item">
+              <div class="flow-time">13:00–13:30</div>
+              <div class="flow-body">
+                <div class="flow-title">報到</div>
+                <div class="flow-desc">領取號碼、簡單填寫基本資料。</div>
+              </div>
+            </div>
+            <div class="flow-item">
+              <div class="flow-time">13:30–14:10</div>
+              <div class="flow-body">
+                <div class="flow-title">開場、說明</div>
+                <div class="flow-desc">活動介紹，說明今日流程與注意事項。</div>
+              </div>
+            </div>
+            <div class="flow-item">
+              <div class="flow-time">14:10–15:00</div>
+              <div class="flow-body">
+                <div class="flow-title">各站點體驗</div>
+                <div class="flow-desc">足部檢測站／選鞋站／結構手法體驗站，每位於各站點限時 10 分鐘。</div>
+              </div>
+            </div>
+            <div class="flow-item">
+              <div class="flow-time">15:00–15:20</div>
+              <div class="flow-body">
+                <div class="flow-title">休息時間</div>
+                <div class="flow-desc">自由休息，也可個別詢問現場教練。</div>
+              </div>
+            </div>
+            <div class="flow-item">
+              <div class="flow-time">15:20–15:50</div>
+              <div class="flow-body">
+                <div class="flow-title">Q&amp;A</div>
+                <div class="flow-desc">開放現場提問，個別詢問後續調整建議。</div>
+              </div>
+            </div>
+            <div class="flow-item">
+              <div class="flow-time">15:50–</div>
+              <div class="flow-body">
+                <div class="flow-title">賦歸・場地復原</div>
+                <div class="flow-desc">感謝參與，收拾場地。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cta-card">
+          <div class="cta-left">
+            <div class="cta-title">想預約 1 對 1 身體調整，或有任何問題？</div>
+            <div class="cta-desc">歡迎加官方 LINE 直接詢問｜LINE ID：@strxhunter</div>
+          </div>
+          <a class="cta-qr-box" href="https://line.me/R/ti/p/@strxhunter" target="_blank" rel="noopener">
+            <img src="line-qr.png" alt="結構X獵人 官方 LINE QR Code">
+          </a>
+        </div>
+
+        <div class="footer-row">
+          <div>中華武醫國際交流發展總會・北區支分會　｜　合作夥伴：<b>結構X獵人</b></div>
+          <div>先照顧好自己，才有力氣照顧別人</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+<script>
+  document.getElementById('downloadBtn').addEventListener('click', async ()=>{
+    const statusText = document.getElementById('statusText');
+    const btn = document.getElementById('downloadBtn');
+    btn.disabled = true;
+    statusText.textContent = '產生圖片中...';
+    try{
+      const poster = document.getElementById('poster');
+      const canvas = await html2canvas(poster, { scale: 2, backgroundColor: '#FAF7F1', useCORS: true });
+      const link = document.createElement('a');
+      link.download = '大健康體驗會_現場流程.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      statusText.textContent = '下載完成！';
+    }catch(e){
+      statusText.textContent = '發生錯誤：' + e.message;
+      console.error(e);
+    }finally{
+      btn.disabled = false;
+    }
+  });
+</script>
+
+</body>
+</html>
