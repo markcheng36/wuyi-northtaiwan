@@ -187,6 +187,13 @@
     max-width:900px;
   }
 
+  .section-title{
+    font-size:20px;
+    font-weight:900;
+    color:var(--ink);
+    margin:36px 0 16px;
+  }
+
   table.signin{
     width:100%;
     border-collapse:collapse;
@@ -271,7 +278,7 @@
 
   <div class="panel">
     <h1>現場簽到表</h1>
-    <p class="hint">先選擇這場是「大健康體驗會」還是「武醫義整」，上方文案會自動帶出。姓名直接在下方欄位打字，序號會自動出現；其餘欄位留白，現場再填。完成後可下載成圖片存檔。</p>
+    <p class="hint">先選擇這場是「大健康體驗會」還是「武醫義整」，上方文案會自動帶出。姓名直接在下方欄位打字，序號會自動出現；其餘欄位留白，現場再填。下方另有獨立的「內部人員簽到」表格，供教練/志工簽到留存紀錄。完成後可下載成圖片存檔。</p>
     <div class="type-toggle">
       <button class="type-btn active" id="btn-experience" type="button">大健康體驗會</button>
       <button class="type-btn" id="btn-charity" type="button">武醫義整</button>
@@ -310,6 +317,22 @@
           </tbody>
         </table>
 
+        <div class="section-title">內部人員簽到</div>
+        <table class="signin">
+          <thead>
+            <tr>
+              <th>序號</th>
+              <th>姓名</th>
+              <th>簽到</th>
+              <th>時間</th>
+              <th>簽退</th>
+              <th>時間</th>
+            </tr>
+          </thead>
+          <tbody id="staffBody">
+          </tbody>
+        </table>
+
         <div class="footer-row">
           <div>中華武醫國際交流發展總會・北區支分會　｜　合作夥伴：<b>結構X獵人</b></div>
           <div>先照顧好自己，才有力氣照顧別人</div>
@@ -320,27 +343,30 @@
   </div>
 
 <script>
-  const ROW_COUNT = 40;
-  const tbody = document.getElementById('signinBody');
-  for (let i = 1; i <= ROW_COUNT; i++) {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td class="seq" data-rownum="${i}"></td>
-      <td class="name-cell"><input type="text" class="name-input"></td>
-      <td><input type="text"></td>
-      <td class="time-cell"><input type="text"></td>
-      <td><input type="text"></td>
-      <td class="time-cell"><input type="text"></td>
-    `;
-    tbody.appendChild(tr);
+  function buildRows(tbodyId, rowCount) {
+    const tbody = document.getElementById(tbodyId);
+    for (let i = 1; i <= rowCount; i++) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="seq" data-rownum="${i}"></td>
+        <td class="name-cell"><input type="text" class="name-input"></td>
+        <td><input type="text"></td>
+        <td class="time-cell"><input type="text"></td>
+        <td><input type="text"></td>
+        <td class="time-cell"><input type="text"></td>
+      `;
+      tbody.appendChild(tr);
+    }
+    tbody.addEventListener('input', (e) => {
+      if (!e.target.classList.contains('name-input')) return;
+      const tr = e.target.closest('tr');
+      const seqCell = tr.querySelector('.seq');
+      seqCell.textContent = e.target.value.trim() ? seqCell.dataset.rownum : '';
+    });
   }
 
-  tbody.addEventListener('input', (e) => {
-    if (!e.target.classList.contains('name-input')) return;
-    const tr = e.target.closest('tr');
-    const seqCell = tr.querySelector('.seq');
-    seqCell.textContent = e.target.value.trim() ? seqCell.dataset.rownum : '';
-  });
+  buildRows('signinBody', 40);
+  buildRows('staffBody', 10);
 
   const TYPES = {
     experience: {
