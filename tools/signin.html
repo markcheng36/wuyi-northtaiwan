@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>簽到表 · 大健康體驗會／武醫義整</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="html2canvas.min.js"></script>
+<style>
+  :root{
+    --cream:#FAF7F1;
+    --card:#F1E9D8;
+    --tan:#C5B290;
+    --brown:#997B57;
+    --brown-dark:#6E5A3E;
+    --ink:#151514;
+    --text:#39352E;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"Noto Sans TC","PingFang TC",sans-serif;
+    background:#e9e4d8;
+    color:var(--text);
+    padding:24px 16px 60px;
+  }
+
+  /* ---- 共用導覽列 ---- */
+  .site-nav{
+    max-width:1080px;
+    margin:0 auto 20px;
+    background:var(--ink);
+    border-radius:16px;
+    padding:14px 24px;
+  }
+  .site-nav-inner{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .site-nav-brand{
+    color:#fff;
+    font-weight:900;
+    font-size:15px;
+    letter-spacing:1px;
+    white-space:nowrap;
+  }
+  .site-nav-links{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .site-nav-links a{
+    color:#d8cdb8;
+    text-decoration:none;
+    font-size:14px;
+    font-weight:700;
+    padding:8px 16px;
+    border-radius:999px;
+    transition:background .15s,color .15s;
+  }
+  .site-nav-links a:hover{ background:rgba(255,255,255,0.1); color:#fff; }
+  .site-nav-links a.active{ background:var(--brown); color:#fff; }
+
+  .panel{
+    max-width:1080px;
+    margin:0 auto 28px;
+    background:#fff;
+    border-radius:16px;
+    box-shadow:0 4px 18px rgba(0,0,0,0.08);
+    padding:20px 24px;
+  }
+  .panel h1{
+    font-size:18px;
+    margin:0 0 4px;
+    color:var(--ink);
+  }
+  .panel p.hint{
+    margin:0 0 16px;
+    font-size:13px;
+    color:#8a8378;
+  }
+  .type-toggle{
+    display:flex;
+    gap:10px;
+    margin-bottom:16px;
+    flex-wrap:wrap;
+  }
+  .type-btn{
+    background:#f4f0e6;
+    color:var(--brown-dark);
+    border:1.5px solid #e2d9c4;
+    padding:10px 22px;
+    border-radius:999px;
+    font-size:14px;
+    font-weight:700;
+    font-family:inherit;
+    cursor:pointer;
+  }
+  .type-btn.active{
+    background:var(--brown);
+    border-color:var(--brown);
+    color:#fff;
+  }
+  .actions{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  .btn-download{
+    background:var(--brown);
+    color:#fff;
+    border:none;
+    padding:12px 28px;
+    border-radius:8px;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    font-family:inherit;
+    white-space:nowrap;
+  }
+  .btn-download:hover{ background:var(--brown-dark); }
+  .status{
+    font-size:13px;
+    color:#8a8378;
+  }
+
+  .stage-wrap{
+    max-width:1080px;
+    margin:0 auto;
+    display:flex;
+    justify-content:center;
+  }
+  #poster{
+    width:1080px;
+    background:var(--cream);
+    position:relative;
+    overflow:hidden;
+  }
+  .p-inner{ padding:56px 64px 48px; }
+
+  .brand-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:32px;
+  }
+  .brand-lockup{
+    font-size:20px;
+    font-weight:900;
+    color:var(--ink);
+    letter-spacing:1px;
+  }
+  .tag-pill{
+    background:var(--card);
+    color:var(--brown-dark);
+    font-size:14px;
+    font-weight:700;
+    padding:8px 18px;
+    border-radius:999px;
+  }
+
+  .eyebrow{
+    color:var(--brown);
+    font-size:18px;
+    font-weight:700;
+    letter-spacing:2px;
+    margin-bottom:8px;
+  }
+  h1.headline{
+    font-size:34px;
+    font-weight:900;
+    line-height:1.4;
+    color:var(--ink);
+    margin:0 0 14px;
+  }
+  p.sub{
+    font-size:16px;
+    color:var(--text);
+    line-height:1.75;
+    margin:0 0 32px;
+    max-width:900px;
+  }
+
+  table.signin{
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
+    border-radius:14px;
+    overflow:hidden;
+  }
+  table.signin th{
+    background:var(--brown);
+    color:#fff;
+    font-size:14px;
+    font-weight:700;
+    padding:12px 8px;
+    text-align:center;
+    white-space:nowrap;
+  }
+  table.signin td{
+    border-bottom:1px solid #ece4d3;
+    padding:0;
+    text-align:center;
+    height:38px;
+  }
+  table.signin td.seq{
+    font-size:14px;
+    font-weight:700;
+    color:var(--brown-dark);
+    width:56px;
+  }
+  table.signin td input{
+    width:100%;
+    height:38px;
+    border:none;
+    background:transparent;
+    text-align:center;
+    font-size:14px;
+    font-family:inherit;
+    color:var(--text);
+    padding:0 6px;
+  }
+  table.signin td input:focus{
+    outline:none;
+    background:#fbf6ea;
+  }
+  table.signin td.name-cell{ width:22%; }
+  table.signin td.time-cell{ width:14%; }
+  table.signin tr:nth-child(even) td{ background:#fcfaf5; }
+  table.signin tr:nth-child(even) td input{ background:transparent; }
+
+  .footer-row{
+    margin-top:30px;
+    padding-top:22px;
+    border-top:1px solid #e2d9c4;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+    font-size:14px;
+    color:#8a8378;
+  }
+  .footer-row b{ color:var(--brown-dark); }
+</style>
+</head>
+<body>
+
+  <div class="site-nav">
+    <div class="site-nav-inner">
+      <div class="site-nav-brand">結構X獵人 ｜ 武醫工具站</div>
+      <div class="site-nav-links">
+        <a href="dm.html">DM 產生器</a>
+        <a href="flow-experience.html">大健康體驗會流程</a>
+        <a href="flow-charity.html">武醫義整流程</a>
+        <a href="stations.html">現場三站</a>
+        <a href="signin.html" class="active">簽到表</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h1>現場簽到表</h1>
+    <p class="hint">先選擇這場是「大健康體驗會」還是「武醫義整」，上方文案會自動帶出。姓名直接在下方欄位打字，序號會自動出現；其餘欄位留白，現場再填。完成後可下載成圖片存檔。</p>
+    <div class="type-toggle">
+      <button class="type-btn active" id="btn-experience" type="button">大健康體驗會</button>
+      <button class="type-btn" id="btn-charity" type="button">武醫義整</button>
+    </div>
+    <div class="actions">
+      <button class="btn-download" id="downloadBtn">⬇ 下載 PNG</button>
+      <span class="status" id="statusText"></span>
+    </div>
+  </div>
+
+  <div class="stage-wrap">
+    <div id="poster">
+      <div class="p-inner">
+
+        <div class="brand-row">
+          <div class="brand-lockup">結構X獵人 ｜ 武醫北區支分會</div>
+          <div class="tag-pill" id="out-badge">現場簽到表</div>
+        </div>
+
+        <div class="eyebrow" id="out-eyebrow">限額・大健康體驗會</div>
+        <h1 class="headline" id="out-headline">痠・緊・累，來被身體「調整」一次</h1>
+        <p class="sub" id="out-desc">現場提供足部檢測與結構平衡調理體驗，不推銷，帶您常穿的鞋子來體驗最有感。</p>
+
+        <table class="signin" id="signinTable">
+          <thead>
+            <tr>
+              <th>序號</th>
+              <th>姓名</th>
+              <th>簽到</th>
+              <th>時間</th>
+              <th>簽退</th>
+              <th>時間</th>
+            </tr>
+          </thead>
+          <tbody id="signinBody">
+          </tbody>
+        </table>
+
+        <div class="footer-row">
+          <div>中華武醫國際交流發展總會・北區支分會　｜　合作夥伴：<b>結構X獵人</b></div>
+          <div>先照顧好自己，才有力氣照顧別人</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+<script>
+  const ROW_COUNT = 40;
+  const tbody = document.getElementById('signinBody');
+  for (let i = 1; i <= ROW_COUNT; i++) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="seq" data-rownum="${i}"></td>
+      <td class="name-cell"><input type="text" class="name-input"></td>
+      <td><input type="text"></td>
+      <td class="time-cell"><input type="text"></td>
+      <td><input type="text"></td>
+      <td class="time-cell"><input type="text"></td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  tbody.addEventListener('input', (e) => {
+    if (!e.target.classList.contains('name-input')) return;
+    const tr = e.target.closest('tr');
+    const seqCell = tr.querySelector('.seq');
+    seqCell.textContent = e.target.value.trim() ? seqCell.dataset.rownum : '';
+  });
+
+  const TYPES = {
+    experience: {
+      badge: '現場簽到表',
+      eyebrow: '限額・大健康體驗會',
+      headline: '痠・緊・累，來被身體「調整」一次',
+      desc: '現場提供足部檢測與結構平衡調理體驗，不推銷，帶您常穿的鞋子來體驗最有感。一場，從腳底重新認識你的身體。'
+    },
+    charity: {
+      badge: '現場簽到表',
+      eyebrow: '武醫義整・無償提供',
+      headline: '先照顧好自己，才有力氣照顧別人',
+      desc: '我們是一群夥伴，不定期、無償走進社區、運動現場與公益團體，分享讓身體回到平衡的心法。現場提供徒手結構調整，不推銷任何產品。'
+    }
+  };
+
+  function applyType(key){
+    const t = TYPES[key];
+    document.getElementById('out-badge').textContent = t.badge;
+    document.getElementById('out-eyebrow').textContent = t.eyebrow;
+    document.getElementById('out-headline').textContent = t.headline;
+    document.getElementById('out-desc').textContent = t.desc;
+    document.getElementById('btn-experience').classList.toggle('active', key === 'experience');
+    document.getElementById('btn-charity').classList.toggle('active', key === 'charity');
+  }
+
+  document.getElementById('btn-experience').addEventListener('click', () => applyType('experience'));
+  document.getElementById('btn-charity').addEventListener('click', () => applyType('charity'));
+
+  document.getElementById('downloadBtn').addEventListener('click', async ()=>{
+    const statusText = document.getElementById('statusText');
+    const btn = document.getElementById('downloadBtn');
+    btn.disabled = true;
+    statusText.textContent = '產生圖片中...';
+    try{
+      const poster = document.getElementById('poster');
+      const canvas = await html2canvas(poster, { scale: 2, backgroundColor: '#FAF7F1', useCORS: true });
+      const link = document.createElement('a');
+      link.download = '現場簽到表.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      statusText.textContent = '下載完成！';
+    }catch(e){
+      statusText.textContent = '發生錯誤：' + e.message;
+      console.error(e);
+    }finally{
+      btn.disabled = false;
+    }
+  });
+</script>
+
+</body>
+</html>
