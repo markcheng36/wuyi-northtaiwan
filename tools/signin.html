@@ -343,12 +343,12 @@
   </div>
 
 <script>
-  function buildRows(tbodyId, rowCount) {
+  function buildRows(tbodyId, rowCount, autoSeq) {
     const tbody = document.getElementById(tbodyId);
     for (let i = 1; i <= rowCount; i++) {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td class="seq" data-rownum="${i}"></td>
+        <td class="seq" data-rownum="${i}">${autoSeq ? '' : i}</td>
         <td class="name-cell"><input type="text" class="name-input"></td>
         <td><input type="text"></td>
         <td class="time-cell"><input type="text"></td>
@@ -357,16 +357,18 @@
       `;
       tbody.appendChild(tr);
     }
-    tbody.addEventListener('input', (e) => {
-      if (!e.target.classList.contains('name-input')) return;
-      const tr = e.target.closest('tr');
-      const seqCell = tr.querySelector('.seq');
-      seqCell.textContent = e.target.value.trim() ? seqCell.dataset.rownum : '';
-    });
+    if (autoSeq) {
+      tbody.addEventListener('input', (e) => {
+        if (!e.target.classList.contains('name-input')) return;
+        const tr = e.target.closest('tr');
+        const seqCell = tr.querySelector('.seq');
+        seqCell.textContent = e.target.value.trim() ? seqCell.dataset.rownum : '';
+      });
+    }
   }
 
-  buildRows('signinBody', 40);
-  buildRows('staffBody', 10);
+  buildRows('signinBody', 20, true);
+  buildRows('staffBody', 10, false);
 
   const TYPES = {
     experience: {
