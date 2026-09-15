@@ -19,18 +19,8 @@
 // ============================================================
 
 const UPCOMING_EVENTS_CONFIG = [
-  {
+{
     order: 1,
-    tag: "足部大健康",
-    date: "2026年9月14日（一）",
-    title: "大健康體驗會(新北板橋場)",
-    description: "現場提供足部檢測與結構平衡調理體驗，不推銷，帶您常穿的鞋子來體驗最有感。",
-    location: "板橋・結構X獵人",
-    price: "免費",
-    formUrl: "https://forms.gle/kSBLeXzU5DeEbgxb8"
-  }
-  ,{
-    order: 2,
     tag: "足部大健康",
     date: "2026年10月13日（二）",
     title: "大健康體驗會(新北板橋場)",
