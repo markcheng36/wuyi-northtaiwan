@@ -35,7 +35,7 @@ const EVENTS_CONFIG = [
   }
 
   ,{
-    order: 4,
+    order: 5,
     featured: false,
     name: "7/18 董氏第四代聚會・分享會與體驗會",
     description: "我們受邀在董氏第四代的聚會中，分享身體結構平衡的觀念，並現場提供徒手調理體驗。",
@@ -43,7 +43,7 @@ const EVENTS_CONFIG = [
     mediatype: "jpg,MOV,mp4"
   }
   ,{
-    order: 3,
+    order: 4,
     featured: false,
     name: "8/15 台灣健康久久協會志工身體保養日・新手法體驗會-第 1 場",
     description: "一群日常都在幫助別人身體恢復平衡的志工們，身體也是很需要被保養的。",
@@ -51,7 +51,7 @@ const EVENTS_CONFIG = [
     mediatype: "jpg,MOV,mp4"
   }
   ,{
-    order: 2,
+    order: 3,
     featured: false,
     name: "8/30 台灣健康久久協會志工身體保養日・新手法體驗會-第 2 場",
     description: "上次辦第1場後，很多沒參加到的志工們，也想來體驗看看，因此有了第 2 場的體驗會。",
@@ -59,11 +59,19 @@ const EVENTS_CONFIG = [
     mediatype: "jpg,MOV,mp4"
   }
   ,{
-    order: 1,
-    featured: true,
+    order: 2,
+    featured: false,
     name: "9/14 全民大健康推廣體驗會",
     description: "來自各地，想了解自己如何穿對的鞋，如何站得穩、走的久。",
     folder: "images/events/0914-health",
+    mediatype: "jpg,MOV,mp4"
+  }
+  ,{
+    order: 1,
+    featured: true,
+    name: "9/16-17 奇美醫院 員工健康促進活動——《步步為營：從足部平衡到全身自療》",
+    description: "【為什麼越放鬆，反而越痠痛？解答就在你的雙腳！】",
+    folder: "images/events/0916-chimei",
     mediatype: "jpg,MOV,mp4"
   }
   // 範例：之後要新增活動，複製下面這段、拿掉最前面的 // 、改內容即可
