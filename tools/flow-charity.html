@@ -404,14 +404,29 @@
     try{
       const poster = document.getElementById('poster');
       const canvas = await html2canvas(poster, { scale: 2, backgroundColor: '#FAF7F1', useCORS: true });
-      const link = document.createElement('a');
-      link.download = '武醫義整_現場流程.png';
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-      statusText.textContent = '下載完成！';
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+      const file = new File([blob], '武醫義整_現場流程.png', { type: 'image/png' });
+
+      // iPad/iPhone Safari 對 <a download> + data URL 支援不穩定，常顯示成功卻找不到檔案，
+      // 改用原生分享面板讓使用者選「儲存影像」，才會真的存進裝置。
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: '武醫義整・現場流程' });
+        statusText.textContent = '請在分享面板選「儲存影像」完成下載';
+      } else {
+        const link = document.createElement('a');
+        link.download = '武醫義整_現場流程.png';
+        link.href = URL.createObjectURL(blob);
+        link.click();
+        URL.revokeObjectURL(link.href);
+        statusText.textContent = '下載完成！';
+      }
     }catch(e){
-      statusText.textContent = '發生錯誤：' + e.message;
-      console.error(e);
+      if (e.name !== 'AbortError') {
+        statusText.textContent = '發生錯誤：' + e.message;
+        console.error(e);
+      } else {
+        statusText.textContent = '';
+      }
     }finally{
       btn.disabled = false;
     }
