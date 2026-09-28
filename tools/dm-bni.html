@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>大健康體驗會 DM 產生器</title>
+<title>大健康體驗會 DM 產生器（BNI版）</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -144,7 +144,7 @@
   }
   #poster{
     width:1080px;
-    height:1527px;
+    height:1610px;
     background:var(--cream);
     position:relative;
     overflow:hidden;
@@ -152,13 +152,13 @@
   }
 
   /* ---- 海報內容 ---- */
-  .p-inner{ padding:56px 64px 136px; }
+  .p-inner{ padding:56px 64px 100px; }
 
   .brand-row{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    margin-bottom:36px;
+    margin-bottom:30px;
   }
   .brand-lockup{
     font-size:20px;
@@ -168,12 +168,63 @@
   }
   .brand-lockup span{ color:var(--brown); }
   .tag-pill{
-    background:var(--card);
-    color:var(--brown-dark);
+    background:#b5482f;
+    color:#fff;
     font-size:14px;
     font-weight:700;
     padding:8px 18px;
     border-radius:999px;
+  }
+
+  /* ---- 人物照區 ---- */
+  .photo-band{
+    position:relative;
+    height:400px;
+    margin-bottom:14px;
+  }
+  .photo-tagline{
+    position:absolute;
+    right:0;
+    top:50%;
+    transform:translateY(-50%);
+    max-width:600px;
+    font-size:52px;
+    font-weight:900;
+    color:var(--ink);
+    line-height:1.35;
+    text-align:right;
+  }
+  .photo-wrap{
+    position:absolute;
+    left:0;
+    bottom:0;
+    width:320px;
+  }
+  .photo-img{
+    width:100%;
+    display:block;
+    -webkit-mask-image:linear-gradient(to bottom, #000 90%, transparent 100%);
+    mask-image:linear-gradient(to bottom, #000 90%, transparent 100%);
+  }
+  .photo-tag{
+    position:absolute;
+    left:8px;
+    right:8px;
+    bottom:12px;
+    background:rgba(21,21,20,0.82);
+    border-radius:12px;
+    padding:14px 18px;
+  }
+  .photo-tag-name{
+    font-size:17px;
+    font-weight:900;
+    color:#fff;
+  }
+  .photo-tag-title{
+    font-size:12px;
+    color:#e4dcc8;
+    margin-top:5px;
+    line-height:1.5;
   }
 
   .eyebrow{
@@ -183,8 +234,14 @@
     letter-spacing:2px;
     margin-bottom:10px;
   }
+  .headline-lead{
+    font-size:26px;
+    font-weight:700;
+    color:var(--brown-dark);
+    margin-bottom:8px;
+  }
   h1.headline{
-    font-size:52px;
+    font-size:50px;
     font-weight:900;
     line-height:1.35;
     color:var(--ink);
@@ -194,105 +251,102 @@
     font-size:21px;
     color:var(--text);
     line-height:1.7;
-    margin:0 0 34px;
+    margin:0 0 32px;
     max-width:820px;
   }
 
-  /* 資訊卡 */
-  .info-card{
+  /* 資訊色帶 */
+  .info-band{
     background:var(--card);
-    border-radius:20px;
-    padding:32px 36px;
+    border-radius:16px;
+    padding:26px 32px;
     margin-bottom:38px;
   }
-  .info-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:24px;
-  }
-  .info-item{ display:flex; gap:14px; align-items:flex-start; }
-  .info-icon{
-    font-size:26px;
-    line-height:1;
-    flex-shrink:0;
-    width:34px;
-    height:34px;
+  .info-band-top{
     display:flex;
     align-items:center;
-    justify-content:center;
+    justify-content:space-between;
+    gap:20px;
+    flex-wrap:wrap;
   }
-  .info-label{
-    font-size:15px;
+  .info-band-items{
+    display:flex;
+    gap:40px;
+    flex-wrap:wrap;
+  }
+  .info-band-place{
+    margin-top:20px;
+    padding-top:20px;
+    border-top:1px solid #e2d5b8;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .info-band-item{
+    display:flex;
+    gap:10px;
+    align-items:center;
+  }
+  .info-band-icon{ font-size:24px; line-height:1; }
+  .info-band-label{
+    font-size:12px;
     font-weight:700;
     color:var(--brown-dark);
-    margin-bottom:4px;
+    margin-bottom:2px;
   }
-  .info-value{
-    font-size:22px;
-    font-weight:700;
+  .info-band-value{
+    font-size:19px;
+    font-weight:900;
     color:var(--ink);
-    line-height:1.4;
-    word-break:break-word;
+    white-space:nowrap;
   }
-  .info-item.price .info-value{ color:#b5482f; }
-  .info-grid .info-value{ white-space:nowrap; }
+  .info-band-item.price .info-band-value{ color:#b5482f; }
+  .info-band-cta{
+    background:var(--brown);
+    color:#fff;
+    font-size:13px;
+    font-weight:700;
+    padding:9px 20px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
 
-  /* 三站流程 */
+  /* 現場體驗特色 */
   .section-title{
     font-size:26px;
     font-weight:900;
     color:var(--ink);
     margin:0 0 22px;
   }
-  .stations{
+  .feature-row{
     display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:20px;
+    grid-template-columns:repeat(4,1fr);
+    gap:16px;
     margin-bottom:38px;
   }
-  .station{
+  .feature-item{
     background:#fff;
     border:1px solid #ecE4d4;
     border-radius:16px;
-    padding:22px 20px;
+    padding:24px 16px;
+    text-align:center;
   }
-  .station .num{
-    display:inline-block;
-    background:var(--brown);
-    color:#fff;
-    font-size:13px;
-    font-weight:700;
-    padding:3px 12px;
-    border-radius:999px;
-    margin-bottom:12px;
+  .feature-icon{
+    font-size:30px;
+    margin-bottom:10px;
+    line-height:1;
   }
-  .station .name{
-    font-size:19px;
-    font-weight:700;
-    color:var(--ink);
-    margin-bottom:8px;
-  }
-  .station .desc{
-    font-size:14.5px;
-    color:#6b6558;
-    line-height:1.6;
-  }
-
-  /* 適合對象 */
-  .audience-row{
-    display:flex;
-    flex-wrap:wrap;
-    gap:12px;
-    margin-bottom:40px;
-  }
-  .audience-chip{
-    background:#fff;
-    border:1.5px solid var(--tan);
-    color:var(--brown-dark);
+  .feature-label{
     font-size:15px;
     font-weight:700;
-    padding:9px 20px;
-    border-radius:999px;
+    color:var(--ink);
+    line-height:1.4;
+    margin-bottom:6px;
+  }
+  .feature-desc{
+    font-size:12.5px;
+    color:#8a8378;
+    line-height:1.5;
   }
 
   /* CTA */
@@ -342,9 +396,16 @@
     padding:10px;
   }
 
-  .footer-row{
+  .footer-categories{
     margin-top:34px;
-    padding-top:26px;
+    font-size:14px;
+    font-weight:700;
+    color:var(--brown-dark);
+    letter-spacing:1px;
+  }
+  .footer-row{
+    margin-top:12px;
+    padding-top:20px;
     border-top:1px solid #e2d9c4;
     display:flex;
     justify-content:space-between;
@@ -363,8 +424,8 @@
     <div class="site-nav-inner">
       <div class="site-nav-brand">結構X獵人 ｜ 武醫工具站</div>
       <div class="site-nav-links">
-        <a href="dm.html" class="active">DM 產生器</a>
-        <a href="dm-bni.html">BNI版 DM 產生器</a>
+        <a href="dm.html">DM 產生器</a>
+        <a href="dm-bni.html" class="active">BNI版 DM 產生器</a>
         <a href="flow-experience.html">大健康體驗會流程</a>
         <a href="flow-charity.html">武醫義整流程</a>
         <a href="stations.html">現場三站</a>
@@ -375,16 +436,24 @@
   </div>
 
   <div class="panel">
-    <h1>大健康體驗會 DM 產生器</h1>
+    <h1>大健康體驗會 DM 產生器（BNI 邀請版）</h1>
     <p class="hint">調整下方欄位，海報內容會即時更新，完成後按「下載 PNG」即可存檔（不含此控制面板）。</p>
     <div class="fields">
       <div class="field">
-        <label for="in-brand">合作夥伴品牌</label>
-        <input id="in-brand" type="text" value="結構X獵人">
+        <label for="in-hostname">主講人姓名</label>
+        <input id="in-hostname" type="text" value="鄭鴻鈞 馬克">
+      </div>
+      <div class="field">
+        <label for="in-hosttitle">主講人職稱</label>
+        <input id="in-hosttitle" type="text" value="武醫北區分會 執行長・結構X獵人 駐點教練">
+      </div>
+      <div class="field">
+        <label for="in-tagline">照片旁標語</label>
+        <input id="in-tagline" type="text" value="「痠．緊．累」，來被身體「調整」一次">
       </div>
       <div class="field">
         <label for="in-date">日期</label>
-        <input id="in-date" type="text" value="2026年9月19日（六）">
+        <input id="in-date" type="text" value="2026年10月17日（六）">
       </div>
       <div class="field">
         <label for="in-time">時間</label>
@@ -400,7 +469,7 @@
       </div>
       <div class="field">
         <label for="in-badge">右上角標籤</label>
-        <input id="in-badge" type="text" value="無償提供・免收費">
+        <input id="in-badge" type="text" value="BNI 邀請場">
       </div>
       <div class="field">
         <label for="in-deadline">報名截止時間</label>
@@ -422,74 +491,84 @@
       <div class="p-inner">
 
         <div class="brand-row">
-          <div class="brand-lockup"><span id="out-brand">結構X獵人</span> ｜ 武醫北區支分會</div>
-          <div class="tag-pill" id="out-badge">無償提供・免收費</div>
+          <div class="brand-lockup">結構<span>X</span>獵人 ｜ 武醫北區支分會</div>
+          <div class="tag-pill" id="out-badge">BNI 邀請場</div>
+        </div>
+
+        <div class="photo-band">
+          <div class="photo-tagline" id="out-tagline">「痠．緊．累」，<br>來被身體「調整」一次</div>
+          <div class="photo-wrap">
+            <img class="photo-img" src="mark-bni.png" alt="鄭鴻鈞 馬克">
+            <div class="photo-tag">
+              <div class="photo-tag-name" id="out-hostname">鄭鴻鈞 馬克</div>
+              <div class="photo-tag-title" id="out-hosttitle">武醫北區分會 執行長・結構X獵人 駐點教練</div>
+            </div>
+          </div>
         </div>
 
         <div class="eyebrow">限額・大健康體驗會</div>
-        <h1 class="headline">痠・緊・累，<br>來被身體「調整」一次</h1>
+        <div class="headline-lead">各位老闆們，你們辛苦了</div>
+        <h1 class="headline">先照顧好自己，才有力氣照顧別人</h1>
         <p class="sub">現場提供足部檢測與結構平衡調理體驗，不推銷，帶您常穿的鞋子來體驗最有感。一場，從腳底重新認識你的身體。</p>
 
-        <div class="info-card">
-          <div class="info-grid">
-            <div class="info-item">
-              <div class="info-icon">📅</div>
-              <div>
-                <div class="info-label">日期</div>
-                <div class="info-value" id="out-date">2026年9月19日（六）</div>
+        <div class="info-band">
+          <div class="info-band-top">
+            <div class="info-band-items">
+              <div class="info-band-item">
+                <div class="info-band-icon">📅</div>
+                <div>
+                  <div class="info-band-label">日期</div>
+                  <div class="info-band-value" id="out-date">2026年10月17日（六）</div>
+                </div>
+              </div>
+              <div class="info-band-item">
+                <div class="info-band-icon">⏰</div>
+                <div>
+                  <div class="info-band-label">時間</div>
+                  <div class="info-band-value" id="out-time">14:00–17:00</div>
+                </div>
+              </div>
+              <div class="info-band-item price">
+                <div class="info-band-icon">💰</div>
+                <div>
+                  <div class="info-band-label">費用</div>
+                  <div class="info-band-value" id="out-price">$600 / 人</div>
+                </div>
               </div>
             </div>
-            <div class="info-item">
-              <div class="info-icon">⏰</div>
-              <div>
-                <div class="info-label">時間</div>
-                <div class="info-value" id="out-time">14:00–17:00</div>
-              </div>
-            </div>
-            <div class="info-item price">
-              <div class="info-icon">💰</div>
-              <div>
-                <div class="info-label">費用</div>
-                <div class="info-value" id="out-price">$600 / 人</div>
-              </div>
-            </div>
+            <div class="info-band-cta">名額有限・立即報名</div>
           </div>
-          <div style="margin-top:22px; padding-top:22px; border-top:1px solid #e2d5b8; display:flex; align-items:center; gap:14px;">
-            <div class="info-icon">📍</div>
-            <div class="info-item">
-              <div>
-                <div class="info-label">地點</div>
-                <div class="info-value" id="out-place">台中・好願飛行種子探索空間</div>
-              </div>
+          <div class="info-band-place">
+            <div class="info-band-icon">📍</div>
+            <div>
+              <div class="info-band-label">地點</div>
+              <div class="info-band-value" id="out-place">台中・好願飛行種子探索空間</div>
             </div>
           </div>
         </div>
 
-        <div class="section-title">現場三站・親身體驗</div>
-        <div class="stations">
-          <div class="station">
-            <div class="num">站 ①</div>
-            <div class="name">足部檢測站</div>
-            <div class="desc">足弓拓印 ✕ 鞋底磨損判讀，一張紙看出你的腳型與受力。</div>
+        <div class="section-title">現場能體驗到什麼</div>
+        <div class="feature-row">
+          <div class="feature-item">
+            <div class="feature-icon">📏</div>
+            <div class="feature-label">足部檢測</div>
+            <div class="feature-desc">足弓拓印✕鞋底磨損判讀</div>
           </div>
-          <div class="station">
-            <div class="num">站 ②</div>
-            <div class="name">選鞋站</div>
-            <div class="desc">選鞋三原則 ✕ 現場試走，學會怎麼挑，下一雙不再買錯。</div>
+          <div class="feature-item">
+            <div class="feature-icon">👟</div>
+            <div class="feature-label">選鞋建議</div>
+            <div class="feature-desc">選鞋三原則✕現場示範</div>
           </div>
-          <div class="station">
-            <div class="num">站 ③</div>
-            <div class="name">結構手法體驗站</div>
-            <div class="desc">徒手結構調整，柔性無痛，當場感受前後差別。</div>
+          <div class="feature-item">
+            <div class="feature-icon">🤲</div>
+            <div class="feature-label">結構調整體驗</div>
+            <div class="feature-desc">徒手調整，當場感受差異</div>
           </div>
-        </div>
-
-        <div class="section-title">這場，特別適合你</div>
-        <div class="audience-row">
-          <div class="audience-chip">久站久坐上班族</div>
-          <div class="audience-chip">痠緊累長期困擾者</div>
-          <div class="audience-chip">運動愛好者</div>
-          <div class="audience-chip">銀髮長輩・照顧者</div>
+          <div class="feature-item">
+            <div class="feature-icon">💬</div>
+            <div class="feature-label">現場交流答疑</div>
+            <div class="feature-desc">一對一了解武醫理念</div>
+          </div>
         </div>
 
         <div class="cta-card">
@@ -503,8 +582,9 @@
           </div>
         </div>
 
+        <div class="footer-categories">結構調整　·　足弓檢測　·　運動訓練　·　武醫義整</div>
         <div class="footer-row">
-          <div>中華武醫國際交流發展總會・北區支分會　｜　合作夥伴：<b id="out-partner">結構X獵人</b></div>
+          <div>中華武醫國際交流發展總會・北區支分會　｜　合作夥伴：結構X獵人</div>
           <div>先照顧好自己，才有力氣照顧別人</div>
         </div>
 
@@ -520,17 +600,20 @@
     ['in-price','out-price'],
     ['in-badge','out-badge'],
     ['in-deadline','out-deadline'],
+    ['in-hostname','out-hostname'],
+    ['in-hosttitle','out-hosttitle'],
   ];
-  const brandInput = document.getElementById('in-brand');
-  const brandOutputs = [document.getElementById('out-brand'), document.getElementById('out-partner')];
-  brandInput.addEventListener('input', ()=>{
-    brandOutputs.forEach(out => out.textContent = brandInput.value);
-  });
 
   map.forEach(([inputId, outId])=>{
     const input = document.getElementById(inputId);
     const out = document.getElementById(outId);
     input.addEventListener('input', ()=>{ out.textContent = input.value; });
+  });
+
+  const taglineInput = document.getElementById('in-tagline');
+  const taglineOut = document.getElementById('out-tagline');
+  taglineInput.addEventListener('input', ()=>{
+    taglineOut.innerHTML = taglineInput.value.replace(/,|，/g, m => m + '<br>');
   });
 
   document.getElementById('in-qr').addEventListener('change', (e)=>{
@@ -555,7 +638,7 @@
       const poster = document.getElementById('poster');
       const canvas = await html2canvas(poster, { scale: 2, backgroundColor: '#FAF7F1', useCORS: true });
       const dateVal = document.getElementById('in-date').value.replace(/[^\d]/g,'').slice(0,8) || 'DM';
-      const filename = `大健康體驗會DM_${dateVal}.png`;
+      const filename = `大健康體驗會DM_BNI版_${dateVal}.png`;
       const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
       const file = new File([blob], filename, { type: 'image/png' });
 
@@ -583,6 +666,12 @@
       btn.disabled = false;
     }
   });
+
+  if (new URLSearchParams(location.search).has('bare')) {
+    document.body.style.padding = '0';
+    document.body.style.background = 'transparent';
+    document.querySelectorAll('.site-nav, .panel').forEach(el => el.style.display = 'none');
+  }
 </script>
 
 </body>
