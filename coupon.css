@@ -1,0 +1,115 @@
+/* 優惠券區塊（由 coupon.js 產生內容，內容在 coupon-config.js 設定） */
+.coupon-section{
+  max-width:1120px;margin:0 auto;
+  padding:56px 24px 40px;
+}
+.coupon-section[hidden]{display:none;}
+.coupon-section .section-eyebrow{text-align:center;}
+.coupon-section .coupon-lead-text{
+  text-align:center;color:var(--fg-soft);font-size:15px;margin:6px auto 26px;max-width:620px;
+}
+
+.coupon-card{
+  --c-olive:#6B7355;
+  --c-olive-dark:#4F5740;
+  --c-coral:#C1553D;
+  --c-coral-dark:#9E4330;
+  --c-cream:#F3F2EE;
+  --c-ink:#3A362F;
+  --c-ink-soft:#6B6558;
+  display:flex;
+  max-width:980px;
+  margin:0 auto;
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 18px 44px rgba(58,54,47,.18);
+  background:var(--c-cream);
+  color:var(--c-ink);
+  font-family:"Noto Serif TC","PingFang TC","Microsoft JhengHei",serif;
+}
+
+/* --- 左：本體 --- */
+.coupon-main{
+  position:relative;
+  flex:1 1 auto;
+  padding:28px 38px 24px;
+  background:linear-gradient(160deg,#EDE7D9 0%,var(--c-cream) 50%,#E7DFCE 100%);
+  overflow:hidden;
+}
+.coupon-main::before{
+  content:"";position:absolute;width:340px;height:340px;border-radius:50%;
+  background:#A89078;opacity:.2;top:-170px;right:-90px;
+}
+.coupon-main > *{position:relative;}
+.coupon-top{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.coupon-logo{height:72px;width:auto;display:block;margin:-4px 0 4px;}
+.coupon-tag{
+  font-size:14px;font-weight:700;letter-spacing:3px;color:var(--c-coral);
+  border:1.5px solid var(--c-coral);padding:5px 14px;border-radius:999px;
+  background:rgba(255,255,255,.55);white-space:nowrap;
+}
+.coupon-title{
+  margin:16px 0 0;
+  font-family:"DFKai-SB","BiauKai","標楷體",serif;
+  font-weight:700;font-size:clamp(34px,5.6vw,58px);line-height:1.1;letter-spacing:4px;
+  color:var(--c-ink);
+}
+.coupon-amount{
+  margin-top:8px;display:flex;align-items:baseline;flex-wrap:wrap;gap:8px 12px;
+}
+.coupon-lead{font-size:clamp(20px,3vw,28px);font-weight:700;color:var(--c-olive-dark);letter-spacing:2px;}
+.coupon-nt{font-size:clamp(24px,3.4vw,34px);font-weight:900;color:var(--c-coral-dark);}
+.coupon-num{
+  font-size:clamp(84px,14vw,128px);font-weight:900;line-height:.92;
+  color:var(--c-coral);letter-spacing:-1px;
+}
+.coupon-how{
+  margin:10px 0 0;font-size:clamp(16px,2.2vw,20px);font-weight:600;
+  color:var(--c-olive-dark);letter-spacing:2px;
+}
+.coupon-terms{
+  list-style:none;margin:16px 0 0;padding:12px 0 0;
+  border-top:1.5px solid rgba(58,54,47,.16);
+  font-size:13.5px;line-height:1.7;color:var(--c-ink-soft);
+}
+.coupon-terms li{position:relative;padding-left:14px;}
+.coupon-terms li::before{content:"・";position:absolute;left:0;}
+
+/* --- 右：存根 --- */
+.coupon-stub{
+  position:relative;
+  flex:0 0 280px;
+  padding:26px 22px 22px 30px;
+  background:linear-gradient(170deg,var(--c-olive) 0%,var(--c-olive-dark) 100%);
+  color:var(--c-cream);
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+}
+.coupon-stub::before{
+  content:"";position:absolute;left:0;top:18px;bottom:18px;
+  border-left:2.5px dashed rgba(243,242,238,.55);
+}
+.coupon-valid-k{display:block;font-size:13px;letter-spacing:4px;opacity:.85;}
+.coupon-valid-v{display:block;margin-top:2px;font-size:30px;font-weight:900;letter-spacing:2px;}
+.coupon-qr{
+  display:block;margin-top:16px;background:#fff;border-radius:14px;padding:8px;
+  box-shadow:0 8px 20px rgba(0,0,0,.25);
+}
+.coupon-qr img{display:block;width:132px;height:132px;}
+.coupon-cta{margin-top:14px;font-size:18px;font-weight:700;letter-spacing:2px;}
+.coupon-id{margin-top:2px;font-size:15px;font-weight:600;letter-spacing:1px;opacity:.95;}
+.coupon-where{margin-top:auto;padding-top:14px;font-size:13px;letter-spacing:1px;opacity:.9;}
+.coupon-where b{display:block;font-size:15px;letter-spacing:2px;margin-bottom:2px;}
+
+@media (max-width:760px){
+  .coupon-section{padding:40px 16px 28px;}
+  .coupon-card{flex-direction:column;}
+  .coupon-main{padding:22px 22px 20px;}
+  .coupon-tag{font-size:12px;letter-spacing:2px;padding:4px 10px;}
+  .coupon-stub{flex:none;padding:24px 22px 20px;}
+  .coupon-stub::before{
+    left:18px;right:18px;top:0;bottom:auto;
+    border-left:none;border-top:2.5px dashed rgba(243,242,238,.55);
+  }
+}
