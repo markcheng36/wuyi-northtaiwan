@@ -68,6 +68,17 @@ function egOpenLightbox(src, alt) {
 
 // 試探單一檔案存不存在（能載入＝存在），回傳 Promise<boolean>
 function egProbeFile(url, kind) {
+  // 優先用 HEAD 請求確認檔案存在：只問「有沒有這個檔」，不用整張下載，速度快很多
+  // 本機直接開檔（file://）不支援 fetch，才退回舊的「實際載入」方式
+  if (location.protocol !== "file:" && window.fetch) {
+    return fetch(url, { method: "HEAD", cache: "no-cache" })
+      .then(function (r) { return r.ok; })
+      .catch(function () { return egProbeByElement(url, kind); });
+  }
+  return egProbeByElement(url, kind);
+}
+
+function egProbeByElement(url, kind) {
   return new Promise(function (resolve) {
     var el = kind === "video" ? document.createElement("video") : new Image();
     var done = false;
@@ -78,6 +89,7 @@ function egProbeFile(url, kind) {
       if (!done) { done = true; resolve(false); }
     }
     el.onerror = fail;
+    setTimeout(fail, 8000); // 某些瀏覽器（如 iPhone）影片可能一直不回應，最多等 8 秒
     if (kind === "video") {
       el.onloadedmetadata = ok;
       el.preload = "metadata";
@@ -88,8 +100,16 @@ function egProbeFile(url, kind) {
   });
 }
 
-// 依 folder + mediatype，從編號 1 開始一路試探，抓不到就停止
-// limit：找到這麼多張就提早停止（首頁只需要少量張數時用，可省去後面不會顯示的探測）
+// 找出某個編號實際存在的檔案（依 mediatype 順序試副檔名），找不到回傳 null
+async function egFindIndex(folder, i, exts) {
+  for (var k = 0; k < exts.length; k++) {
+    var kind = egExtKind(exts[k]);
+    var url = folder + "/" + i + "." + exts[k];
+    if (await egProbeFile(url, kind)) return { type: kind, src: url };
+  }
+  return null;
+}
+
 async function egBuildMedia(ev, limit) {
   var exts = (ev.mediatype || "jpg")
     .split(",")
@@ -99,20 +119,19 @@ async function egBuildMedia(ev, limit) {
   var media = [];
   var i = 1;
   var SAFETY_MAX = 300; // 避免設定錯誤造成無限迴圈
+  var BATCH = 6;        // 一次同時確認 6 個編號，比一個一個試快很多
 
   while (i <= SAFETY_MAX) {
-    if (limit && media.length >= limit) break;
-    var matched = null;
-    for (var k = 0; k < exts.length; k++) {
-      var ext = exts[k];
-      var kind = egExtKind(ext);
-      var url = ev.folder + "/" + i + "." + ext;
-      var found = await egProbeFile(url, kind);
-      if (found) { matched = { type: kind, src: url }; break; }
+    var batch = [];
+    for (var b = 0; b < BATCH; b++) batch.push(egFindIndex(ev.folder, i + b, exts));
+    var results = await Promise.all(batch);
+    var stop = false;
+    for (var r = 0; r < results.length; r++) {
+      if (!results[r] || (limit && media.length >= limit)) { stop = true; break; }
+      media.push(results[r]);
     }
-    if (!matched) break;
-    media.push(matched);
-    i++;
+    if (stop) break;
+    i += BATCH;
   }
   return media;
 }
