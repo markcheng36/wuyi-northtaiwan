@@ -212,7 +212,7 @@ function renderEventGallery(container) {
     events.forEach(function (ev, i) {
       var tab = document.createElement("button");
       tab.className = "eg-tab";
-      tab.textContent = ev.name;
+      tab.textContent = ev.tab || ev.name;  // 頁籤用短名稱，沒填就沿用完整名稱
       tab.addEventListener("click", function () {
         activeIndex = i;
         mediaIndex = 0;

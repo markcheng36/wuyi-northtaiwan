@@ -14,7 +14,9 @@
 //        featured     true / false——首頁只會顯示一場活動的花絮，
 //                     哪一場想放在首頁，就把它設成 true（同時只能有一場是 true，
 //                     如果標了兩場，程式會用排在前面的那一場）
-//        name         活動名稱，會顯示在網站上
+//        tab          頁籤上的短名稱（建議「日期＋地點/單位」，10 個字以內，例如 "9/22 志工保養日"）
+//                     沒填就直接用下面的 name
+//        name         活動完整名稱，點了頁籤後顯示在照片上方的大標題
 //        description  一句話說明（選填，不寫留空字串 ""）
 //        folder       這場活動的資料夾路徑
 //        mediatype    這個資料夾裡可能會用到的副檔名，逗號分隔，
@@ -28,6 +30,7 @@ const EVENTS_CONFIG = [
   {
     order: 8,
     featured: false,
+    tab: "6/14 北醫匹克球場",
     name: "6/14 北醫匹克球場，足部健檢",
     description: "我們受邀在北醫匹球場，透過體驗足部力學壓力圖及分享正確鞋款結構，並提供徒手調理體驗。",
     folder: "images/events/0614-beiyi",
@@ -37,6 +40,7 @@ const EVENTS_CONFIG = [
   ,{
     order: 7,
     featured: false,
+    tab: "7/18 董氏聚會",
     name: "7/18 董氏第四代聚會・分享會與體驗會",
     description: "我們受邀在董氏第四代的聚會中，分享身體結構平衡的觀念，並現場提供徒手調理體驗。",
     folder: "images/events/0718-dongshi",
@@ -45,6 +49,7 @@ const EVENTS_CONFIG = [
   ,{
     order: 6,
     featured: false,
+    tab: "8/15 志工保養日①",
     name: "8/15 台灣健康久久協會志工身體保養日・新手法體驗會-第 1 場",
     description: "一群日常都在幫助別人身體恢復平衡的志工們，身體也是很需要被保養的。",
     folder: "images/events/0815-yuanshi",
@@ -53,6 +58,7 @@ const EVENTS_CONFIG = [
   ,{
     order: 5,
     featured: false,
+    tab: "8/30 志工保養日②",
     name: "8/30 台灣健康久久協會志工身體保養日・新手法體驗會-第 2 場",
     description: "上次辦第1場後，很多沒參加到的志工們，也想來體驗看看，因此有了第 2 場的體驗會。",
     folder: "images/events/0830-health",
@@ -61,6 +67,7 @@ const EVENTS_CONFIG = [
   ,{
     order: 4,
     featured: false,
+    tab: "9/14 大健康體驗會",
     name: "9/14 全民大健康推廣體驗會",
     description: "來自各地，想了解自己如何穿對的鞋，如何站得穩、走的久。",
     folder: "images/events/0914-health",
@@ -69,6 +76,7 @@ const EVENTS_CONFIG = [
   ,{
     order: 3,
     featured: false,
+    tab: "9/16-17 奇美醫院",
     name: "9/16-17 奇美醫院 員工健康促進活動——《步步為營：從足部平衡到全身自療》",
     description: "【為什麼越放鬆，反而越痠痛？解答就在你的雙腳！】",
     folder: "images/events/0916-chimei",
@@ -77,6 +85,7 @@ const EVENTS_CONFIG = [
   ,{
     order: 2,
     featured: false,
+    tab: "9/21 天母講座",
     name: "9/21 天母東山里里民-大健康講座",
     description: "整天的穿軟鞋、躺沙發、睡軟床，讓你的身體越來越累嗎?",
     folder: "images/events/0921-commuity",
@@ -85,6 +94,7 @@ const EVENTS_CONFIG = [
   ,{
     order: 1,
     featured: true,
+    tab: "9/22 志工保養日",
     name: "9/22 台灣健康久久協會‧志工身體保養日",
     description: "志工的專屬身體保養日，50 分鐘的完整調整",
     folder: "images/events/0922-charity",
@@ -94,6 +104,7 @@ const EVENTS_CONFIG = [
   // ,{
   //   order: 0,
   //   featured: false,
+  //   tab: "8/15 體驗會",
   //   name: "8/15 大健康體驗會",
   //   description: "板橋場的免費足部檢測與結構平衡體驗。",
   //   folder: "images/events/0815-dajiankang",
