@@ -30,10 +30,10 @@ const SEATS_API_URL = "";
 const UPCOMING_EVENTS_CONFIG = [
 {
     order: 1,
-    tag: "足部大健康",
-    date: "2026年10月13日（二）",
-    title: "大健康體驗會(新北板橋場)",
-    description: "現場提供足部檢測與結構平衡調理體驗，不推銷，帶您常穿的鞋子來體驗最有感。",
+    tag: "志工守護日",
+    date: "2026年11月30日（一）",
+    title: "志工守護日（板橋場）",
+    description: "一天三個時段 14:00／15:00／16:00，每時段 50 分鐘、名額有限。現場提供結構與足部檢視、徒手舒緩放鬆與個人化保養建議。",
     location: "板橋・結構X獵人",
     price: "免費",
     formUrl: "https://forms.gle/nXQg1Y6sXykNMkEQ8",
