@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
   moreCard.className = "event-more";
   moreCard.innerHTML =
     '<span class="event-tag">陸續公布</span>' +
-    '<p>接下來我們也會走進更多社區、運動現場與公益團體，無償分享這份心法。實際場次與時間，第一手都在官方 LINE 公布。</p>' +
-    '<a class="btn-outline" href="https://line.me/R/ti/p/@strxhunter">私訊官方 LINE 了解活動細節</a>';
+    '<p>接下來的志工守護日與體驗會場次，第一手都在官方 LINE 公布。有任何問題也歡迎直接私訊，我們一對一回覆。</p>' +
+    '<a class="btn-outline" href="https://lin.ee/YjZwpzZ">加入官方 LINE，接收活動公告</a>';
   container.appendChild(moreCard);
 });

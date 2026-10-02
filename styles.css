@@ -744,3 +744,17 @@
     font-size:24px;line-height:1;border:1px solid rgba(255,255,255,0.3);
   }
   .eg-lightbox-close:hover{background:rgba(255,255,255,0.24);}
+
+  /* 官方 LINE QR code（首頁 Hero／守護日頁／聯絡頁） */
+  .line-qr-inline{
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  }
+  .line-qr-inline img{
+    width:96px;height:96px;
+    background:#fff;border:1px solid var(--line);border-radius:12px;padding:6px;
+  }
+  .join-path .line-qr-inline{justify-content:flex-start;}
+  .assoc-detail .line-qr-inline{margin-top:6px;}
+  @media (max-width:860px){
+    .hero-actions .line-qr-inline{justify-content:center;text-align:left;}
+  }
