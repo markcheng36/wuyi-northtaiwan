@@ -252,7 +252,7 @@
 
   <div class="panel">
     <h1>優惠券產生器</h1>
-    <p class="hint">調整下方欄位，優惠券會即時更新，完成後按「下載 PNG」即可存檔。你改過的內容會記在這台裝置上，下次打開還在。</p>
+    <p class="hint">調整下方欄位，優惠券會即時更新，完成後按「下載 PNG」即可存檔。按「★ 設為預設」可把目前內容存成預設，之後打開都會自動帶出。</p>
     <div class="fields">
       <div class="field">
         <label for="in-brand">發行單位（LOGO）</label>
@@ -299,7 +299,6 @@
     </div>
     <div class="actions">
       <button class="btn-download" id="downloadBtn">⬇ 下載 PNG</button>
-      <button class="btn-ghost" id="resetBtn" type="button">還原預設值</button>
       <span class="status" id="statusText"></span>
     </div>
   </div>
@@ -354,9 +353,6 @@
 
   const $ = id => document.getElementById(id);
   const FIELDS = ['in-brand','in-amount','in-expiry','in-title','in-tag','in-lead','in-how','in-venue','in-terms'];
-  const DEFAULTS = {};
-  FIELDS.forEach(id => DEFAULTS[id] = $(id).value);
-  const STORE_KEY = 'wuyi_coupon_v1';
 
   function fmtDate(v){
     const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || '');
@@ -386,21 +382,6 @@
       box.appendChild(d);
     });
     box.style.display = box.children.length ? '' : 'none';
-    save();
-  }
-
-  function save(){
-    try{
-      const o = {};
-      FIELDS.forEach(id => o[id] = $(id).value);
-      localStorage.setItem(STORE_KEY, JSON.stringify(o));
-    }catch(e){}
-  }
-  function load(){
-    try{
-      const o = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
-      if(o) FIELDS.forEach(id => { if(typeof o[id] === 'string') $(id).value = o[id]; });
-    }catch(e){}
   }
 
   // 切換發行單位時，地點自動帶入該單位的預設地點
@@ -409,13 +390,6 @@
     render();
   });
   FIELDS.filter(id => id !== 'in-brand').forEach(id => $(id).addEventListener('input', render));
-
-  $('resetBtn').addEventListener('click', () => {
-    if(!confirm('要把所有欄位還原成預設值嗎？')) return;
-    FIELDS.forEach(id => $(id).value = DEFAULTS[id]);
-    render();
-    $('statusText').textContent = '已還原預設值';
-  });
 
   // ===== 預覽縮放（手機螢幕比券窄時自動縮小顯示）=====
   function fit(){
@@ -474,12 +448,12 @@
     document.querySelectorAll('.site-nav, .panel').forEach(el => el.style.display = 'none');
   }
 
-  load();
   render();
   fit();
   // 字型載入完成後再校正一次版面
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
 </script>
+<script src="defaults.js"></script>
 
 </body>
 </html>

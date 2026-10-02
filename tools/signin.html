@@ -437,5 +437,13 @@
   });
 </script>
 
+<script>
+  window.WUYI_DEFAULTS_EXTRA = {
+    get: function(){ return document.getElementById('btn-charity').classList.contains('active') ? 'charity' : 'experience'; },
+    set: function(k){ if (TYPES[k]) applyType(k); }
+  };
+</script>
+<script src="defaults.js"></script>
+
 </body>
 </html>
