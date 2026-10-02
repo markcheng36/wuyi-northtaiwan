@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>優惠券產生器</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@600;700;900&display=swap" rel="stylesheet">
+<script src="html2canvas.min.js"></script>
+<style>
+  :root{
+    --cream:#FAF7F1;
+    --tan:#C5B290;
+    --brown:#997B57;
+    --brown-dark:#6E5A3E;
+    --ink:#151514;
+    --text:#39352E;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"Noto Sans TC","PingFang TC",sans-serif;
+    background:#e9e4d8;
+    color:var(--text);
+    padding:24px 16px 60px;
+  }
+
+  /* ---- 共用導覽列 ---- */
+  .site-nav{
+    max-width:1080px;
+    margin:0 auto 20px;
+    background:var(--ink);
+    border-radius:16px;
+    padding:14px 24px;
+  }
+  .site-nav-inner{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .site-nav-brand{
+    color:#fff;
+    font-weight:900;
+    font-size:15px;
+    letter-spacing:1px;
+    white-space:nowrap;
+  }
+  .site-nav-links{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .site-nav-links a{
+    color:#d8cdb8;
+    text-decoration:none;
+    font-size:14px;
+    font-weight:700;
+    padding:8px 16px;
+    border-radius:999px;
+    transition:background .15s,color .15s;
+  }
+  .site-nav-links a:hover{ background:rgba(255,255,255,0.1); color:#fff; }
+  .site-nav-links a.active{ background:var(--brown); color:#fff; }
+
+  /* ---- 控制面板 ---- */
+  .panel{
+    max-width:1080px;
+    margin:0 auto 28px;
+    background:#fff;
+    border-radius:16px;
+    box-shadow:0 4px 18px rgba(0,0,0,0.08);
+    padding:20px 24px;
+  }
+  .panel h1{ font-size:18px; margin:0 0 4px; color:var(--ink); }
+  .panel p.hint{ margin:0 0 16px; font-size:13px; color:#8a8378; }
+  .fields{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
+    gap:14px;
+  }
+  .field.wide{ grid-column:1 / -1; }
+  .field label{
+    display:block;
+    font-size:13px;
+    font-weight:700;
+    color:var(--brown-dark);
+    margin-bottom:6px;
+  }
+  .field input, .field select, .field textarea{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid #d8d1c2;
+    border-radius:8px;
+    font-size:14px;
+    font-family:inherit;
+    background:#fdfcfa;
+    color:var(--text);
+  }
+  .field textarea{ min-height:92px; resize:vertical; line-height:1.6; }
+  .field input:focus, .field select:focus, .field textarea:focus{
+    outline:none;
+    border-color:var(--brown);
+  }
+  .field .tip{ margin-top:4px; font-size:12px; color:#9a9285; }
+  .actions{
+    margin-top:18px;
+    display:flex;
+    gap:12px;
+    align-items:center;
+    flex-wrap:wrap;
+  }
+  .btn-download{
+    background:var(--brown);
+    color:#fff;
+    border:none;
+    padding:12px 28px;
+    border-radius:8px;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    font-family:inherit;
+  }
+  .btn-download:hover{ background:var(--brown-dark); }
+  .btn-ghost{
+    background:#fff;
+    color:var(--brown-dark);
+    border:1.5px solid var(--tan);
+    padding:11px 20px;
+    border-radius:8px;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    font-family:inherit;
+  }
+  .btn-ghost:hover{ background:#f6f0e3; }
+  .status{ font-size:13px; color:#8a8378; }
+
+  /* ---- 預覽外框（手機會自動縮小顯示，下載時一律輸出原尺寸）---- */
+  .stage-wrap{
+    max-width:1080px;
+    margin:0 auto;
+    overflow:hidden;
+  }
+  .stage{
+    width:1080px;
+    transform-origin:top left;
+  }
+
+  /* ---- 優惠券本體（設計尺寸 1080×480）---- */
+  #coupon{
+    --olive:#6B7355;
+    --olive-dark:#4F5740;
+    --brown-light:#A89078;
+    --coral:#C1553D;
+    --coral-dark:#9E4330;
+    --c-cream:#F3F2EE;
+    --c-ink:#3A362F;
+    --c-ink-soft:#6B6558;
+    width:1080px;
+    height:480px;
+    display:flex;
+    position:relative;
+    overflow:hidden;
+    background:var(--c-cream);
+    color:var(--c-ink);
+    font-family:"Noto Serif TC","PingFang TC","Microsoft JhengHei",serif;
+  }
+  .c-main{
+    width:750px;height:480px;position:relative;
+    padding:31px 46px 24px;
+    background:linear-gradient(160deg,#EDE7D9 0%,var(--c-cream) 50%,#E7DFCE 100%);
+    display:flex;flex-direction:column;overflow:hidden;
+  }
+  .c-main::before{
+    content:"";position:absolute;width:372px;height:372px;border-radius:50%;
+    background:var(--brown-light);opacity:.20;top:-180px;right:-108px;
+  }
+  .c-main::after{
+    content:"";position:absolute;width:252px;height:252px;border-radius:50%;
+    background:var(--olive);opacity:.12;bottom:-126px;left:-72px;
+  }
+  .c-main > *{position:relative;z-index:1;}
+  .c-top{display:flex;align-items:center;justify-content:space-between;}
+  .c-top img{height:82px;width:auto;display:block;margin:-7px 0 -4px;}
+  .c-tag{
+    font-size:17px;font-weight:700;letter-spacing:3px;color:var(--coral);
+    border:1.5px solid var(--coral);padding:5px 14px;border-radius:999px;
+    background:rgba(255,255,255,.55);
+  }
+  .c-title{
+    margin-top:12px;
+    font-family:"DFKai-SB","BiauKai","標楷體","Noto Serif TC",serif;
+    font-weight:700;font-size:67px;line-height:1.1;letter-spacing:4px;color:var(--c-ink);
+  }
+  .c-amount{margin-top:8px;display:flex;align-items:baseline;gap:11px;}
+  .c-lead{font-size:32px;font-weight:700;color:var(--olive-dark);letter-spacing:2px;}
+  .c-nt{font-size:38px;font-weight:900;color:var(--coral-dark);letter-spacing:1px;}
+  .c-num{font-size:142px;font-weight:900;line-height:.9;color:var(--coral);letter-spacing:-1px;}
+  .c-how{margin-top:10px;font-size:23px;font-weight:600;color:var(--olive-dark);letter-spacing:2px;}
+  .c-fine{
+    margin-top:auto;padding-top:10px;
+    border-top:1px solid rgba(58,54,47,.16);
+    font-size:14px;line-height:1.5;color:var(--c-ink-soft);letter-spacing:.5px;
+  }
+  .c-fine div{ padding-left:14px; position:relative; }
+  .c-fine div::before{ content:"・"; position:absolute; left:0; }
+
+  .c-stub{
+    width:330px;height:480px;position:relative;
+    background:linear-gradient(170deg,var(--olive) 0%,var(--olive-dark) 100%);
+    color:var(--c-cream);
+    padding:31px 29px 24px 37px;
+    display:flex;flex-direction:column;align-items:center;text-align:center;
+  }
+  .c-stub::before{
+    content:"";position:absolute;left:0;top:20px;bottom:20px;
+    border-left:2.5px dashed rgba(243,242,238,.55);
+  }
+  .c-valid-k{font-size:16px;letter-spacing:4px;opacity:.85;}
+  .c-valid-v{margin-top:3px;font-size:35px;font-weight:900;letter-spacing:2px;}
+  .c-qr{
+    margin-top:18px;background:#fff;border-radius:13px;padding:8px;
+    box-shadow:0 7px 17px rgba(0,0,0,.25);
+  }
+  .c-qr img{width:142px;height:142px;display:block;}
+  .c-cta{margin-top:14px;font-size:21px;font-weight:700;letter-spacing:2px;}
+  .c-id{margin-top:3px;font-size:18px;font-weight:600;letter-spacing:1px;opacity:.95;}
+  .c-where{margin-top:auto;font-size:14px;letter-spacing:.3px;opacity:.9;line-height:1.45;}
+  .c-where b{display:block;font-size:18px;letter-spacing:2px;margin-bottom:2px;}
+</style>
+</head>
+<body>
+
+  <div class="site-nav">
+    <div class="site-nav-inner">
+      <div class="site-nav-brand">結構X獵人 ｜ 武醫工具站</div>
+      <div class="site-nav-links">
+        <a href="dm.html">DM 產生器</a>
+        <a href="dm-bni.html">BNI版 DM 產生器</a>
+        <a href="coupon.html" class="active">優惠券產生器</a>
+        <a href="flow-experience.html">大健康體驗會流程</a>
+        <a href="flow-charity.html">武醫義整流程</a>
+        <a href="stations.html">現場三站</a>
+        <a href="signin.html">簽到表</a>
+        <a href="handbook.html">體驗會手禮</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h1>優惠券產生器</h1>
+    <p class="hint">調整下方欄位，優惠券會即時更新，完成後按「下載 PNG」即可存檔。你改過的內容會記在這台裝置上，下次打開還在。</p>
+    <div class="fields">
+      <div class="field">
+        <label for="in-brand">發行單位（LOGO）</label>
+        <select id="in-brand">
+          <option value="chunbalance">鈞衡舍 ChunBalance</option>
+          <option value="strxhunter">結構X獵人 STR×HUNTER</option>
+        </select>
+        <div class="tip">切換後 LOGO、LINE QR、LINE ID、地點會整組一起換</div>
+      </div>
+      <div class="field">
+        <label for="in-amount">折抵金額（NT.）</label>
+        <input id="in-amount" type="number" min="0" step="50" value="400">
+      </div>
+      <div class="field">
+        <label for="in-expiry">有效期限</label>
+        <input id="in-expiry" type="date" value="2026-10-31">
+      </div>
+      <div class="field">
+        <label for="in-title">券標題</label>
+        <input id="in-title" type="text" value="身體平衡調整券">
+      </div>
+      <div class="field">
+        <label for="in-tag">左上角標籤（可留空）</label>
+        <input id="in-tag" type="text" value="BNI 專講限定贈禮">
+      </div>
+      <div class="field">
+        <label for="in-lead">金額前面的字</label>
+        <input id="in-lead" type="text" value="憑券折抵">
+      </div>
+      <div class="field">
+        <label for="in-how">使用方式（金額下方一行）</label>
+        <input id="in-how" type="text" value="預約時出示本券，現場直接抵用">
+      </div>
+      <div class="field">
+        <label for="in-venue">地點</label>
+        <input id="in-venue" type="text" value="板橋江子翠捷運站">
+      </div>
+      <div class="field wide">
+        <label for="in-terms">使用說明（一行一條）</label>
+        <textarea id="in-terms">每張限用一次，限本人使用，不得兌換現金或找零
+不得與其他優惠併用
+請先加官方 LINE 預約時段，並於調整前出示本券</textarea>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn-download" id="downloadBtn">⬇ 下載 PNG</button>
+      <button class="btn-ghost" id="resetBtn" type="button">還原預設值</button>
+      <span class="status" id="statusText"></span>
+    </div>
+  </div>
+
+  <div class="stage-wrap" id="stageWrap">
+    <div class="stage" id="stage">
+      <div id="coupon">
+        <div class="c-main">
+          <div class="c-top">
+            <img id="out-logo" src="coupon-chunbalance-logo.png" alt="LOGO">
+            <div class="c-tag" id="out-tag">BNI 專講限定贈禮</div>
+          </div>
+          <div class="c-title" id="out-title">身體平衡調整券</div>
+          <div class="c-amount">
+            <span class="c-lead" id="out-lead">憑券折抵</span>
+            <span class="c-nt">NT.</span>
+            <span class="c-num" id="out-amount">400</span>
+          </div>
+          <div class="c-how" id="out-how">預約時出示本券，現場直接抵用</div>
+          <div class="c-fine" id="out-terms"></div>
+        </div>
+        <div class="c-stub">
+          <div class="c-valid-k">有效期限</div>
+          <div class="c-valid-v" id="out-expiry">2026.10.31</div>
+          <div class="c-qr"><img id="out-qr" src="coupon-chunbalance-qr.png" alt="加LINE好友"></div>
+          <div class="c-cta">加官方 LINE 預約</div>
+          <div class="c-id" id="out-id">@chunbalance</div>
+          <div class="c-where"><b id="out-brandname">鈞衡舍 ChunBalance</b><span id="out-venue">板橋江子翠捷運站</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ===== 兩個發行單位的資料（LOGO／QR／LINE／地點）=====
+  const BRANDS = {
+    chunbalance: {
+      name: '鈞衡舍 ChunBalance',
+      logo: 'coupon-chunbalance-logo.png',
+      qr:   'coupon-chunbalance-qr.png',
+      id:   '@chunbalance',
+      venue:'板橋江子翠捷運站'
+    },
+    strxhunter: {
+      name: '結構X獵人 STR×HUNTER',
+      logo: 'coupon-strxhunter-logo.png',
+      qr:   'coupon-strxhunter-qr.png',
+      id:   '@strxhunter',
+      venue:'板橋區文化路二段182巷3弄81號19樓'
+    }
+  };
+
+  const $ = id => document.getElementById(id);
+  const FIELDS = ['in-brand','in-amount','in-expiry','in-title','in-tag','in-lead','in-how','in-venue','in-terms'];
+  const DEFAULTS = {};
+  FIELDS.forEach(id => DEFAULTS[id] = $(id).value);
+  const STORE_KEY = 'wuyi_coupon_v1';
+
+  function fmtDate(v){
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || '');
+    return m ? `${m[1]}.${m[2]}.${m[3]}` : (v || '');
+  }
+
+  function render(){
+    const b = BRANDS[$('in-brand').value] || BRANDS.chunbalance;
+    $('out-logo').src = b.logo;
+    $('out-qr').src = b.qr;
+    $('out-id').textContent = b.id;
+    $('out-brandname').textContent = b.name;
+    $('out-venue').textContent = $('in-venue').value;
+    $('out-amount').textContent = $('in-amount').value || '0';
+    $('out-expiry').textContent = fmtDate($('in-expiry').value);
+    $('out-title').textContent = $('in-title').value;
+    $('out-lead').textContent = $('in-lead').value;
+    $('out-how').textContent = $('in-how').value;
+    const tag = $('in-tag').value.trim();
+    $('out-tag').textContent = tag;
+    $('out-tag').style.display = tag ? '' : 'none';
+    const box = $('out-terms');
+    box.innerHTML = '';
+    $('in-terms').value.split('\n').map(s => s.trim()).filter(Boolean).forEach(t => {
+      const d = document.createElement('div');
+      d.textContent = t;
+      box.appendChild(d);
+    });
+    box.style.display = box.children.length ? '' : 'none';
+    save();
+  }
+
+  function save(){
+    try{
+      const o = {};
+      FIELDS.forEach(id => o[id] = $(id).value);
+      localStorage.setItem(STORE_KEY, JSON.stringify(o));
+    }catch(e){}
+  }
+  function load(){
+    try{
+      const o = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
+      if(o) FIELDS.forEach(id => { if(typeof o[id] === 'string') $(id).value = o[id]; });
+    }catch(e){}
+  }
+
+  // 切換發行單位時，地點自動帶入該單位的預設地點
+  $('in-brand').addEventListener('change', () => {
+    $('in-venue').value = BRANDS[$('in-brand').value].venue;
+    render();
+  });
+  FIELDS.filter(id => id !== 'in-brand').forEach(id => $(id).addEventListener('input', render));
+
+  $('resetBtn').addEventListener('click', () => {
+    if(!confirm('要把所有欄位還原成預設值嗎？')) return;
+    FIELDS.forEach(id => $(id).value = DEFAULTS[id]);
+    render();
+    $('statusText').textContent = '已還原預設值';
+  });
+
+  // ===== 預覽縮放（手機螢幕比券窄時自動縮小顯示）=====
+  function fit(){
+    const wrap = $('stageWrap'), stage = $('stage');
+    const s = Math.min(1, wrap.clientWidth / 1080);
+    stage.style.transform = s < 1 ? `scale(${s})` : '';
+    wrap.style.height = (480 * s) + 'px';
+  }
+  window.addEventListener('resize', fit);
+
+  // ===== 下載 PNG =====
+  $('downloadBtn').addEventListener('click', async () => {
+    const statusText = $('statusText');
+    const btn = $('downloadBtn');
+    btn.disabled = true;
+    statusText.textContent = '產生圖片中...';
+    const stage = $('stage');
+    const prev = stage.style.transform;
+    stage.style.transform = '';            // 輸出一律用原尺寸，不吃縮放
+    try{
+      const canvas = await html2canvas($('coupon'), { scale: 3, backgroundColor: '#F3F2EE', useCORS: true });
+      const b = BRANDS[$('in-brand').value];
+      const dateVal = $('in-expiry').value.replace(/-/g,'') || 'coupon';
+      const filename = `優惠券_NT${$('in-amount').value}_${b.id.replace('@','')}_${dateVal}.png`;
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+      const file = new File([blob], filename, { type: 'image/png' });
+
+      // iPad/iPhone Safari 對 <a download> 支援不穩定，改用原生分享面板讓使用者選「儲存影像」
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: '優惠券' });
+        statusText.textContent = '請在分享面板選「儲存影像」完成下載';
+      } else {
+        const link = document.createElement('a');
+        link.download = filename;
+        link.href = URL.createObjectURL(blob);
+        link.click();
+        URL.revokeObjectURL(link.href);
+        statusText.textContent = '下載完成！';
+      }
+    }catch(e){
+      if (e.name !== 'AbortError') {
+        statusText.textContent = '發生錯誤：' + e.message;
+        console.error(e);
+      } else {
+        statusText.textContent = '';
+      }
+    }finally{
+      stage.style.transform = prev;
+      btn.disabled = false;
+    }
+  });
+
+  if (new URLSearchParams(location.search).has('bare')) {
+    document.body.style.padding = '0';
+    document.body.style.background = 'transparent';
+    document.querySelectorAll('.site-nav, .panel').forEach(el => el.style.display = 'none');
+  }
+
+  load();
+  render();
+  fit();
+  // 字型載入完成後再校正一次版面
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+</script>
+
+</body>
+</html>
