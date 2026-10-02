@@ -6,6 +6,8 @@
  *   與 window.WUYI_DEFAULTS_QR = [['in-qr','out-qr','qr-placeholder']] 處理上傳的 QR 圖片
  */
 (function(){
+  // 只有 iPhone/iPad 才用系統分享面板存相簿；電腦與安卓直接下載檔案
+  window.IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   var page = (location.pathname.split('/').pop() || 'index').replace(/\.html$/,'');
   var KEY = 'wuyi_defaults_' + page;
   var panel = document.querySelector('.panel');

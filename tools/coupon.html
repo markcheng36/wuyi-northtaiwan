@@ -418,7 +418,7 @@
       const file = new File([blob], filename, { type: 'image/png' });
 
       // iPad/iPhone Safari 對 <a download> 支援不穩定，改用原生分享面板讓使用者選「儲存影像」
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      if (window.IS_IOS && navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({ files: [file], title: '優惠券' });
         statusText.textContent = '請在分享面板選「儲存影像」完成下載';
       } else {

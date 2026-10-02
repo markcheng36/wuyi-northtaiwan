@@ -645,7 +645,7 @@
 
       // iPad/iPhone Safari 對 <a download> + data URL 支援不穩定，常顯示成功卻找不到檔案，
       // 改用原生分享面板讓使用者選「儲存影像」，才會真的存進裝置。
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      if (window.IS_IOS && navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({ files: [file], title: '大健康體驗會DM' });
         statusText.textContent = '請在分享面板選「儲存影像」完成下載';
       } else {
