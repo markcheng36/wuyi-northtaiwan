@@ -31,6 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
       '<p class="event-desc"></p>' +
       '<div class="event-location"></div>' +
       '<div class="event-price"></div>' +
+      '<div class="event-seats" hidden></div>' +
       '<a class="btn-primary event-cta" target="_blank" rel="noopener">立即報名 →</a>';
     card.querySelector(".event-tag").textContent = ev.tag;
     card.querySelector(".event-date").textContent = ev.date;
@@ -39,6 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
     card.querySelector(".event-location").textContent = "📍 " + ev.location;
     card.querySelector(".event-price").textContent = "💰 " + ev.price;
     card.querySelector(".event-cta").href = ev.formUrl;
+    loadSeats(card, ev);
     container.appendChild(card);
   });
 
@@ -51,3 +53,33 @@ document.addEventListener("DOMContentLoaded", function () {
     '<a class="btn-outline" href="https://lin.ee/YjZwpzZ">加入官方 LINE，接收活動公告</a>';
   container.appendChild(moreCard);
 });
+
+// ------------------------------------------------------------
+// 剩餘名額：向「名額控管」Apps Script 查詢（設定見 upcoming-events-config.js 的 SEATS_API_URL / formId）
+// 查不到（沒設定、網路問題）就不顯示，報名按鈕照常可用
+// ------------------------------------------------------------
+function loadSeats(card, ev) {
+  if (typeof SEATS_API_URL === "undefined" || !SEATS_API_URL || !ev.formId) return;
+  var seats = card.querySelector(".event-seats");
+  var cta = card.querySelector(".event-cta");
+  seats.hidden = false;
+  seats.textContent = "👥 名額查詢中…";
+  fetch(SEATS_API_URL + "?id=" + encodeURIComponent(ev.formId))
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      if (!d || d.error || !d.capacity) { seats.hidden = true; return; }
+      if (d.left <= 0 || d.open === false) {
+        seats.textContent = "👥 名額 " + d.capacity + " 位｜已額滿";
+        seats.classList.add("is-full");
+        cta.textContent = "已額滿，下一場請關注官方 LINE";
+        cta.removeAttribute("href");
+        cta.classList.add("is-disabled");
+        cta.setAttribute("aria-disabled", "true");
+      } else {
+        seats.innerHTML = "👥 名額 " + d.capacity + " 位｜目前剩餘 <b></b> 位";
+        seats.querySelector("b").textContent = d.left;
+        if (d.left <= 3) seats.classList.add("is-low");
+      }
+    })
+    .catch(function () { seats.hidden = true; });
+}

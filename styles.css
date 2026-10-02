@@ -191,6 +191,15 @@
   .event-cta{
     margin-top:20px;display:inline-flex;
   }
+  .event-seats{
+    margin-top:8px;font-size:14px;font-weight:700;color:var(--fg);
+  }
+  .event-seats b{font-size:17px;color:var(--accent-dark);}
+  .event-seats.is-low b{color:#B4472E;}
+  .event-seats.is-full{color:#B4472E;}
+  .event-cta.is-disabled{
+    background:#B9AE9F;box-shadow:none;cursor:not-allowed;pointer-events:none;
+  }
   .event-card.event-card-wide{grid-column:1 / -1;}
   .event-more{
     grid-column:1 / -1;

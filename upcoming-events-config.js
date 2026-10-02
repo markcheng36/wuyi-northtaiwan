@@ -15,8 +15,17 @@
 //   price       費用，以「每人」為單位計算，例如 "NT$500 / 人"；
 //               完全免費就寫 "免費"
 //   formUrl     這場的 Google 表單報名連結，會做成按鈕、點了另開新分頁
+//   formId      （選填）這場表單的「ID」，用來在卡片上顯示剩餘名額。
+//               打開表單的「編輯」頁，網址長這樣：
+//               https://docs.google.com/forms/d/【這一段就是 ID】/edit
+//               表單說明裡也要寫一行「名額上限：20」（數字改成你的人數）
+//               沒填 formId 就不顯示名額，其他功能照常
 //
 // ============================================================
+
+// 「名額控管」Apps Script 部署後的網址（只要設定一次，所有場次共用）
+// 留空 "" 就是不顯示剩餘名額
+const SEATS_API_URL = "";
 
 const UPCOMING_EVENTS_CONFIG = [
 {
@@ -27,17 +36,19 @@ const UPCOMING_EVENTS_CONFIG = [
     description: "現場提供足部檢測與結構平衡調理體驗，不推銷，帶您常穿的鞋子來體驗最有感。",
     location: "板橋・結構X獵人",
     price: "免費",
-    formUrl: "https://forms.gle/nXQg1Y6sXykNMkEQ8"
+    formUrl: "https://forms.gle/nXQg1Y6sXykNMkEQ8",
+    formId: ""
   }
   // 範例：之後要新增場次，複製下面這段、拿掉最前面的 // 、改內容即可
   // ,{
   //   order: 4,
-  //   tag: "社區大健康",
+  //   tag: "志工守護日",
   //   date: "2026年9月某日（六）",
-  //   title: "大健康體驗會",
+  //   title: "志工守護日",
   //   description: "現場提供足部檢測與結構調理體驗，現場備有超值贈品，也可加購。",
-  //   location: "地點",
-  //   price: "NT$500 / 人",
-  //   formUrl: "https://forms.gle/xxxxxxxxxxxxx"
+  //   location: "板橋・結構X獵人",
+  //   price: "免費",
+  //   formUrl: "https://forms.gle/xxxxxxxxxxxxx",
+  //   formId: "表單編輯網址 /d/ 後面那一段"
   // }
 ];
