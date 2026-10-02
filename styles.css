@@ -681,6 +681,7 @@
     margin-top:44px;
     display:grid;grid-template-columns:repeat(3,1fr);gap:24px;
   }
+  .join-grid-2{grid-template-columns:repeat(2,1fr);}
   .join-card{
     background:var(--bg);border:1px solid var(--line);border-radius:20px;
     padding:32px;
@@ -691,7 +692,7 @@
 
   @media (max-width:860px){
     .join-who{padding:56px 20px;}
-    .join-grid{grid-template-columns:1fr;}
+    .join-grid,.join-grid-2{grid-template-columns:1fr;}
   }
 
   /* Join: training path */
