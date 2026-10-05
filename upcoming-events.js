@@ -56,30 +56,63 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // ------------------------------------------------------------
 // 剩餘名額：向「名額控管」Apps Script 查詢（設定見 upcoming-events-config.js 的 SEATS_API_URL / formId）
+// Apps Script 回應要好幾秒，所以：
+//   ・網頁一載入就先發出查詢，不等卡片畫好
+//   ・上次查到的數字存在瀏覽器裡，再次打開時先直接顯示，查到新數字再更新
+//   ・第一次來、還沒有數字時不顯示「查詢中」，查到才出現
 // 查不到（沒設定、網路問題）就不顯示，報名按鈕照常可用
 // ------------------------------------------------------------
-function loadSeats(card, ev) {
-  if (typeof SEATS_API_URL === "undefined" || !SEATS_API_URL || !ev.formId) return;
+var seatsRequests = {};
+function requestSeats(formId) {
+  if (!seatsRequests[formId]) {
+    seatsRequests[formId] = fetch(SEATS_API_URL + "?id=" + encodeURIComponent(formId))
+      .then(function (r) { return r.json(); });
+  }
+  return seatsRequests[formId];
+}
+if (typeof SEATS_API_URL !== "undefined" && SEATS_API_URL && typeof UPCOMING_EVENTS_CONFIG !== "undefined") {
+  UPCOMING_EVENTS_CONFIG.forEach(function (ev) { if (ev.formId) requestSeats(ev.formId); });
+}
+
+function readSeatsCache(formId) {
+  try { return JSON.parse(localStorage.getItem("seats:" + formId)); } catch (e) { return null; }
+}
+function writeSeatsCache(formId, d) {
+  try { localStorage.setItem("seats:" + formId, JSON.stringify(d)); } catch (e) {}
+}
+
+function showSeats(card, ev, d) {
   var seats = card.querySelector(".event-seats");
   var cta = card.querySelector(".event-cta");
+  seats.classList.remove("is-full", "is-low");
+  cta.textContent = "立即報名 →";
+  cta.href = ev.formUrl;
+  cta.classList.remove("is-disabled");
+  cta.removeAttribute("aria-disabled");
   seats.hidden = false;
-  seats.textContent = "👥 名額查詢中…";
-  fetch(SEATS_API_URL + "?id=" + encodeURIComponent(ev.formId))
-    .then(function (r) { return r.json(); })
+  if (d.left <= 0 || d.open === false) {
+    seats.textContent = "👥 名額 " + d.capacity + " 位｜已額滿";
+    seats.classList.add("is-full");
+    cta.textContent = "已額滿，下一場請關注官方 LINE";
+    cta.removeAttribute("href");
+    cta.classList.add("is-disabled");
+    cta.setAttribute("aria-disabled", "true");
+  } else {
+    seats.innerHTML = "👥 名額 " + d.capacity + " 位｜目前剩餘 <b></b> 位";
+    seats.querySelector("b").textContent = d.left;
+    if (d.left <= 3) seats.classList.add("is-low");
+  }
+}
+
+function loadSeats(card, ev) {
+  if (typeof SEATS_API_URL === "undefined" || !SEATS_API_URL || !ev.formId) return;
+  var cached = readSeatsCache(ev.formId);
+  if (cached && cached.capacity) showSeats(card, ev, cached);
+  requestSeats(ev.formId)
     .then(function (d) {
-      if (!d || d.error || !d.capacity) { seats.hidden = true; return; }
-      if (d.left <= 0 || d.open === false) {
-        seats.textContent = "👥 名額 " + d.capacity + " 位｜已額滿";
-        seats.classList.add("is-full");
-        cta.textContent = "已額滿，下一場請關注官方 LINE";
-        cta.removeAttribute("href");
-        cta.classList.add("is-disabled");
-        cta.setAttribute("aria-disabled", "true");
-      } else {
-        seats.innerHTML = "👥 名額 " + d.capacity + " 位｜目前剩餘 <b></b> 位";
-        seats.querySelector("b").textContent = d.left;
-        if (d.left <= 3) seats.classList.add("is-low");
-      }
+      if (!d || d.error || !d.capacity) { card.querySelector(".event-seats").hidden = true; return; }
+      writeSeatsCache(ev.formId, d);
+      showSeats(card, ev, d);
     })
-    .catch(function () { seats.hidden = true; });
+    .catch(function () { if (!cached) card.querySelector(".event-seats").hidden = true; });
 }
