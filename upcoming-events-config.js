@@ -25,7 +25,7 @@
 
 // 「名額控管」Apps Script 部署成「網頁應用程式」後的網址（…/exec 結尾，只要設定一次，所有場次共用）
 // 留空 "" 就是不顯示剩餘名額
-const SEATS_API_URL = "";
+const SEATS_API_URL = "https://script.google.com/macros/s/AKfycbwNetCmJebSsLfgklzvnSt2xCoAc-YCPTOrs-7DSgij--JFwGpCJUco-iw_uJVmapkd3w/exec";
 
 const UPCOMING_EVENTS_CONFIG = [
 {
