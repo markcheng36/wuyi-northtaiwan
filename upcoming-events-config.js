@@ -36,8 +36,8 @@ const UPCOMING_EVENTS_CONFIG = [
     description: "一天三個時段 14:00／15:00／16:00，每時段 50 分鐘、名額有限。現場提供結構與足部檢視、徒手舒緩放鬆與個人化保養建議。",
     location: "板橋・結構X獵人",
     price: "免費",
-    formUrl: "https://forms.gle/gASXbP76GdKHEvXT9",
-    formId: "gASXbP76GdKHEvXT9"
+    formUrl: "https://forms.gle/nXQg1Y6sXykNMkEQ8",
+    formId: "nXQg1Y6sXykNMkEQ8"
   }
   // 範例：之後要新增場次，複製下面這段、拿掉最前面的 // 、改內容即可
   // ,{
