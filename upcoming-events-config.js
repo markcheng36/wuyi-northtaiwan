@@ -15,17 +15,17 @@
 //   price       費用，以「每人」為單位計算，例如 "NT$500 / 人"；
 //               完全免費就寫 "免費"
 //   formUrl     這場的 Google 表單報名連結，會做成按鈕、點了另開新分頁
-//   formId      （選填）這場表單的「ID」，用來在卡片上顯示剩餘名額。
-//               打開表單的「編輯」頁，網址長這樣：
-//               https://docs.google.com/forms/d/【這一段就是 ID】/edit
-//               表單說明裡也要寫一行「名額上限：20」（數字改成你的人數）
+//   formId      （選填）有填才會在卡片上顯示剩餘名額。
+//               名額控管程式綁在報名表單本身，這裡填什麼都可以，
+//               習慣上填 formUrl 最後那一段（例如 gASXbP76GdKHEvXT9）
+//               名額讀的是表單「報名場次」那一題說明的「每時段名額：N」
 //               沒填 formId 就不顯示名額，其他功能照常
 //
 // ============================================================
 
-// 「名額控管」Apps Script 部署後的網址（只要設定一次，所有場次共用）
+// 「名額控管」Apps Script 部署成「網頁應用程式」後的網址（…/exec 結尾，只要設定一次，所有場次共用）
 // 留空 "" 就是不顯示剩餘名額
-const SEATS_API_URL = "";
+const SEATS_API_URL = "https://script.google.com/macros/s/AKfycbwNetCmJebSsLfgklzvnSt2xCoAc-YCPTOrs-7DSgij--JFwGpCJUco-iw_uJVmapkd3w/exec";
 
 const UPCOMING_EVENTS_CONFIG = [
 {
@@ -37,7 +37,7 @@ const UPCOMING_EVENTS_CONFIG = [
     location: "板橋・結構X獵人",
     price: "免費",
     formUrl: "https://forms.gle/nXQg1Y6sXykNMkEQ8",
-    formId: ""
+    formId: "nXQg1Y6sXykNMkEQ8"
   }
   // 範例：之後要新增場次，複製下面這段、拿掉最前面的 // 、改內容即可
   // ,{
@@ -48,7 +48,7 @@ const UPCOMING_EVENTS_CONFIG = [
   //   description: "現場提供足部檢測與結構調理體驗，現場備有超值贈品，也可加購。",
   //   location: "板橋・結構X獵人",
   //   price: "免費",
-  //   formUrl: "https://forms.gle/xxxxxxxxxxxxx",
-  //   formId: "表單編輯網址 /d/ 後面那一段"
+  //   formUrl: "https://forms.gle/gASXbP76GdKHEvXT9",
+  //   formId: "gASXbP76GdKHEvXT9"
   // }
 ];
