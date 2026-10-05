@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
 // Apps Script 回應要好幾秒，所以：
 //   ・網頁一載入就先發出查詢，不等卡片畫好
 //   ・上次查到的數字存在瀏覽器裡，再次打開時先直接顯示，查到新數字再更新
-//   ・第一次來、還沒有數字時不顯示「查詢中」，查到才出現
+//   ・第一次來、還沒有數字時先顯示「剩餘名額查詢中，請稍後...」
 // 查不到（沒設定、網路問題）就不顯示，報名按鈕照常可用
 // ------------------------------------------------------------
 var seatsRequests = {};
@@ -107,7 +107,13 @@ function showSeats(card, ev, d) {
 function loadSeats(card, ev) {
   if (typeof SEATS_API_URL === "undefined" || !SEATS_API_URL || !ev.formId) return;
   var cached = readSeatsCache(ev.formId);
-  if (cached && cached.capacity) showSeats(card, ev, cached);
+  if (cached && cached.capacity) {
+    showSeats(card, ev, cached);
+  } else {
+    var seats = card.querySelector(".event-seats");
+    seats.hidden = false;
+    seats.textContent = "👥 剩餘名額查詢中，請稍後...";
+  }
   requestSeats(ev.formId)
     .then(function (d) {
       if (!d || d.error || !d.capacity) { card.querySelector(".event-seats").hidden = true; return; }
