@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <script src="html2canvas.min.js"></script>
+<script src="qrcode.min.js"></script>
 <style>
   :root{
     --cream:#FAF7F1;
@@ -370,6 +371,14 @@
     font-size:15px;
     color:#f0e6d4;
   }
+  .cta-left .cta-link{
+    margin-top:8px;
+    font-size:14px;
+    font-weight:700;
+    color:#fff;
+    letter-spacing:.5px;
+  }
+  .cta-left .cta-link:empty{ display:none; }
   .cta-qr-box{
     width:150px;
     height:150px;
@@ -380,6 +389,8 @@
     align-items:center;
     justify-content:center;
     overflow:hidden;
+    padding:10px;
+    box-sizing:border-box;
   }
   .cta-qr-box img{
     width:100%;
@@ -477,7 +488,11 @@
         <input id="in-deadline" type="text" value="額滿為止">
       </div>
       <div class="field">
-        <label for="in-qr">上傳報名 QR Code 圖片</label>
+        <label for="in-formurl">報名連結（自動產生 QR Code）</label>
+        <input id="in-formurl" type="url" value="https://forms.gle/gASXbP76GdKHEvXT9">
+      </div>
+      <div class="field">
+        <label for="in-qr">或上傳 QR Code 圖片（取代自動產生的）</label>
         <input id="in-qr" type="file" accept="image/*">
       </div>
     </div>
@@ -576,6 +591,7 @@
           <div class="cta-left">
             <div class="cta-title">掃描 QR Code 完成報名</div>
             <div class="cta-desc">請掃描右方 QR Code 填寫線上報名表單，名額有限<br>報名截止：<span id="out-deadline">額滿為止</span></div>
+            <div class="cta-link" id="out-formurl"></div>
           </div>
           <div class="cta-qr-box" id="qr-box">
             <div class="qr-placeholder" id="qr-placeholder">尚未上傳<br>報名 QR Code</div>
@@ -616,6 +632,30 @@
   taglineInput.addEventListener('input', ()=>{
     taglineOut.innerHTML = taglineInput.value.replace(/,|，/g, m => m + '<br>');
   });
+
+  // 報名連結 → 自動產生 QR Code，並在海報上印出短網址（掃不到的人可以直接打字）
+  const formUrlInput = document.getElementById('in-formurl');
+  function renderFormQr(){
+    const url = formUrlInput.value.trim();
+    const img = document.getElementById('out-qr');
+    const placeholder = document.getElementById('qr-placeholder');
+    document.getElementById('out-formurl').textContent = url ? '或輸入網址：' + url.replace(/^https?:\/\//, '') : '';
+    if (!url){
+      img.removeAttribute('src');
+      img.style.display = 'none';
+      placeholder.style.display = '';
+      return;
+    }
+    const holder = document.createElement('div');
+    new QRCode(holder, { text: url, width: 600, height: 600, correctLevel: QRCode.CorrectLevel.M });
+    const canvas = holder.querySelector('canvas');
+    if (!canvas) return;
+    img.src = canvas.toDataURL('image/png');
+    img.style.display = 'block';
+    placeholder.style.display = 'none';
+  }
+  formUrlInput.addEventListener('input', renderFormQr);
+  renderFormQr();
 
   document.getElementById('in-qr').addEventListener('change', (e)=>{
     const file = e.target.files[0];
