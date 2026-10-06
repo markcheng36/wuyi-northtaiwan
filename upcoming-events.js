@@ -19,13 +19,20 @@ document.addEventListener("DOMContentLoaded", function () {
   renderEvents(container, events);
   events.forEach(function (ev) {
     if (!seatsEnabled(ev)) return;
+    // 查詢超過 8 秒就先不等，顯示一般卡片；之後查到了還是會更新
+    var slow = setTimeout(function () {
+      seatsFailed[ev.formId] = true;
+      renderEvents(container, events);
+    }, 8000);
     requestSeats(ev.formId)
       .then(function (d) {
         if (!d || d.error) throw new Error("no data");
+        clearTimeout(slow);
         writeSeatsCache(ev.formId, d);
         renderEvents(container, events);
       })
       .catch(function () {
+        clearTimeout(slow);
         seatsFailed[ev.formId] = true;
         renderEvents(container, events);
       });
