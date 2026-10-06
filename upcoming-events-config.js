@@ -20,6 +20,9 @@
 //               習慣上填 formUrl 最後那一段（例如 gASXbP76GdKHEvXT9）
 //               名額讀的是表單「報名場次」那一題說明的「每時段名額：N」
 //               沒填 formId 就不顯示名額，其他功能照常
+//   autoSchedule （選填）true＝日期跟著「夥伴報名表單」自動帶出：
+//               會顯示「本場」和「下一場」兩張卡片，報名中的顯示剩餘名額，
+//               還沒開放的顯示開放日、報名按鈕反灰。上面的 date 只在查不到資料時才用
 //
 // ============================================================
 
@@ -37,7 +40,8 @@ const UPCOMING_EVENTS_CONFIG = [
     location: "板橋・結構X獵人",
     price: "免費",
     formUrl: "https://forms.gle/nXQg1Y6sXykNMkEQ8",
-    formId: "nXQg1Y6sXykNMkEQ8"
+    formId: "nXQg1Y6sXykNMkEQ8",
+    autoSchedule: true
   }
   // 範例：之後要新增場次，複製下面這段、拿掉最前面的 // 、改內容即可
   // ,{

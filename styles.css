@@ -169,6 +169,13 @@
     background:var(--bg);border:1px solid var(--line);border-radius:20px;
     padding:36px;
   }
+  .event-tags{display:flex;flex-wrap:wrap;gap:8px;}
+  .event-status{
+    display:inline-block;font-size:13px;font-weight:700;
+    padding:6px 14px;border-radius:999px;
+  }
+  .event-status.is-open{color:#2F6B3F;background:#E2EFE3;}
+  .event-status.is-soon{color:#6F655A;background:#ECE8E2;}
   .event-tag{
     display:inline-block;font-size:13px;font-weight:700;color:var(--accent-dark);
     background:#EFE6D6;padding:6px 14px;border-radius:999px;
