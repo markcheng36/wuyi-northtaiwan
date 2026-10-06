@@ -190,18 +190,18 @@
     margin-top:14px;font-size:15px;color:var(--fg-soft);
   }
   .event-location{
-    margin-top:18px;font-size:14px;color:var(--fg);font-weight:600;
+    margin-top:18px;font-size:17px;color:var(--fg);font-weight:700;
   }
   .event-price{
-    margin-top:10px;font-size:15px;font-weight:800;color:var(--accent-dark);
+    margin-top:10px;font-size:17px;font-weight:800;color:var(--accent-dark);
   }
   .event-cta{
     margin-top:20px;display:inline-flex;
   }
   .event-seats{
-    margin-top:8px;font-size:14px;font-weight:700;color:var(--fg);
+    margin-top:10px;font-size:17px;font-weight:700;color:var(--fg);
   }
-  .event-seats b{font-size:17px;color:var(--accent-dark);}
+  .event-seats b{font-size:21px;color:var(--accent-dark);}
   .event-seats.is-low b{color:#B4472E;}
   .event-seats.is-full{color:#B4472E;}
   .event-cta.is-disabled{

@@ -117,7 +117,7 @@ function scheduleCard(ev, item, d) {
     var when = item.status.replace(/\s*開放$/, "");
     setStatus(card, "尚未開放", "is-soon");
     seats.textContent = "🗓 " + (when === "上一場結束後" ? "上一場結束後開放報名" : when + " 開放報名");
-    disableCta(card, when === "上一場結束後" ? "上一場結束後開放報名" : when + " 開放報名");
+    disableCta(card, "尚未開放");
   }
   return card;
 }
