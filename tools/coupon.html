@@ -199,6 +199,17 @@
   .c-lead{font-size:32px;font-weight:700;color:var(--olive-dark);letter-spacing:2px;}
   .c-nt{font-size:38px;font-weight:900;color:var(--coral-dark);letter-spacing:1px;}
   .c-num{font-size:142px;font-weight:900;line-height:.9;color:var(--coral);letter-spacing:-1px;}
+  .c-unit{font-size:38px;font-weight:900;color:var(--coral-dark);letter-spacing:2px;}
+  .c-extra{
+    margin-top:10px;align-self:flex-start;
+    font-size:26px;font-weight:700;letter-spacing:2px;color:#fff;
+    background:var(--coral);padding:5px 18px;border-radius:999px;
+  }
+  /* 體驗＋折價：多一行，數字稍微縮小讓版面放得下 */
+  #coupon.is-combo .c-num{font-size:104px;}
+  #coupon.is-combo .c-title{font-size:58px;}
+  #coupon.is-combo .c-how{margin-top:6px;font-size:21px;}
+  #coupon.is-combo .c-extra{margin-top:8px;margin-bottom:10px;}
   .c-how{margin-top:10px;font-size:23px;font-weight:600;color:var(--olive-dark);letter-spacing:2px;}
   .c-fine{
     margin-top:auto;padding-top:10px;
@@ -263,6 +274,19 @@
         <div class="tip">切換後 LOGO、LINE QR、LINE ID、地點會整組一起換</div>
       </div>
       <div class="field">
+        <label for="in-type">券種</label>
+        <select id="in-type">
+          <option value="discount">折價券（憑券折抵金額）</option>
+          <option value="trial">體驗券（贈送體驗課）</option>
+          <option value="combo">體驗＋折價券（送體驗＋購課折抵）</option>
+        </select>
+        <div class="tip">切換後標題、說明、使用規則會帶入該券種的建議文字，可再自行修改</div>
+      </div>
+      <div class="field" id="f-minutes">
+        <label for="in-minutes">體驗課時長（分鐘）</label>
+        <input id="in-minutes" type="number" min="0" step="10" value="30">
+      </div>
+      <div class="field" id="f-amount">
         <label for="in-amount">折抵金額（NT.）</label>
         <input id="in-amount" type="number" min="0" step="50" value="400">
       </div>
@@ -279,12 +303,17 @@
         <input id="in-tag" type="text" value="BNI 專講限定贈禮">
       </div>
       <div class="field">
-        <label for="in-lead">金額前面的字</label>
+        <label for="in-lead">大字前面的字</label>
         <input id="in-lead" type="text" value="憑券折抵">
       </div>
       <div class="field">
-        <label for="in-how">使用方式（金額下方一行）</label>
+        <label for="in-how">使用方式（大字下方一行）</label>
         <input id="in-how" type="text" value="預約時出示本券，現場直接抵用">
+      </div>
+      <div class="field" id="f-extra">
+        <label for="in-extra">折價那一行（體驗＋折價券才會顯示）</label>
+        <input id="in-extra" type="text" value="體驗後購課，再折 NT.{金額}">
+        <div class="tip">{金額} 會自動換成上面的折抵金額</div>
       </div>
       <div class="field">
         <label for="in-venue">地點</label>
@@ -314,10 +343,12 @@
           <div class="c-title" id="out-title">身體平衡調整券</div>
           <div class="c-amount">
             <span class="c-lead" id="out-lead">憑券折抵</span>
-            <span class="c-nt">NT.</span>
+            <span class="c-nt" id="out-nt">NT.</span>
             <span class="c-num" id="out-amount">400</span>
+            <span class="c-unit" id="out-unit" style="display:none">分鐘</span>
           </div>
           <div class="c-how" id="out-how">預約時出示本券，現場直接抵用</div>
+          <div class="c-extra" id="out-extra" style="display:none"></div>
           <div class="c-fine" id="out-terms"></div>
         </div>
         <div class="c-stub">
@@ -351,8 +382,30 @@
     }
   };
 
+  // ===== 三種券的建議文字（切換券種時帶入）=====
+  const TYPES = {
+    discount: {
+      title: '身體平衡調整券',
+      lead:  '憑券折抵',
+      how:   '預約時出示本券，現場直接抵用',
+      terms: '每張限用一次，限本人使用，不得兌換現金或找零\n不得與其他優惠併用\n請先加官方 LINE 預約時段，並於調整前出示本券'
+    },
+    trial: {
+      title: '身體平衡體驗券',
+      lead:  '免費體驗',
+      how:   '贈送結構調整體驗課一堂',
+      terms: '每張限用一次，限本人使用，不得兌換現金\n限首次體驗者使用\n請先加官方 LINE 預約時段，並於體驗前出示本券'
+    },
+    combo: {
+      title: '身體平衡體驗券',
+      lead:  '免費體驗',
+      how:   '贈送結構調整體驗課一堂',
+      terms: '每張限用一次，限本人使用，不得兌換現金或找零\n體驗課限首次體驗者；購課折抵限體驗後首次購課使用\n請先加官方 LINE 預約時段，並於體驗前出示本券'
+    }
+  };
+
   const $ = id => document.getElementById(id);
-  const FIELDS = ['in-brand','in-amount','in-expiry','in-title','in-tag','in-lead','in-how','in-venue','in-terms'];
+  const FIELDS = ['in-brand','in-type','in-minutes','in-amount','in-expiry','in-title','in-tag','in-lead','in-how','in-extra','in-venue','in-terms'];
 
   function fmtDate(v){
     const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || '');
@@ -366,7 +419,19 @@
     $('out-id').textContent = b.id;
     $('out-brandname').textContent = b.name;
     $('out-venue').textContent = $('in-venue').value;
-    $('out-amount').textContent = $('in-amount').value || '0';
+    const type = $('in-type').value;
+    const amount = $('in-amount').value || '0';
+    const isTrial = type !== 'discount';
+    $('coupon').classList.toggle('is-combo', type === 'combo');
+    $('f-minutes').style.display = isTrial ? '' : 'none';
+    $('f-amount').style.display = type === 'trial' ? 'none' : '';
+    $('f-extra').style.display = type === 'combo' ? '' : 'none';
+    $('out-nt').style.display = isTrial ? 'none' : '';
+    $('out-unit').style.display = isTrial ? '' : 'none';
+    $('out-amount').textContent = isTrial ? ($('in-minutes').value || '0') : amount;
+    const extra = $('in-extra').value.replace(/\{金額\}/g, amount).trim();
+    $('out-extra').textContent = extra;
+    $('out-extra').style.display = (type === 'combo' && extra) ? '' : 'none';
     $('out-expiry').textContent = fmtDate($('in-expiry').value);
     $('out-title').textContent = $('in-title').value;
     $('out-lead').textContent = $('in-lead').value;
@@ -389,7 +454,16 @@
     $('in-venue').value = BRANDS[$('in-brand').value].venue;
     render();
   });
-  FIELDS.filter(id => id !== 'in-brand').forEach(id => $(id).addEventListener('input', render));
+  // 切換券種時，標題／說明／使用規則帶入該券種的建議文字
+  $('in-type').addEventListener('change', () => {
+    const t = TYPES[$('in-type').value];
+    $('in-title').value = t.title;
+    $('in-lead').value = t.lead;
+    $('in-how').value = t.how;
+    $('in-terms').value = t.terms;
+    render();
+  });
+  FIELDS.filter(id => id !== 'in-brand' && id !== 'in-type').forEach(id => $(id).addEventListener('input', render));
 
   // ===== 預覽縮放（手機螢幕比券窄時自動縮小顯示）=====
   function fit(){
@@ -413,7 +487,11 @@
       const canvas = await html2canvas($('coupon'), { scale: 3, backgroundColor: '#F3F2EE', useCORS: true });
       const b = BRANDS[$('in-brand').value];
       const dateVal = $('in-expiry').value.replace(/-/g,'') || 'coupon';
-      const filename = `優惠券_NT${$('in-amount').value}_${b.id.replace('@','')}_${dateVal}.png`;
+      const type = $('in-type').value;
+      const what = type === 'discount' ? `優惠券_NT${$('in-amount').value}`
+                 : type === 'trial'    ? `體驗券_${$('in-minutes').value}分`
+                 : `體驗券_${$('in-minutes').value}分+折NT${$('in-amount').value}`;
+      const filename = `${what}_${b.id.replace('@','')}_${dateVal}.png`;
       const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
       const file = new File([blob], filename, { type: 'image/png' });
 
