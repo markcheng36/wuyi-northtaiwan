@@ -211,6 +211,11 @@
   #coupon.is-combo .c-how{margin-top:6px;font-size:21px;}
   #coupon.is-combo .c-extra{margin-top:8px;margin-bottom:10px;}
   .c-how{margin-top:10px;font-size:23px;font-weight:600;color:var(--olive-dark);letter-spacing:2px;}
+  .c-fixed{
+    display:inline-block;margin-left:12px;vertical-align:2px;
+    font-size:17px;font-weight:700;letter-spacing:2px;color:var(--olive-dark);
+    border:1.5px solid var(--olive-dark);padding:2px 12px;border-radius:999px;
+  }
   .c-fine{
     margin-top:auto;padding-top:10px;
     border-top:1px solid rgba(58,54,47,.16);
@@ -347,7 +352,7 @@
             <span class="c-num" id="out-amount">400</span>
             <span class="c-unit" id="out-unit" style="display:none">分鐘</span>
           </div>
-          <div class="c-how" id="out-how">預約時出示本券，現場直接抵用</div>
+          <div class="c-how"><span id="out-how">預約時出示本券，現場直接抵用</span><span class="c-fixed" id="out-fixed" style="display:none">限不指定教練</span></div>
           <div class="c-extra" id="out-extra" style="display:none"></div>
           <div class="c-fine" id="out-terms"></div>
         </div>
@@ -427,6 +432,7 @@
     $('f-amount').style.display = type === 'trial' ? 'none' : '';
     $('f-extra').style.display = type === 'combo' ? '' : 'none';
     $('out-nt').style.display = isTrial ? 'none' : '';
+    $('out-fixed').style.display = isTrial ? '' : 'none';   // 體驗券固定文案
     $('out-unit').style.display = isTrial ? '' : 'none';
     $('out-amount').textContent = isTrial ? ($('in-minutes').value || '0') : amount;
     const extra = $('in-extra').value.replace(/\{金額\}/g, amount).trim();
