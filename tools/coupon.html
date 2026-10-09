@@ -196,7 +196,7 @@
     font-weight:700;font-size:67px;line-height:1.1;letter-spacing:4px;color:var(--c-ink);
   }
   .c-amount{margin-top:8px;display:flex;align-items:baseline;gap:11px;}
-  .c-lead{font-size:32px;font-weight:700;color:var(--olive-dark);letter-spacing:2px;}
+  .c-lead{white-space:nowrap;font-size:32px;font-weight:700;color:var(--olive-dark);letter-spacing:2px;}
   .c-nt{font-size:38px;font-weight:900;color:var(--coral-dark);letter-spacing:1px;}
   .c-num{font-size:142px;font-weight:900;line-height:.9;color:var(--coral);letter-spacing:-1px;}
   .c-unit{font-size:38px;font-weight:900;color:var(--coral-dark);letter-spacing:2px;}
@@ -223,6 +223,30 @@
   }
   .c-fine div{ padding-left:14px; position:relative; }
   .c-fine div::before{ content:"・"; position:absolute; left:0; }
+
+  /* ---- 贈品／調整照片（有上傳才出現）---- */
+  .c-photo{
+    display:none;position:absolute;z-index:2;
+    right:366px;top:96px;width:214px;
+    background:#fff;padding:8px 8px 6px;border-radius:12px;
+    box-shadow:0 8px 20px rgba(0,0,0,.18);transform:rotate(2.5deg);
+  }
+  .c-photo img{display:block;width:198px;height:198px;object-fit:cover;border-radius:7px;}
+  .c-photo-cap{
+    margin-top:5px;text-align:center;font-size:16px;font-weight:700;
+    letter-spacing:2px;color:var(--c-ink);
+  }
+  #coupon.has-photo .c-photo{display:block;}
+  #coupon.has-photo .c-main{padding-right:280px;}
+  #coupon.has-photo .c-title{font-size:56px;letter-spacing:2px;}
+  #coupon.has-photo .c-num{font-size:112px;}
+  #coupon.has-photo .c-lead{font-size:28px;}
+  #coupon.has-photo .c-nt{font-size:32px;}
+  #coupon.has-photo .c-how{font-size:20px;letter-spacing:1px;}
+  #coupon.has-photo .c-fixed{margin-left:6px;font-size:15px;padding:1px 9px;}
+  #coupon.has-photo .c-extra{font-size:22px;}
+  #coupon.has-photo .c-fine{margin-right:-234px;}
+  #coupon.has-photo.is-combo .c-num{font-size:96px;}
 
   .c-stub{
     width:330px;height:480px;position:relative;
@@ -324,6 +348,16 @@
         <label for="in-venue">地點</label>
         <input id="in-venue" type="text" value="板橋江子翠捷運站">
       </div>
+      <div class="field">
+        <label for="in-photo">照片（調整照片或贈品圖，可不放）</label>
+        <input id="in-photo" type="file" accept="image/*">
+        <div class="tip">放上後會出現在券面右側；<a href="#" id="photoClear">移除照片</a></div>
+      </div>
+      <div class="field">
+        <label for="in-photocap">照片下方小字（可留空）</label>
+        <input id="in-photocap" type="text" value="">
+        <div class="tip">例如：實際調整情形、贈送商品</div>
+      </div>
       <div class="field wide">
         <label for="in-terms">使用說明（一行一條）</label>
         <textarea id="in-terms">每張限用一次，限本人使用，不得兌換現金或找零
@@ -356,6 +390,7 @@
           <div class="c-extra" id="out-extra" style="display:none"></div>
           <div class="c-fine" id="out-terms"></div>
         </div>
+        <div class="c-photo"><img id="out-photo" alt="照片"><div class="c-photo-cap" id="out-photocap"></div></div>
         <div class="c-stub">
           <div class="c-valid-k">有效期限</div>
           <div class="c-valid-v" id="out-expiry">2026.10.31</div>
@@ -410,7 +445,7 @@
   };
 
   const $ = id => document.getElementById(id);
-  const FIELDS = ['in-brand','in-type','in-minutes','in-amount','in-expiry','in-title','in-tag','in-lead','in-how','in-extra','in-venue','in-terms'];
+  const FIELDS = ['in-brand','in-type','in-minutes','in-amount','in-expiry','in-title','in-tag','in-lead','in-how','in-extra','in-photocap','in-venue','in-terms'];
 
   function fmtDate(v){
     const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || '');
@@ -428,6 +463,11 @@
     const amount = $('in-amount').value || '0';
     const isTrial = type !== 'discount';
     $('coupon').classList.toggle('is-combo', type === 'combo');
+    const photoSrc = $('out-photo').getAttribute('src') || '';
+    $('coupon').classList.toggle('has-photo', photoSrc.indexOf('data:') === 0);
+    const cap = $('in-photocap').value.trim();
+    $('out-photocap').textContent = cap;
+    $('out-photocap').style.display = cap ? '' : 'none';
     $('f-minutes').style.display = isTrial ? '' : 'none';
     $('f-amount').style.display = type === 'trial' ? 'none' : '';
     $('f-extra').style.display = type === 'combo' ? '' : 'none';
@@ -470,6 +510,33 @@
     render();
   });
   FIELDS.filter(id => id !== 'in-brand' && id !== 'in-type').forEach(id => $(id).addEventListener('input', render));
+
+  // ===== 照片上傳：先縮到最長邊 900px 再放上券面（存預設時也不會太大）=====
+  $('in-photo').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => {
+        const k = Math.min(1, 900 / Math.max(img.width, img.height));
+        const c = document.createElement('canvas');
+        c.width = Math.round(img.width * k);
+        c.height = Math.round(img.height * k);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        $('out-photo').src = c.toDataURL('image/jpeg', 0.85);
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+  $('out-photo').addEventListener('load', render);
+  $('photoClear').addEventListener('click', e => {
+    e.preventDefault();
+    $('out-photo').removeAttribute('src');
+    $('in-photo').value = '';
+    render();
+  });
 
   // ===== 預覽縮放（手機螢幕比券窄時自動縮小顯示）=====
   function fit(){
@@ -537,6 +604,7 @@
   // 字型載入完成後再校正一次版面
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
 </script>
+<script>window.WUYI_DEFAULTS_QR = [['in-photo','out-photo']];</script>
 <script src="defaults.js"></script>
 
 </body>
