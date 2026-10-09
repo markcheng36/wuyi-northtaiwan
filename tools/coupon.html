@@ -196,6 +196,14 @@
     font-weight:700;font-size:67px;line-height:1.1;letter-spacing:4px;color:var(--c-ink);
   }
   .c-amount{margin-top:8px;display:flex;align-items:baseline;gap:11px;}
+  .c-lead-wrap{position:relative;}
+  /* 原價疊在「憑券折抵／免費體驗」上方，不佔橫向空間 */
+  .c-orig{
+    position:absolute;left:0;bottom:100%;margin-bottom:4px;white-space:nowrap;
+    font-size:22px;font-weight:700;letter-spacing:1px;color:var(--c-ink-soft);
+  }
+  .c-orig s{text-decoration-thickness:2px;text-decoration-color:var(--coral);}
+  #coupon.has-photo .c-orig{font-size:16px;letter-spacing:0;}
   .c-lead{white-space:nowrap;font-size:32px;font-weight:700;color:var(--olive-dark);letter-spacing:2px;}
   .c-nt{font-size:38px;font-weight:900;color:var(--coral-dark);letter-spacing:1px;}
   .c-num{font-size:142px;font-weight:900;line-height:.9;color:var(--coral);letter-spacing:-1px;}
@@ -339,6 +347,11 @@
         <label for="in-how">使用方式（大字下方一行）</label>
         <input id="in-how" type="text" value="預約時出示本券，現場直接抵用">
       </div>
+      <div class="field">
+        <label for="in-orig">原價（NT.，留空就不顯示）</label>
+        <input id="in-orig" type="number" min="0" step="100" value="">
+        <div class="tip">會以「原價 NT.xxx」加刪除線顯示在大字旁邊</div>
+      </div>
       <div class="field" id="f-extra">
         <label for="in-extra">折價那一行（體驗＋折價券才會顯示）</label>
         <input id="in-extra" type="text" value="體驗後購課，再折 NT.{金額}">
@@ -381,7 +394,7 @@
           </div>
           <div class="c-title" id="out-title">身體平衡調整券</div>
           <div class="c-amount">
-            <span class="c-lead" id="out-lead">憑券折抵</span>
+            <span class="c-lead-wrap"><span class="c-orig" id="out-orig" style="display:none">原價 <s id="out-orig-num"></s></span><span class="c-lead" id="out-lead">憑券折抵</span></span>
             <span class="c-nt" id="out-nt">NT.</span>
             <span class="c-num" id="out-amount">400</span>
             <span class="c-unit" id="out-unit" style="display:none">分鐘</span>
@@ -445,7 +458,7 @@
   };
 
   const $ = id => document.getElementById(id);
-  const FIELDS = ['in-brand','in-type','in-minutes','in-amount','in-expiry','in-title','in-tag','in-lead','in-how','in-extra','in-photocap','in-venue','in-terms'];
+  const FIELDS = ['in-brand','in-type','in-minutes','in-amount','in-expiry','in-title','in-tag','in-lead','in-how','in-extra','in-orig','in-photocap','in-venue','in-terms'];
 
   function fmtDate(v){
     const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || '');
@@ -465,6 +478,9 @@
     $('coupon').classList.toggle('is-combo', type === 'combo');
     const photoSrc = $('out-photo').getAttribute('src') || '';
     $('coupon').classList.toggle('has-photo', photoSrc.indexOf('data:') === 0);
+    const orig = parseInt($('in-orig').value, 10);
+    $('out-orig').style.display = orig > 0 ? '' : 'none';
+    $('out-orig-num').textContent = orig > 0 ? 'NT.' + orig.toLocaleString('en-US') : '';
     const cap = $('in-photocap').value.trim();
     $('out-photocap').textContent = cap;
     $('out-photocap').style.display = cap ? '' : 'none';
