@@ -121,6 +121,25 @@ async function egBuildMedia(ev, limit, onBatch) {
 
   var media = [];
   var i = 1;
+
+  // 有檔案清單（events-media.js）就直接照清單顯示，不用一個一個試探；
+  // 清單之後的編號還是會往下試探，新加的照片沒寫進清單也抓得到
+  var listed = typeof EVENTS_MEDIA !== "undefined" && EVENTS_MEDIA[ev.folder];
+  if (listed && listed.length) {
+    listed.forEach(function (name) {
+      var ext = name.split(".").pop();
+      media.push({ type: egExtKind(ext), src: ev.folder + "/" + name });
+    });
+    if (limit && media.length >= limit) {
+      media = media.slice(0, limit);
+      if (onBatch) onBatch(media.slice());
+      return media;
+    }
+    if (onBatch) onBatch(media.slice());
+    i = listed.length + 1;
+    // 等照片先載完再試探後面的編號，不跟照片搶網路
+    await new Promise(function (r) { setTimeout(r, 2500); });
+  }
   var SAFETY_MAX = 300; // 避免設定錯誤造成無限迴圈
   var BATCH = 6;        // 一次同時確認 6 個編號，比一個一個試快很多
 
