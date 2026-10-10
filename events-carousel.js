@@ -296,10 +296,11 @@ function renderEventGallery(container) {
       slide.className = "eg-slide";
       if (m.type === "video") {
         var video = document.createElement("video");
-        video.src = m.src;
+        video.dataset.src = m.src; // 先不給 src，輪到附近才載入（見 egLoadSlide）
+        video.preload = "none";
         video.controls = false;
         video.muted = true;
-        video.autoplay = true;
+        video.autoplay = false; // 輪到這張才播放，避免全部影片在背景同時下載、播放
         video.loop = false;
         video.playsInline = true;
         video.disablePictureInPicture = true;
@@ -321,7 +322,7 @@ function renderEventGallery(container) {
         trigger.className = "eg-zoom";
         trigger.setAttribute("aria-label", "放大看圖片");
         var img = document.createElement("img");
-        img.src = m.src;
+        img.dataset.src = m.src; // 先不給 src，輪到附近才載入（見 egLoadSlide）
         img.alt = ev.name;
         trigger.appendChild(img);
         trigger.addEventListener("click", function (src, alt) {
@@ -357,8 +358,34 @@ function renderEventGallery(container) {
     scheduleAdvance();
   }
 
+  // 只載入目前這張和前後各一張，其他等輪到再載，進頁面不用一次下載整場的照片影片
+  function egLoadSlide(i) {
+    var slideEl = trackEl.children[(i + currentMediaCount) % currentMediaCount];
+    var el = slideEl ? slideEl.querySelector("img[data-src], video[data-src]") : null;
+    if (!el) return;
+    el.src = el.dataset.src;
+    el.removeAttribute("data-src");
+  }
+
   function updateTrack() {
     trackEl.style.transform = "translateX(-" + mediaIndex * 100 + "%)";
+    if (currentMediaCount > 0) {
+      egLoadSlide(mediaIndex);
+      egLoadSlide(mediaIndex + 1);
+      egLoadSlide(mediaIndex - 1);
+    }
+    // 只有目前這張影片播放，其他暫停
+    Array.prototype.forEach.call(trackEl.children, function (slideEl, i) {
+      var v = slideEl.querySelector("video");
+      if (!v) return;
+      if (i === mediaIndex) {
+        v.currentTime = 0;
+        var p = v.play();
+        if (p && p.catch) p.catch(function () {});
+      } else {
+        v.pause();
+      }
+    });
     dotsEl.querySelectorAll(".eg-dot").forEach(function (dot, i) {
       dot.classList.toggle("active", i === mediaIndex);
     });
