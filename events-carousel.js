@@ -71,7 +71,7 @@ function egProbeFile(url, kind) {
   // 優先用 HEAD 請求確認檔案存在：只問「有沒有這個檔」，不用整張下載，速度快很多
   // 本機直接開檔（file://）不支援 fetch，才退回舊的「實際載入」方式
   if (location.protocol !== "file:" && window.fetch) {
-    return fetch(url, { method: "HEAD", cache: "no-cache" })
+    return fetch(url, { method: "HEAD" })
       .then(function (r) { return r.ok; })
       .catch(function () { return egProbeByElement(url, kind); });
   }
@@ -102,15 +102,18 @@ function egProbeByElement(url, kind) {
 
 // 找出某個編號實際存在的檔案（依 mediatype 順序試副檔名），找不到回傳 null
 async function egFindIndex(folder, i, exts) {
+  // 各種副檔名同時試，不用一個試完才試下一個；結果仍依 mediatype 順序取第一個存在的
+  var found = await Promise.all(exts.map(function (ext) {
+    return egProbeFile(folder + "/" + i + "." + ext, egExtKind(ext));
+  }));
   for (var k = 0; k < exts.length; k++) {
-    var kind = egExtKind(exts[k]);
-    var url = folder + "/" + i + "." + exts[k];
-    if (await egProbeFile(url, kind)) return { type: kind, src: url };
+    if (found[k]) return { type: egExtKind(exts[k]), src: folder + "/" + i + "." + exts[k] };
   }
   return null;
 }
 
-async function egBuildMedia(ev, limit) {
+// onBatch(media)：每確認完一批就回呼一次，讓畫面可以先顯示已找到的照片，不用等全部試完
+async function egBuildMedia(ev, limit, onBatch) {
   var exts = (ev.mediatype || "jpg")
     .split(",")
     .map(function (s) { return s.trim(); })
@@ -130,6 +133,7 @@ async function egBuildMedia(ev, limit) {
       if (!results[r] || (limit && media.length >= limit)) { stop = true; break; }
       media.push(results[r]);
     }
+    if (onBatch && media.length > 0) onBatch(media.slice());
     if (stop) break;
     i += BATCH;
   }
@@ -275,66 +279,94 @@ function renderEventGallery(container) {
 
     // 首頁只放前 5 張，避免載入太多張、也讓版面精簡；完整花絮導去「義整活動」頁看
     var homeLimit = mode === "home" ? 5 : null;
-    var media = await egBuildMedia(ev, homeLimit);
-
-    // 使用者可能在載入中途切換頁籤，這裡確認還是同一場才畫面更新
-    if (events[activeIndex] !== ev) return;
-
-    if (mode === "home" && media.length > 0) {
-      media = media.concat([{ type: "cta" }]);
-    }
-
-    trackEl.innerHTML = "";
-    if (media.length === 0) {
-      trackEl.innerHTML = '<div class="eg-empty">這場活動還沒有花絮照片／影片</div>';
-      currentMediaCount = 0;
-      return;
-    }
-
-    media.forEach(function (m) {
-      var slide = document.createElement("div");
-      slide.className = "eg-slide";
-      if (m.type === "video") {
-        var video = document.createElement("video");
-        video.dataset.src = m.src; // 先不給 src，輪到附近才載入（見 egLoadSlide）
-        video.preload = "none";
-        video.controls = false;
-        video.muted = true;
-        video.autoplay = false; // 輪到這張才播放，避免全部影片在背景同時下載、播放
-        video.loop = false;
-        video.playsInline = true;
-        video.disablePictureInPicture = true;
-        video.setAttribute("controlsList", "nodownload noplaybackrate nofullscreen");
-        video.style.pointerEvents = "none"; // 不能點擊開啟/全螢幕，純播放
-        slide.appendChild(video);
-      } else if (m.type === "cta") {
-        var ctaLink = document.createElement("a");
-        ctaLink.className = "eg-cta-link";
-        ctaLink.href = "events.html";
-        ctaLink.innerHTML =
-          '<span class="eg-cta-text">查看更多義整活動</span>' +
-          '<span class="eg-cta-arrow">→</span>';
-        slide.appendChild(ctaLink);
-      } else {
-        // 圖片包一層按鈕，點擊用 Lightbox 彈出大圖（同一頁彈窗，不另開分頁）
-        var trigger = document.createElement("button");
-        trigger.type = "button";
-        trigger.className = "eg-zoom";
-        trigger.setAttribute("aria-label", "放大看圖片");
-        var img = document.createElement("img");
-        img.dataset.src = m.src; // 先不給 src，輪到附近才載入（見 egLoadSlide）
-        img.alt = ev.name;
-        trigger.appendChild(img);
-        trigger.addEventListener("click", function (src, alt) {
-          return function () { egOpenLightbox(src, alt); };
-        }(m.src, ev.name));
-        slide.appendChild(trigger);
+    var shownCount = 0;
+    function show(found, done) {
+      // 使用者可能在載入中途切換頁籤，這裡確認還是同一場才畫面更新
+      if (events[activeIndex] !== ev) return;
+      var media = found;
+      if (done && mode === "home" && media.length > 0) {
+        media = media.concat([{ type: "cta" }]);
       }
-      trackEl.appendChild(slide);
-    });
+      if (shownCount === 0) {
+        trackEl.innerHTML = "";
+        if (media.length === 0) {
+          if (done) {
+            trackEl.innerHTML = '<div class="eg-empty">這場活動還沒有花絮照片／影片</div>';
+            currentMediaCount = 0;
+          }
+          return;
+        }
+      }
+      // 只補上新找到的，前面已顯示的不重畫
+      for (var k = shownCount; k < media.length; k++) addSlide(media[k], ev);
+      var first = shownCount === 0;
+      shownCount = media.length;
+      currentMedia = media;
+      currentMediaCount = media.length;
+      buildDots();
+      if (first) {
+        mediaIndex = 0;
+        updateTrack();
+        scheduleAdvance();
+      } else {
+        // 不呼叫 updateTrack，以免正在播的影片被重頭播；只補載前後張、更新圓點
+        egLoadSlide(mediaIndex + 1);
+        egLoadSlide(mediaIndex - 1);
+        dotsEl.querySelectorAll(".eg-dot").forEach(function (dot, i) {
+          dot.classList.toggle("active", i === mediaIndex);
+        });
+        if (!advanceTimer && !activeVideoEl) scheduleAdvance();
+      }
+    }
 
-    if (media.length > 1) {
-      media.forEach(function (_, i) {
+    var found = await egBuildMedia(ev, homeLimit, function (partial) { show(partial, false); });
+    show(found, true);
+  }
+
+  function addSlide(m, ev) {
+    var slide = document.createElement("div");
+    slide.className = "eg-slide";
+    if (m.type === "video") {
+      var video = document.createElement("video");
+      video.dataset.src = m.src; // 先不給 src，輪到附近才載入（見 egLoadSlide）
+      video.preload = "none";
+      video.controls = false;
+      video.muted = true;
+      video.autoplay = false; // 輪到這張才播放，避免全部影片在背景同時下載、播放
+      video.loop = false;
+      video.playsInline = true;
+      video.disablePictureInPicture = true;
+      video.setAttribute("controlsList", "nodownload noplaybackrate nofullscreen");
+      video.style.pointerEvents = "none"; // 不能點擊開啟/全螢幕，純播放
+      slide.appendChild(video);
+    } else if (m.type === "cta") {
+      var ctaLink = document.createElement("a");
+      ctaLink.className = "eg-cta-link";
+      ctaLink.href = "events.html";
+      ctaLink.innerHTML =
+        '<span class="eg-cta-text">查看更多義整活動</span>' +
+        '<span class="eg-cta-arrow">→</span>';
+      slide.appendChild(ctaLink);
+    } else {
+      // 圖片包一層按鈕，點擊用 Lightbox 彈出大圖（同一頁彈窗，不另開分頁）
+      var trigger = document.createElement("button");
+      trigger.type = "button";
+      trigger.className = "eg-zoom";
+      trigger.setAttribute("aria-label", "放大看圖片");
+      var img = document.createElement("img");
+      img.dataset.src = m.src; // 先不給 src，輪到附近才載入（見 egLoadSlide）
+      img.alt = ev.name;
+      trigger.appendChild(img);
+      trigger.addEventListener("click", function () { egOpenLightbox(m.src, ev.name); });
+      slide.appendChild(trigger);
+    }
+    trackEl.appendChild(slide);
+  }
+
+  function buildDots() {
+    dotsEl.innerHTML = "";
+    if (currentMediaCount > 1) {
+      currentMedia.forEach(function (_, i) {
         var dot = document.createElement("button");
         dot.className = "eg-dot";
         dot.addEventListener("click", function () {
@@ -345,17 +377,10 @@ function renderEventGallery(container) {
         dotsEl.appendChild(dot);
       });
     }
-
-    var showNav = media.length > 1;
+    var showNav = currentMediaCount > 1;
     prevBtn.style.display = showNav ? "" : "none";
     nextBtn.style.display = showNav ? "" : "none";
     dotsEl.style.display = showNav ? "" : "none";
-
-    mediaIndex = 0;
-    currentMedia = media;
-    currentMediaCount = media.length;
-    updateTrack();
-    scheduleAdvance();
   }
 
   // 只載入目前這張和前後各一張，其他等輪到再載，進頁面不用一次下載整場的照片影片
