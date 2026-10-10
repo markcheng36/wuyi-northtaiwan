@@ -349,6 +349,9 @@ function renderEventGallery(container) {
       var video = document.createElement("video");
       video.dataset.src = m.src; // 先不給 src，輪到附近才載入（見 egLoadSlide）
       video.preload = "none";
+      // 封面圖：影片還在緩衝時先顯示第一格畫面，不會黑一片（images/events/資料夾/poster/編號.jpg）
+      var slash = m.src.lastIndexOf("/");
+      video.poster = m.src.slice(0, slash) + "/poster/" + m.src.slice(slash + 1).replace(/\.[^.]+$/, ".jpg");
       video.controls = false;
       video.muted = true;
       video.autoplay = false; // 輪到這張才播放，避免全部影片在背景同時下載、播放
@@ -407,6 +410,8 @@ function renderEventGallery(container) {
     var slideEl = trackEl.children[(i + currentMediaCount) % currentMediaCount];
     var el = slideEl ? slideEl.querySelector("img[data-src], video[data-src]") : null;
     if (!el) return;
+    // 影片輪到附近就先緩衝，輪到它時才能順順播，不會一邊下載一邊卡
+    if (el.tagName === "VIDEO") el.preload = "auto";
     el.src = el.dataset.src;
     el.removeAttribute("data-src");
   }
