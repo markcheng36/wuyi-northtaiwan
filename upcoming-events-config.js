@@ -26,9 +26,10 @@
 //
 // ============================================================
 
-// 「名額控管」Apps Script 部署成「網頁應用程式」後的網址（…/exec 結尾，只要設定一次，所有場次共用）
+// 「志工守護日報名系統」Apps Script 網頁應用程式的網址（…/exec 結尾，只要設定一次，所有場次共用）
+// 2026/10 起志工改在這個系統報名，報名按鈕（formUrl）也連到同一個網址
 // 留空 "" 就是不顯示剩餘名額
-const SEATS_API_URL = "https://script.google.com/macros/s/AKfycbwNetCmJebSsLfgklzvnSt2xCoAc-YCPTOrs-7DSgij--JFwGpCJUco-iw_uJVmapkd3w/exec";
+const SEATS_API_URL = "https://script.google.com/macros/s/AKfycbw2Knkx5wC8Yk0U3_7sbbo0iNup36JHs2iOvB0OUtRn3tMtEF2w6Zxh4KQ2P_DRRnZ8/exec";
 
 const UPCOMING_EVENTS_CONFIG = [
 {
@@ -39,7 +40,7 @@ const UPCOMING_EVENTS_CONFIG = [
     description: "一天三個時段 14:00／15:00／16:00，每時段 50 分鐘、名額有限。現場提供結構與足部檢視、徒手舒緩放鬆與個人化保養建議。",
     location: "板橋・結構X獵人",
     price: "免費",
-    formUrl: "https://forms.gle/nXQg1Y6sXykNMkEQ8",
+    formUrl: "https://script.google.com/macros/s/AKfycbw2Knkx5wC8Yk0U3_7sbbo0iNup36JHs2iOvB0OUtRn3tMtEF2w6Zxh4KQ2P_DRRnZ8/exec",
     formId: "nXQg1Y6sXykNMkEQ8",
     autoSchedule: true
   }
