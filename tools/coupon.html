@@ -277,6 +277,17 @@
   .c-qr img{width:142px;height:142px;display:block;}
   .c-cta{margin-top:14px;font-size:21px;font-weight:700;letter-spacing:2px;}
   .c-id{margin-top:3px;font-size:18px;font-weight:600;letter-spacing:1px;opacity:.95;}
+  /* 發放日期／簽名欄（列印手寫用）*/
+  .c-sign{display:none;margin-top:10px;width:100%;text-align:left;font-size:15px;letter-spacing:1px;}
+  .c-sign div{display:flex;align-items:flex-end;gap:6px;margin-top:9px;white-space:nowrap;}
+  .c-sign span.ln{flex:1;border-bottom:1.5px solid rgba(243,242,238,.8);height:18px;}
+  #coupon.has-sign .c-sign{display:block;}
+  #coupon.has-sign .c-qr{margin-top:12px;padding:6px;}
+  #coupon.has-sign .c-qr img{width:112px;height:112px;}
+  #coupon.has-sign .c-cta{margin-top:9px;font-size:19px;}
+  #coupon.has-sign .c-id{font-size:16px;}
+  #coupon.has-sign .c-valid-v{font-size:30px;}
+  #coupon.has-sign .c-valid-v.is-days{font-size:27px;}
   .c-where{margin-top:auto;font-size:14px;letter-spacing:.3px;opacity:.9;line-height:1.45;}
   .c-where b{display:block;font-size:18px;letter-spacing:2px;margin-bottom:2px;}
 </style>
@@ -336,8 +347,16 @@
         </select>
         <input id="in-expiry" type="date" value="2026-10-31" style="margin-top:8px">
         <div id="f-days" style="margin-top:8px;display:none;align-items:center;gap:8px">
-          領取後 <input id="in-days" type="number" min="1" step="1" value="7" style="width:80px"> 天內使用
+          <span id="days-pre">領取後</span> <input id="in-days" type="number" min="1" step="1" value="7" style="width:80px"> 天內使用
         </div>
+      </div>
+      <div class="field">
+        <label for="in-sign">發放日期／簽名欄（大量列印用）</label>
+        <select id="in-sign">
+          <option value="off">不加</option>
+          <option value="on">加上，發放時手寫</option>
+        </select>
+        <div class="tip">加上後券面右側會多「發放日期」「發放人簽名」兩條手寫線；期限選「幾天內」時會改成從發放日起算</div>
       </div>
       <div class="field">
         <label for="in-title">券標題</label>
@@ -418,6 +437,7 @@
           <div class="c-qr"><img id="out-qr" src="coupon-chunbalance-qr.png" alt="加LINE好友"></div>
           <div class="c-cta">加官方 LINE 預約</div>
           <div class="c-id" id="out-id">@chunbalance</div>
+          <div class="c-sign"><div>發放日期<span class="ln"></span></div><div>發放人簽名<span class="ln"></span></div></div>
           <div class="c-where"><b id="out-brandname">鈞衡舍 ChunBalance</b><span id="out-venue">板橋江子翠捷運站</span></div>
         </div>
       </div>
@@ -466,7 +486,7 @@
   };
 
   const $ = id => document.getElementById(id);
-  const FIELDS = ['in-brand','in-type','in-minutes','in-amount','in-expmode','in-expiry','in-days','in-title','in-tag','in-lead','in-how','in-extra','in-orig','in-photocap','in-venue','in-terms'];
+  const FIELDS = ['in-brand','in-type','in-minutes','in-amount','in-expmode','in-expiry','in-days','in-sign','in-title','in-tag','in-lead','in-how','in-extra','in-orig','in-photocap','in-venue','in-terms'];
 
   function fmtDate(v){
     const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || '');
@@ -506,8 +526,11 @@
     $('in-expiry').style.display = byDays ? 'none' : '';
     $('f-days').style.display = byDays ? 'flex' : 'none';
     $('out-expiry').classList.toggle('is-days', byDays);
+    const signOn = $('in-sign').value === 'on';
+    $('coupon').classList.toggle('has-sign', signOn);
+    $('days-pre').textContent = signOn ? '發放日起' : '領取後';
     $('out-expiry').textContent = byDays
-      ? `領取後 ${$('in-days').value || 7} 天內`
+      ? `${signOn ? '發放日起' : '領取後'} ${$('in-days').value || 7} 天內`
       : fmtDate($('in-expiry').value);
     $('out-title').textContent = $('in-title').value;
     $('out-lead').textContent = $('in-lead').value;
@@ -532,6 +555,7 @@
   });
   // 切換券種時，標題／說明／使用規則帶入該券種的建議文字
   $('in-expmode').addEventListener('change', render);
+  $('in-sign').addEventListener('change', render);
   $('in-type').addEventListener('change', () => {
     const t = TYPES[$('in-type').value];
     $('in-title').value = t.title;
