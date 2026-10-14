@@ -290,6 +290,33 @@
   #coupon.has-sign .c-valid-v.is-days{font-size:27px;}
   .c-where{margin-top:auto;font-size:14px;letter-spacing:.3px;opacity:.9;line-height:1.45;}
   .c-where b{display:block;font-size:18px;letter-spacing:2px;margin-bottom:2px;}
+
+  /* ---- 列印頁（A4 直式一頁 3 張，沿虛線裁切）---- */
+  #printSheet{display:none;}
+  @media print{
+    @page{size:A4 portrait;margin:10mm;}
+    body{background:#fff !important;padding:0 !important;}
+    body > *:not(#printSheet){display:none !important;}
+    #printSheet{display:block;}
+    .p-item{
+      position:relative;width:190mm;height:84.4mm;margin:0 auto 6mm;
+      outline:0.3mm dashed #999;break-inside:avoid;page-break-inside:avoid;
+      -webkit-print-color-adjust:exact;print-color-adjust:exact;
+    }
+    .p-item:nth-child(3n){break-after:page;page-break-after:always;margin-bottom:0;}
+    .p-item img{display:block;width:100%;height:100%;}
+    .p-item .p-no{
+      position:absolute;top:2.2mm;right:3mm;font-family:"Noto Sans TC",sans-serif;
+      font-size:9pt;font-weight:700;letter-spacing:.3mm;color:#F3F2EE;
+    }
+    .p-log{break-before:page;page-break-before:always;font-family:"Noto Sans TC",sans-serif;color:#222;}
+    .p-log h2{font-size:15pt;margin:0 0 2mm;}
+    .p-log p{font-size:9pt;margin:0 0 4mm;color:#555;}
+    .p-log table{width:100%;border-collapse:collapse;font-size:10pt;}
+    .p-log th,.p-log td{border:0.3mm solid #888;height:8.5mm;padding:0 2mm;text-align:left;}
+    .p-log th{background:#eee;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .p-log tr{break-inside:avoid;page-break-inside:avoid;}
+  }
 </style>
 </head>
 <body>
@@ -405,8 +432,21 @@
 請先加官方 LINE 預約時段，並於調整前出示本券</textarea>
       </div>
     </div>
+    <div class="fields" style="margin-top:14px">
+      <div class="field">
+        <label for="in-count">列印張數</label>
+        <input id="in-count" type="number" min="3" max="300" step="3" value="30">
+        <div class="tip">A4 直式一頁 3 張，印好沿虛線裁切</div>
+      </div>
+      <div class="field">
+        <label for="in-serial">起始編號（留空就不編號）</label>
+        <input id="in-serial" type="number" min="1" step="1" value="1">
+        <div class="tip">每張右上角印 No.0001、No.0002…，最後一頁附「發放登記表」可對號記錄</div>
+      </div>
+    </div>
     <div class="actions">
       <button class="btn-download" id="downloadBtn">⬇ 下載 PNG</button>
+      <button class="btn-ghost" id="printBtn" type="button">🖨 列印 A4（一頁 3 張）</button>
       <span class="status" id="statusText"></span>
     </div>
   </div>
@@ -644,6 +684,67 @@
       } else {
         statusText.textContent = '';
       }
+    }finally{
+      stage.style.transform = prev;
+      btn.disabled = false;
+    }
+  });
+
+  // ===== 列印 A4：券面轉成圖片，排成一頁 3 張，可加流水號與發放登記表 =====
+  $('printBtn').addEventListener('click', async () => {
+    const statusText = $('statusText');
+    const btn = $('printBtn');
+    const count = Math.max(1, Math.min(300, parseInt($('in-count').value, 10) || 0));
+    const start = parseInt($('in-serial').value, 10);
+    const numbered = start > 0;
+    btn.disabled = true;
+    statusText.textContent = '準備列印中...';
+    const stage = $('stage');
+    const prev = stage.style.transform;
+    stage.style.transform = '';
+    try{
+      const canvas = await html2canvas($('coupon'), { scale: 2, backgroundColor: '#F3F2EE', useCORS: true });
+      const src = canvas.toDataURL('image/jpeg', 0.92);
+      const no = i => 'No.' + String(start + i).padStart(4, '0');
+      let sheet = $('printSheet');
+      if (!sheet){ sheet = document.createElement('div'); sheet.id = 'printSheet'; document.body.appendChild(sheet); }
+      sheet.innerHTML = '';
+      for (let i = 0; i < count; i++){
+        const item = document.createElement('div');
+        item.className = 'p-item';
+        const img = document.createElement('img');
+        img.src = src;
+        item.appendChild(img);
+        if (numbered){
+          const n = document.createElement('div');
+          n.className = 'p-no';
+          n.textContent = no(i);
+          item.appendChild(n);
+        }
+        sheet.appendChild(item);
+      }
+      if (numbered){
+        const log = document.createElement('div');
+        log.className = 'p-log';
+        const title = $('in-title').value || '優惠券';
+        log.innerHTML = '<h2></h2><p>每發出一張就登記一列；客人來使用時，對照編號與發放日期確認是否在期限內，並在「使用日期」欄打勾。</p>'
+          + '<table><thead><tr><th style="width:17%">編號</th><th style="width:15%">發放日期</th><th style="width:20%">領取人</th><th style="width:18%">電話／LINE</th><th style="width:15%">發放人</th><th>使用日期</th></tr></thead><tbody></tbody></table>';
+        log.querySelector('h2').textContent = `發放登記表：${title}（${no(0)} ～ ${no(count - 1)}）`;
+        const tb = log.querySelector('tbody');
+        for (let i = 0; i < count; i++){
+          const tr = document.createElement('tr');
+          tr.innerHTML = '<td></td><td></td><td></td><td></td><td></td><td></td>';
+          tr.firstChild.textContent = no(i);
+          tb.appendChild(tr);
+        }
+        sheet.appendChild(log);
+      }
+      await new Promise(r => setTimeout(r, 300));   // 等圖片排好再叫出列印
+      statusText.textContent = '';
+      window.print();
+    }catch(e){
+      statusText.textContent = '發生錯誤：' + e.message;
+      console.error(e);
     }finally{
       stage.style.transform = prev;
       btn.disabled = false;
