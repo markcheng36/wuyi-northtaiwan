@@ -441,7 +441,15 @@
       <div class="field">
         <label for="in-serial">起始編號（留空就不編號）</label>
         <input id="in-serial" type="number" min="1" step="1" value="1">
-        <div class="tip">每張右上角印 No.0001、No.0002…，最後一頁附「發放登記表」可對號記錄</div>
+        <div class="tip">每張右上角印 No.0001、No.0002…</div>
+      </div>
+      <div class="field">
+        <label for="in-log">發放登記表</label>
+        <select id="in-log">
+          <option value="off">不附</option>
+          <option value="on">附在最後一頁</option>
+        </select>
+        <div class="tip">附上後最後一頁會多一張表，可依編號登記領取人、發放與使用日期（需有起始編號）</div>
       </div>
     </div>
     <div class="actions">
@@ -690,7 +698,7 @@
     }
   });
 
-  // ===== 列印 A4：券面轉成圖片，排成一頁 3 張，可加流水號與發放登記表 =====
+  // ===== 列印 A4：券面轉成圖片，排成一頁 3 張，可加流水號、可選擇附發放登記表 =====
   $('printBtn').addEventListener('click', async () => {
     const statusText = $('statusText');
     const btn = $('printBtn');
@@ -723,7 +731,7 @@
         }
         sheet.appendChild(item);
       }
-      if (numbered){
+      if (numbered && $('in-log').value === 'on'){
         const log = document.createElement('div');
         log.className = 'p-log';
         const title = $('in-title').value || '優惠券';
