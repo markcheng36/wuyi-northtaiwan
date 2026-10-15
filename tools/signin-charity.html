@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>義整簽到簿（老師／來調整的人）· 武醫工具站</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{ --brown:#997B57; --brown-dark:#6E5A3E; --ink:#151514; --blue:#1f3a8a; --red:#c0392b; --line:#7d7566; }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:"Noto Sans TC","PingFang TC",sans-serif;background:#e9e4d8;color:var(--ink);padding:24px 16px 60px;}
+  .panel{max-width:794px;margin:0 auto 24px;background:#fff;border-radius:16px;box-shadow:0 4px 18px rgba(0,0,0,.08);padding:20px 24px;}
+  .panel h1{font-size:18px;margin:0 0 4px;}
+  .panel p.hint{margin:0 0 14px;font-size:13px;color:#8a8378;line-height:1.6;}
+  .fields{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin-bottom:14px;}
+  .fields label{font-size:12px;font-weight:700;color:var(--brown-dark);display:block;}
+  .fields input{width:100%;margin-top:4px;padding:8px 10px;border:1.5px solid #e2d9c4;border-radius:8px;font-size:14px;font-family:inherit;}
+  .fields .full{grid-column:1/-1;}
+  .actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+  .btn{background:var(--brown);color:#fff;border:none;padding:12px 28px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .status{font-size:13px;color:#8a8378;}
+
+  .sheet{width:210mm;height:297mm;margin:0 auto 24px;background:#fff;position:relative;overflow:hidden;
+    padding:13mm 14mm 10mm;box-shadow:0 4px 18px rgba(0,0,0,.1);display:flex;flex-direction:column;}
+  .wm{position:absolute;left:50%;top:54%;width:150mm;transform:translate(-50%,-50%);opacity:.13;pointer-events:none;z-index:0;}
+  .sheet > *:not(.wm){position:relative;z-index:1;}
+  .org{text-align:center;font-size:11pt;color:var(--brown-dark);font-weight:700;letter-spacing:1px;}
+  .title{text-align:center;font-size:19pt;font-weight:900;color:var(--blue);margin:2mm 0 0;line-height:1.35;}
+  .subtitle{text-align:center;font-size:15pt;font-weight:900;color:var(--red);margin:1mm 0 3mm;letter-spacing:3px;}
+  .meta{font-size:10.5pt;line-height:1.8;margin-bottom:3mm;}
+  .meta b{color:var(--brown-dark);}
+  table{width:100%;border-collapse:collapse;flex:1;table-layout:fixed;}
+  th{background:rgba(153,123,87,.88);color:#fff;font-size:11pt;padding:2.2mm 1mm;border:1px solid var(--line);}
+  td{border:1px solid var(--line);height:0;text-align:center;font-size:12pt;padding:0;}
+  td.no{font-size:11pt;color:var(--brown-dark);font-weight:700;}
+  .foot{margin-top:3mm;font-size:9.5pt;color:#6b6558;display:flex;justify-content:space-between;gap:8px;}
+  .tbl-wrap{flex:1;display:flex;flex-direction:column;}
+
+  @media print{
+    @page{size:A4;margin:0;}
+    body{background:#fff;padding:0;}
+    .panel{display:none;}
+    .sheet{margin:0;box-shadow:none;page-break-after:always;break-after:page;}
+    .sheet:last-child{page-break-after:auto;break-after:auto;}
+    *{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  }
+</style>
+</head>
+<body>
+
+<div class="panel">
+  <h1>義整簽到簿（出席老師／來調整的人）</h1>
+  <p class="hint">參考武醫總會義整現場的做法，分成兩張：①出席老師簽到簿 ②來調整的人簽到簿（服務對象）。改下方文字，兩張會同步更新；按「列印 / 存成 PDF」選 A4、邊界「無」、勾選「背景圖形」。</p>
+  <div class="fields">
+    <div class="full"><label>活動名稱<input id="f-title" value="115年度 志工守護日 武醫義整活動"></label></div>
+    <div><label>活動日期<input id="f-date" value="115年　　月　　日　　時　　分 至　　時　　分"></label></div>
+    <div><label>活動地點<input id="f-place" value="板橋・結構X獵人"></label></div>
+    <div class="full"><label>主辦單位<input id="f-org" value="中華武醫國際交流發展總會・北區支分會　合作夥伴：結構X獵人"></label></div>
+  </div>
+  <div class="actions">
+    <button class="btn" id="downloadBtn" type="button">🖨 列印 / 存成 PDF</button>
+    <span class="status" id="statusText"></span>
+  </div>
+</div>
+
+<!-- ① 出席老師 -->
+<div class="sheet">
+  <img class="wm" src="../images/wuyi-logo.png" alt="">
+  <div class="org o-org"></div>
+  <div class="title o-title"></div>
+  <div class="subtitle">出席老師簽到簿</div>
+  <div class="meta"><div><b>活動日期：</b><span class="o-date"></span></div><div><b>活動地點：</b><span class="o-place"></span></div></div>
+  <table>
+    <colgroup><col style="width:11%"><col style="width:26%"><col style="width:26%"><col style="width:37%"></colgroup>
+    <thead><tr><th>序號</th><th>老師姓名</th><th>所屬單位／專長</th><th>簽名</th></tr></thead>
+    <tbody id="t-body"></tbody>
+  </table>
+  <div class="foot"><span>感謝老師無償付出，辛苦了！</span><span>先照顧好自己，才有力氣照顧別人</span></div>
+</div>
+
+<!-- ② 來調整的人 -->
+<div class="sheet">
+  <img class="wm" src="../images/wuyi-logo.png" alt="">
+  <div class="org o-org"></div>
+  <div class="title o-title"></div>
+  <div class="subtitle">來調整的人　簽到簿</div>
+  <div class="meta"><div><b>活動日期：</b><span class="o-date"></span></div><div><b>活動地點：</b><span class="o-place"></span></div></div>
+  <table>
+    <colgroup><col style="width:9%"><col style="width:20%"><col style="width:22%"><col style="width:26%"><col style="width:23%"></colgroup>
+    <thead><tr><th>編號</th><th>姓名</th><th>聯絡電話</th><th>想調整的部位</th><th>簽到</th></tr></thead>
+    <tbody id="c-body"></tbody>
+  </table>
+  <div class="foot"><span>個人資料僅供活動聯繫與服務紀錄使用，不作他用。</span><span>現場不推銷任何產品</span></div>
+</div>
+
+<script>
+  function rows(id, n, cols){
+    var h = '';
+    for (var i = 1; i <= n; i++){
+      h += '<tr><td class="no">' + i + '</td>' + new Array(cols).join('<td></td>') + '</tr>';
+    }
+    document.getElementById(id).innerHTML = h;
+  }
+  rows('t-body', 15, 4);
+  rows('c-body', 22, 5);
+
+  var map = [['f-title','o-title'],['f-date','o-date'],['f-place','o-place'],['f-org','o-org']];
+  function sync(){
+    map.forEach(function(m){
+      var v = document.getElementById(m[0]).value;
+      document.querySelectorAll('.' + m[1]).forEach(function(el){ el.textContent = v; });
+    });
+  }
+  map.forEach(function(m){ document.getElementById(m[0]).addEventListener('input', sync); });
+  sync();
+  document.getElementById('downloadBtn').addEventListener('click', function(){ window.print(); });
+</script>
+<script src="defaults.js"></script>
+</body>
+</html>
