@@ -291,6 +291,12 @@
   .c-where{margin-top:auto;font-size:14px;letter-spacing:.3px;opacity:.9;line-height:1.45;}
   .c-where b{display:block;font-size:18px;letter-spacing:2px;margin-bottom:2px;}
 
+  #saveSheet{display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:16px;}
+  #saveSheet .ss-box{background:#fff;border-radius:12px;padding:16px;max-width:720px;width:100%;text-align:center;}
+  #saveSheet img{width:100%;height:auto;display:block;border-radius:6px;-webkit-touch-callout:default;}
+  #saveSheet .ss-tip{font-size:14px;color:#555;margin:10px 0;}
+  #saveSheet .ss-btns{display:flex;gap:10px;justify-content:center;}
+
   /* ---- 列印頁（A4 直式一頁 3 張，沿虛線裁切）---- */
   #printSheet{display:none;}
   @media print{
@@ -674,9 +680,10 @@
       const file = new File([blob], filename, { type: 'image/png' });
 
       // iPad/iPhone Safari 對 <a download> 支援不穩定，改用原生分享面板讓使用者選「儲存影像」
-      if (window.IS_IOS && navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: '優惠券' });
-        statusText.textContent = '請在分享面板選「儲存影像」完成下載';
+      if (window.IS_IOS) {
+        // 產圖要等一下，Safari 會判定「不是使用者點的」而擋掉分享，所以改成跳出圖片，再點一次按鈕存
+        showSaveSheet(file, blob);
+        statusText.textContent = '';
       } else {
         const link = document.createElement('a');
         link.download = filename;
@@ -697,6 +704,34 @@
       btn.disabled = false;
     }
   });
+
+  // ===== iPad／iPhone：產好的圖片跳出來，點「儲存圖片」或長按圖片存到相簿 =====
+  function showSaveSheet(file, blob){
+    let sheet = $('saveSheet');
+    if (!sheet){
+      sheet = document.createElement('div');
+      sheet.id = 'saveSheet';
+      sheet.innerHTML = '<div class="ss-box"><img alt="優惠券"><div class="ss-tip">點下方按鈕選「儲存影像」，或長按圖片選「加入照片」</div>'
+        + '<div class="ss-btns"><button type="button" class="btn-download" id="ssSave">⬇ 儲存圖片</button><button type="button" class="btn-ghost" id="ssClose">關閉</button></div></div>';
+      document.body.appendChild(sheet);
+      $('ssClose').addEventListener('click', () => { sheet.style.display = 'none'; });
+      $('ssSave').addEventListener('click', async () => {
+        const f = sheet._file;
+        try{
+          if (navigator.canShare && navigator.canShare({ files: [f] })) await navigator.share({ files: [f], title: '優惠券' });
+          else window.open(sheet.querySelector('img').src, '_blank');
+        }catch(e){
+          if (e.name !== 'AbortError') sheet.querySelector('.ss-tip').textContent = '無法開啟分享，請長按圖片選「加入照片」';
+        }
+      });
+    }
+    const img = sheet.querySelector('img');
+    if (img.src) URL.revokeObjectURL(img.src);
+    img.src = URL.createObjectURL(blob);
+    sheet._file = file;
+    sheet.querySelector('.ss-tip').textContent = '點下方按鈕選「儲存影像」，或長按圖片選「加入照片」';
+    sheet.style.display = 'flex';
+  }
 
   // ===== 列印 A4：券面轉成圖片，排成一頁 3 張，可加流水號、可選擇附發放登記表 =====
   $('printBtn').addEventListener('click', async () => {
