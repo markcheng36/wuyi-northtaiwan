@@ -587,7 +587,8 @@
     $('f-extra').style.display = type === 'combo' ? '' : 'none';
     $('out-nt').style.display = isTrial ? 'none' : '';
     $('out-nt').textContent = isRaffle ? 'No.' : 'NT.';
-    $('out-fixed').style.display = isTrial ? '' : 'none';   // 體驗券固定文案
+    // 「限不指定教練」只給結構X獵人（團隊）的體驗券；鈞衡舍是馬克本人，不需要
+    $('out-fixed').style.display = (isTrial && $('in-brand').value === 'strxhunter') ? '' : 'none';
     $('out-unit').style.display = isTrial ? '' : 'none';
     $('out-amount').textContent = isRaffle ? serialText(0)
       : isTrial ? ($('in-minutes').value || '0') : amount;
