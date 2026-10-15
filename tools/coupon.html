@@ -315,6 +315,7 @@
       position:absolute;top:2.2mm;right:3mm;font-family:"Noto Sans TC",sans-serif;
       font-size:9pt;font-weight:700;letter-spacing:.3mm;color:#F3F2EE;
     }
+    .p-item .p-big{position:absolute;white-space:nowrap;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
     .p-log{break-before:page;page-break-before:always;font-family:"Noto Sans TC",sans-serif;color:#222;}
     .p-log h2{font-size:15pt;margin:0 0 2mm;}
     .p-log p{font-size:9pt;margin:0 0 4mm;color:#555;}
@@ -361,6 +362,7 @@
           <option value="discount">折價券（憑券折抵金額）</option>
           <option value="trial">體驗券（贈送體驗課）</option>
           <option value="combo">體驗＋折價券（送體驗＋購課折抵）</option>
+          <option value="raffle">抽獎券（每張一個號碼）</option>
         </select>
         <div class="tip">切換後標題、說明、使用規則會帶入該券種的建議文字，可再自行修改</div>
       </div>
@@ -373,7 +375,7 @@
         <input id="in-amount" type="number" min="0" step="50" value="400">
       </div>
       <div class="field">
-        <label for="in-expmode">有效期限</label>
+        <label for="in-expmode" id="lbl-expmode">有效期限</label>
         <select id="in-expmode">
           <option value="date">固定日期</option>
           <option value="days">領取後幾天內使用</option>
@@ -486,7 +488,7 @@
         </div>
         <div class="c-photo"><img id="out-photo" alt="照片"><div class="c-photo-cap" id="out-photocap"></div></div>
         <div class="c-stub">
-          <div class="c-valid-k">有效期限</div>
+          <div class="c-valid-k" id="out-expiry-k">有效期限</div>
           <div class="c-valid-v" id="out-expiry">2026.10.31</div>
           <div class="c-qr"><img id="out-qr" src="coupon-chunbalance-qr.png" alt="加LINE好友"></div>
           <div class="c-cta">加官方 LINE 預約</div>
@@ -531,6 +533,12 @@
       how:   '贈送結構調整體驗課一堂',
       terms: '每張限用一次，限本人使用，不得兌換現金\n限首次體驗者使用\n請先加官方 LINE 預約時段，並於體驗前出示本券'
     },
+    raffle: {
+      title: '專講抽獎券',
+      lead:  '抽獎號碼',
+      how:   '請保留本券，抽獎時對號領獎',
+      terms: '每人限領一張，請保留到抽獎結束\n中獎者請出示本券領獎\n本券不得兌換現金'
+    },
     combo: {
       title: '身體平衡體驗券',
       lead:  '免費體驗',
@@ -547,6 +555,12 @@
     return m ? `${m[1]}.${m[2]}.${m[3]}` : (v || '');
   }
 
+  // 抽獎券號碼：起始編號＋第幾張，補成 4 位數（0001），跟抽獎頁的號碼一致
+  function serialText(i){
+    const start = parseInt($('in-serial').value, 10) || 1;
+    return String(start + i).padStart(4, '0');
+  }
+
   function render(){
     const b = BRANDS[$('in-brand').value] || BRANDS.chunbalance;
     $('out-logo').src = b.logo;
@@ -556,7 +570,9 @@
     $('out-venue').textContent = $('in-venue').value;
     const type = $('in-type').value;
     const amount = $('in-amount').value || '0';
-    const isTrial = type !== 'discount';
+    const isRaffle = type === 'raffle';
+    const isTrial = type === 'trial' || type === 'combo';
+    $('coupon').classList.toggle('is-raffle', isRaffle);
     $('coupon').classList.toggle('is-combo', type === 'combo');
     const photoSrc = $('out-photo').getAttribute('src') || '';
     $('coupon').classList.toggle('has-photo', photoSrc.indexOf('data:') === 0);
@@ -567,16 +583,22 @@
     $('out-photocap').textContent = cap;
     $('out-photocap').style.display = cap ? '' : 'none';
     $('f-minutes').style.display = isTrial ? '' : 'none';
-    $('f-amount').style.display = type === 'trial' ? 'none' : '';
+    $('f-amount').style.display = (type === 'trial' || isRaffle) ? 'none' : '';
     $('f-extra').style.display = type === 'combo' ? '' : 'none';
     $('out-nt').style.display = isTrial ? 'none' : '';
+    $('out-nt').textContent = isRaffle ? 'No.' : 'NT.';
     $('out-fixed').style.display = isTrial ? '' : 'none';   // 體驗券固定文案
     $('out-unit').style.display = isTrial ? '' : 'none';
-    $('out-amount').textContent = isTrial ? ($('in-minutes').value || '0') : amount;
+    $('out-amount').textContent = isRaffle ? serialText(0)
+      : isTrial ? ($('in-minutes').value || '0') : amount;
     const extra = $('in-extra').value.replace(/\{金額\}/g, amount).trim();
     $('out-extra').textContent = extra;
     $('out-extra').style.display = (type === 'combo' && extra) ? '' : 'none';
-    const byDays = $('in-expmode').value === 'days';
+    // 抽獎券：不需要有效期限，改成「活動日期」，只用固定日期
+    const byDays = !isRaffle && $('in-expmode').value === 'days';
+    $('in-expmode').style.display = isRaffle ? 'none' : '';
+    $('lbl-expmode').textContent = isRaffle ? '活動日期' : '有效期限';
+    $('out-expiry-k').textContent = isRaffle ? '活動日期' : '有效期限';
     $('in-expiry').style.display = byDays ? 'none' : '';
     $('f-days').style.display = byDays ? 'flex' : 'none';
     $('out-expiry').classList.toggle('is-days', byDays);
@@ -619,6 +641,7 @@
     render();
   });
   FIELDS.filter(id => id !== 'in-brand' && id !== 'in-type').forEach(id => $(id).addEventListener('input', render));
+  $('in-serial').addEventListener('input', render);
 
   // ===== 照片上傳：先縮到最長邊 900px 再放上券面（存預設時也不會太大）=====
   $('in-photo').addEventListener('change', e => {
@@ -668,12 +691,14 @@
     try{
       const canvas = await html2canvas($('coupon'), { scale: 3, backgroundColor: '#F3F2EE', useCORS: true });
       const b = BRANDS[$('in-brand').value];
-      const dateVal = $('in-expmode').value === 'days'
+      const dateVal = $('in-type').value === 'raffle' ? 'No' + serialText(0)
+        : $('in-expmode').value === 'days'
         ? `領取後${$('in-days').value || 7}天`
         : ($('in-expiry').value.replace(/-/g,'') || 'coupon');
       const type = $('in-type').value;
       const what = type === 'discount' ? `優惠券_NT${$('in-amount').value}`
                  : type === 'trial'    ? `體驗券_${$('in-minutes').value}分`
+                 : type === 'raffle'   ? '抽獎券'
                  : `體驗券_${$('in-minutes').value}分+折NT${$('in-amount').value}`;
       const filename = `${what}_${b.id.replace('@','')}_${dateVal}.png`;
       const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
@@ -746,16 +771,28 @@
     const btn = $('printBtn');
     const count = Math.max(1, Math.min(300, parseInt($('in-count').value, 10) || 0));
     const start = parseInt($('in-serial').value, 10);
-    const numbered = start > 0;
+    const raffle = $('in-type').value === 'raffle';
+    const numbered = raffle || start > 0;
     btn.disabled = true;
     statusText.textContent = '準備列印中...';
     const stage = $('stage');
     const prev = stage.style.transform;
     stage.style.transform = '';
+    // 抽獎券：大號碼每張不同，先量好位置、截圖時把號碼藏起來，列印時再一張張疊上去
+    const numEl = $('out-amount');
+    let big = null;
+    if (raffle){
+      const c = $('coupon').getBoundingClientRect(), r = numEl.getBoundingClientRect(), cs = getComputedStyle(numEl);
+      const mm = 190 / c.width;
+      big = { left: (r.left - c.left) * mm, top: (r.top - c.top) * mm, h: r.height * mm, size: parseFloat(cs.fontSize) * mm,
+              font: cs.fontFamily, weight: cs.fontWeight, color: cs.color, ls: parseFloat(cs.letterSpacing || 0) * mm || 0 };
+      numEl.style.visibility = 'hidden';
+    }
     try{
       const canvas = await html2canvas($('coupon'), { scale: 2, backgroundColor: '#F3F2EE', useCORS: true });
+      numEl.style.visibility = '';
       const src = canvas.toDataURL('image/jpeg', 0.92);
-      const no = i => 'No.' + String(start + i).padStart(4, '0');
+      const no = i => 'No.' + (raffle ? serialText(i) : String(start + i).padStart(4, '0'));
       let sheet = $('printSheet');
       if (!sheet){ sheet = document.createElement('div'); sheet.id = 'printSheet'; document.body.appendChild(sheet); }
       sheet.innerHTML = '';
@@ -765,7 +802,14 @@
         const img = document.createElement('img');
         img.src = src;
         item.appendChild(img);
-        if (numbered){
+        if (raffle){
+          const n = document.createElement('div');
+          n.className = 'p-big';
+          n.textContent = serialText(i);
+          Object.assign(n.style, { left: big.left + 'mm', top: big.top + 'mm', height: big.h + 'mm', lineHeight: big.h + 'mm',
+            fontSize: big.size + 'mm', fontFamily: big.font, fontWeight: big.weight, color: big.color, letterSpacing: big.ls + 'mm' });
+          item.appendChild(n);
+        } else if (numbered){
           const n = document.createElement('div');
           n.className = 'p-no';
           n.textContent = no(i);
@@ -796,6 +840,7 @@
       statusText.textContent = '發生錯誤：' + e.message;
       console.error(e);
     }finally{
+      numEl.style.visibility = '';
       stage.style.transform = prev;
       btn.disabled = false;
     }
