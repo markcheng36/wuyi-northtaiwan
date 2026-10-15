@@ -681,9 +681,16 @@
 
       // iPad/iPhone Safari 對 <a download> 支援不穩定，改用原生分享面板讓使用者選「儲存影像」
       if (window.IS_IOS) {
-        // 產圖要等一下，Safari 會判定「不是使用者點的」而擋掉分享，所以改成跳出圖片，再點一次按鈕存
-        showSaveSheet(file, blob);
-        statusText.textContent = '';
+        // 先直接叫出原生分享面板；若 Safari 擋掉（產圖太久，判定不是使用者點的），才跳出圖片讓你再點一次存
+        try{
+          if (!(navigator.canShare && navigator.canShare({ files: [file] }))) throw new Error('no-share');
+          await navigator.share({ files: [file], title: '優惠券' });
+          statusText.textContent = '請在分享面板選「儲存影像」完成下載';
+        }catch(err){
+          if (err.name === 'AbortError') throw err;
+          showSaveSheet(file, blob);
+          statusText.textContent = '';
+        }
       } else {
         const link = document.createElement('a');
         link.download = filename;
