@@ -23,7 +23,8 @@
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px;
           padding: 14px 16px; margin-bottom: 14px; }
   .muted { color: var(--muted); font-size: 14px; }
-  input, button { font: inherit; color: var(--text); }
+  input, button, select { font: inherit; color: var(--text); }
+  select { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; min-width: 160px; }
   input { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; }
   input[type=number] { width: 90px; text-align: right; }
   input.wide { width: 100%; }
@@ -73,9 +74,8 @@
     <details id="setupBox" open>
       <summary>設定（抽之前先確認）</summary>
       <div class="row"><label>場次</label>
-        <input id="session" list="sessionList" style="width:110px" placeholder="例如 1021">
-        <datalist id="sessionList"></datalist>
-        <span class="muted">預設是今天的日期</span></div>
+        <select id="session"></select>
+        <span class="muted">試算表的場次＋今天的日期，臨時加開就選今天</span></div>
       <p class="muted" id="sheetStatus">讀取試算表中…</p>
       <div class="row"><label>券號從</label><input type="number" id="from" min="1" value="1">
         <span>到</span><input type="number" id="to" min="1" value="30"></div>
@@ -161,7 +161,6 @@ function randInt(n) {
 let rolling = false;
 function render() {
   const s = sess();
-  if (document.activeElement !== $('session')) $('session').value = store.current;
   $('from').value = s.from; $('to').value = s.to;
   $('skip').value = s.skip; $('prizes').value = s.prizes;
   const p = pool();
@@ -172,8 +171,13 @@ function render() {
     '<li><b>No.' + pad(w.n) + '</b>　' + String(w.prize).replace(/[<>&]/g, '') + '</li>').join('');
   $('noWin').hidden = s.winners.length > 0;
   $('undoBtn').hidden = !s.winners.length;
-  $('sessionList').innerHTML = [...new Set([...Object.keys(sheet), ...Object.keys(store.sessions)])]
-    .filter(Boolean).sort().map(k => '<option value="' + k + '">').join('');
+  // 下拉選單：今天＋試算表的每個場次（N+1）；目前選的場次不在裡面也會保留
+  const t = today();
+  const keys = [t, ...[...new Set([...Object.keys(sheet), store.current])].filter(k => k && k !== t).sort()];
+  const md = k => k.slice(0, 2) + '/' + k.slice(2);
+  $('session').innerHTML = keys.map(k => '<option value="' + k + '">' + md(k) +
+    (k === t ? '（今天）' : sheet[k] ? '' : '（手動）') + '</option>').join('');
+  $('session').value = store.current;
 }
 
 $('goBtn').onclick = () => {
@@ -203,7 +207,7 @@ $('goBtn').onclick = () => {
   save(); render();
 }));
 $('session').addEventListener('change', () => {
-  const k = normKey($('session').value);
+  const k = $('session').value;
   if (!k) return;
   store.current = k; $('num').textContent = '----'; $('num').classList.remove('win');
   save(); render();
