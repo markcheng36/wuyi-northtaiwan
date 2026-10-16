@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>簽到表 · 大健康體驗會／武醫義整</title>
+<title>大健康體驗會簽到表 · 武醫工具站</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -83,28 +83,6 @@
     margin:0 0 16px;
     font-size:13px;
     color:#8a8378;
-  }
-  .type-toggle{
-    display:flex;
-    gap:10px;
-    margin-bottom:16px;
-    flex-wrap:wrap;
-  }
-  .type-btn{
-    background:#f4f0e6;
-    color:var(--brown-dark);
-    border:1.5px solid #e2d9c4;
-    padding:10px 22px;
-    border-radius:999px;
-    font-size:14px;
-    font-weight:700;
-    font-family:inherit;
-    cursor:pointer;
-  }
-  .type-btn.active{
-    background:var(--brown);
-    border-color:var(--brown);
-    color:#fff;
   }
   .actions{
     display:flex;
@@ -279,12 +257,8 @@
   </div>
 
   <div class="panel">
-    <h1>現場簽到表</h1>
-    <p class="hint">先選擇這場是「大健康體驗會」還是「武醫義整」，上方文案會自動帶出。姓名直接在下方欄位打字，序號會自動出現；其餘欄位留白，現場再填。下方另有獨立的「內部人員簽到」表格，供教練/志工簽到留存紀錄。完成後可下載成圖片存檔。</p>
-    <div class="type-toggle">
-      <button class="type-btn active" id="btn-experience" type="button">大健康體驗會</button>
-      <button class="type-btn" id="btn-charity" type="button">武醫義整</button>
-    </div>
+    <h1>大健康體驗會　現場簽到表</h1>
+    <p class="hint">大健康體驗會（申請制）專用；武醫義整請改用<a href="signin.html">義整簽到簿</a>。姓名直接在下方欄位打字，序號會自動出現；其餘欄位留白，現場再填。下方另有獨立的「內部人員簽到」表格，供教練/志工簽到留存紀錄。完成後可下載成圖片存檔。</p>
     <div class="actions">
       <button class="btn-download" id="downloadBtn">⬇ 下載 PNG</button>
       <span class="status" id="statusText"></span>
@@ -378,12 +352,6 @@
       eyebrow: '限額・大健康體驗會',
       headline: '痠・緊・累，來被身體「調整」一次',
       desc: '現場提供足部檢測與結構平衡調理體驗，不推銷，帶您常穿的鞋子來體驗最有感。一場，從腳底重新認識你的身體。'
-    },
-    charity: {
-      badge: '現場簽到表',
-      eyebrow: '武醫義整・無償提供',
-      headline: '先照顧好自己，才有力氣照顧別人',
-      desc: '我們是一群夥伴，不定期、無償走進社區、運動現場與公益團體，分享讓身體回到平衡的心法。現場提供徒手結構調整，不推銷任何產品。'
     }
   };
 
@@ -393,12 +361,9 @@
     document.getElementById('out-eyebrow').textContent = t.eyebrow;
     document.getElementById('out-headline').textContent = t.headline;
     document.getElementById('out-desc').textContent = t.desc;
-    document.getElementById('btn-experience').classList.toggle('active', key === 'experience');
-    document.getElementById('btn-charity').classList.toggle('active', key === 'charity');
   }
 
-  document.getElementById('btn-experience').addEventListener('click', () => applyType('experience'));
-  document.getElementById('btn-charity').addEventListener('click', () => applyType('charity'));
+  applyType('experience');
 
   document.getElementById('downloadBtn').addEventListener('click', async ()=>{
     const statusText = document.getElementById('statusText');
@@ -437,12 +402,6 @@
   });
 </script>
 
-<script>
-  window.WUYI_DEFAULTS_EXTRA = {
-    get: function(){ return document.getElementById('btn-charity').classList.contains('active') ? 'charity' : 'experience'; },
-    set: function(k){ if (TYPES[k]) applyType(k); }
-  };
-</script>
 <script src="defaults.js"></script>
 
 </body>
