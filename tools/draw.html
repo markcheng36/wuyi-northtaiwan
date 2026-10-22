@@ -38,7 +38,12 @@
   button.danger { background: var(--hot); }
   button:disabled { opacity: .45; cursor: default; }
   .stage { text-align: center; background: var(--accent-soft); border-color: var(--accent); padding: 24px 16px; }
-  .prize { font-size: 22px; font-weight: 700; color: var(--accent); min-height: 33px; }
+  .sess { font-size: 15px; color: var(--muted); font-weight: 600; min-height: 22px; }
+  .prize-cap { font-size: 15px; color: var(--muted); margin-top: 6px; }
+  .prize { font-size: min(9vw, 44px); font-weight: 800; color: var(--accent); line-height: 1.25;
+           display: inline-block; margin-top: 4px; padding: 6px 22px; border: 2px solid var(--accent);
+           border-radius: 999px; background: var(--card); word-break: break-all; }
+  .prize:empty, .prize-cap:empty { display: none; }
   .num { font-size: min(30vw, 200px); font-weight: 800; letter-spacing: 2px; line-height: 1.1;
          font-variant-numeric: tabular-nums; margin: 8px 0; }
   .num.name { font-size: min(16vw, 120px); letter-spacing: 0; word-break: break-all; }
@@ -61,7 +66,9 @@
   <h1>專講抽獎</h1>
 
   <div class="card stage">
-    <div class="prize" id="prizeLabel"></div>
+    <div class="sess" id="sessLabel"></div>
+    <div class="prize-cap" id="prizeCap"></div>
+    <div><div class="prize" id="prizeLabel"></div></div>
     <div class="num" id="num">----</div>
     <button class="go" id="goBtn">抽一個</button>
     <div class="muted left" id="leftInfo"></div>
@@ -197,7 +204,9 @@ function render() {
   document.querySelectorAll('input[name=mode]').forEach(el => el.checked = el.value === (s.mode || 'ticket'));
   $('num').classList.toggle('name', byName());
   const p = pool();
-  $('prizeLabel').textContent = (store.current ? store.current + ' 場　' : '') + (p.length ? '這次抽：' + nextPrize() : '');
+  $('sessLabel').textContent = store.current ? store.current.slice(0, 2) + '/' + store.current.slice(2) + ' 場' : '';
+  $('prizeCap').textContent = p.length ? '這次抽' : '';
+  $('prizeLabel').textContent = p.length ? nextPrize() : '';
   $('leftInfo').textContent = '還有 ' + p.length + (byName() ? ' 個人' : ' 個號碼') + '可以抽';
   $('goBtn').disabled = !p.length || rolling;
   $('winners').innerHTML = s.winners.map(w =>
