@@ -47,6 +47,7 @@
   .num { font-size: min(30vw, 200px); font-weight: 800; letter-spacing: 2px; line-height: 1.1;
          font-variant-numeric: tabular-nums; margin: 8px 0; }
   .num.name { font-size: min(16vw, 120px); letter-spacing: 0; word-break: break-all; }
+  .num.idle { color: var(--accent); opacity: .3; letter-spacing: 0; }
   .num.win { color: var(--hot); animation: pop .5s ease-out; }
   @keyframes pop { 0% { transform: scale(.7); } 70% { transform: scale(1.08); } 100% { transform: scale(1); } }
   .go { font-size: 22px; padding: 14px 40px; }
@@ -69,7 +70,7 @@
     <div class="sess" id="sessLabel"></div>
     <div class="prize-cap" id="prizeCap"></div>
     <div><div class="prize" id="prizeLabel"></div></div>
-    <div class="num" id="num">----</div>
+    <div class="num idle" id="num">？</div>
     <button class="go" id="goBtn">抽一個</button>
     <div class="muted left" id="leftInfo"></div>
   </div>
@@ -193,6 +194,8 @@ function randInt(n) {
 }
 
 const esc = v => String(v).replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' })[c]);
+// 還沒抽時顯示淡淡的「？」，不要一排粗橫線
+function idleNum() { const el = $('num'); el.textContent = '？'; el.classList.remove('win'); el.classList.add('idle'); }
 let rolling = false, justWon = null;
 function render() {
   const s = sess();
@@ -227,7 +230,7 @@ $('goBtn').onclick = () => {
   const p = pool();
   if (!p.length || rolling) return;
   rolling = true; justWon = null; render();
-  const el = $('num'); el.classList.remove('win');
+  const el = $('num'); el.classList.remove('win', 'idle');
   const pick = p[randInt(p.length)];
   const prize = nextPrize();
   const s = sess();
@@ -254,7 +257,7 @@ $('names').addEventListener('input', () => { sess().names = $('names').value; sa
 document.querySelectorAll('input[name=mode]').forEach(el => el.addEventListener('change', () => {
   const s = sess();
   if (s.winners.length) { $('sheetStatus').textContent = '這場已經抽過了，換方式前請先「清空這場中獎名單」。'; render(); return; }
-  s.mode = el.value; justWon = null; $('num').textContent = byName() ? '?' : '----'; $('num').classList.remove('win');
+  s.mode = el.value; justWon = null; idleNum();
   save(); render();
 }));
 $('nameFile').addEventListener('change', async () => {
@@ -269,7 +272,7 @@ $('nameFile').addEventListener('change', async () => {
 $('session').addEventListener('change', () => {
   const k = $('session').value;
   if (!k) return;
-  store.current = k; justWon = null; $('num').textContent = byName() ? '?' : '----'; $('num').classList.remove('win');
+  store.current = k; justWon = null; idleNum();
   save(); render();
 });
 
@@ -282,10 +285,9 @@ function twoTap(btn, label, action) {
     armed = setTimeout(() => { armed = null; btn.textContent = label; }, 3000);
   };
 }
-twoTap($('resetBtn'), '清空這場中獎名單', () => { sess().winners = []; justWon = null; $('num').textContent = '----';
-  $('num').classList.remove('win'); save(); render(); });
+twoTap($('resetBtn'), '清空這場中獎名單', () => { sess().winners = []; justWon = null; idleNum(); save(); render(); });
 twoTap($('undoBtn'), '取消上一個', () => { sess().winners.pop(); justWon = null;
-  $('num').textContent = byName() ? '?' : '----'; $('num').classList.remove('win'); save(); render(); });
+  idleNum(); save(); render(); });
 twoTap($('reloadBtn'), '重新讀取試算表', () => loadSheet(true));
 
 $('hideBtn').onclick = () => { document.body.classList.add('show'); $('showSetup').hidden = false; };
