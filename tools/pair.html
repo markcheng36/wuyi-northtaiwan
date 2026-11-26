@@ -40,6 +40,8 @@
           -webkit-touch-callout: none; touch-action: manipulation; }
   .stage { text-align: center; background: var(--accent-soft); border-color: var(--accent); padding: 22px 12px; }
   .sess { font-size: 15px; color: var(--muted); font-weight: 600; min-height: 22px; }
+  .host { font-size: 15px; color: var(--gold); font-weight: 700; min-height: 0; }
+  .host:empty { display: none; }
   .pair { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; margin: 14px 0 4px; }
   .side .cap { font-size: 14px; color: var(--muted); font-weight: 600; }
   .side .nm { font-size: min(10vw, 64px); font-weight: 800; line-height: 1.2; word-break: break-all; min-height: 1.2em; }
@@ -67,6 +69,7 @@
 
   <div class="card stage">
     <div class="sess" id="sessLabel"></div>
+    <div class="host" id="hostLabel"></div>
     <div class="pair">
       <div class="side vol"><div class="cap">志工夥伴</div><div class="nm idle" id="volName">？</div></div>
       <div class="heart">🤝</div>
@@ -91,6 +94,7 @@
     <table id="resultTbl" hidden><thead><tr><th></th><th>志工夥伴</th><th>被調整者</th></tr></thead><tbody id="results"></tbody></table>
     <div class="muted" id="noRes">還沒抽。</div>
     <div class="muted" id="unpaired"></div>
+    <div class="muted" id="hostInfo"></div>
   </div>
 
   <div class="card setup">
@@ -98,6 +102,9 @@
       <summary><b>設定（抽之前先確認）</b></summary>
       <div class="row"><label>場次</label>
         <input class="wide" id="session" placeholder="例如 12/10（四）10:00 BNI 守護日"></div>
+      <div class="row"><label>主場</label>
+        <input class="wide" id="host" placeholder="顧場的人，不參加抽籤，可以填多位，用逗號隔開">
+      </div>
       <div class="cols">
         <div><b>志工夥伴</b> <span class="muted" id="volCount"></span>
           <textarea id="vols" placeholder="一行一個名字"></textarea></div>
@@ -105,7 +112,7 @@
           <textarea id="guests" placeholder="一行一個名字"></textarea></div>
       </div>
       <div class="warn" id="countWarn"></div>
-      <p class="muted">從報名系統的名單複製貼上就好，一行一個名字。名單只存在這台手機或電腦，不會傳到網路上。人數不一樣時，多出來的人會列在「還沒配到」，由現場安排。</p>
+      <p class="muted">從報名系統的名單複製貼上就好，一行一個名字。主場的人就算也貼在志工名單裡，也會自動排除，不會被抽到。名單只存在這台手機或電腦，不會傳到網路上。人數不一樣時，多出來的志工列為「機動支援」，多出來的被調整者列為「還沒配到」，由主場安排。</p>
       <div class="row">
         <button class="secondary" id="hideBtn">投影模式（藏起設定）</button>
         <button class="danger" id="resetBtn">清空配對結果</button>
@@ -118,7 +125,7 @@
 (function () {
   var KEY = 'wuyi-pair-v1';
   var $ = function (id) { return document.getElementById(id); };
-  var st = { session: '', vols: '', guests: '', pairs: [] };
+  var st = { session: '', host: '', vols: '', guests: '', pairs: [] };
   try { var s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) st = Object.assign(st, s); } catch (e) {}
   function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
   function list(t) {
@@ -128,10 +135,12 @@
     });
     return out;
   }
+  function hosts() { return list(st.host); }
+  function volList() { var h = {}; hosts().forEach(function (x) { h[x] = 1; }); return list(st.vols).filter(function (x) { return !h[x]; }); }
   function usedSet(k) { var o = {}; st.pairs.forEach(function (p) { o[p[k]] = 1; }); return o; }
   function remain() {
     var uv = usedSet('v'), ug = usedSet('g');
-    return { v: list(st.vols).filter(function (x) { return !uv[x]; }),
+    return { v: volList().filter(function (x) { return !uv[x]; }),
              g: list(st.guests).filter(function (x) { return !ug[x]; }) };
   }
   function rnd(n) {
@@ -142,11 +151,15 @@
 
   function render() {
     $('sessLabel').textContent = st.session;
-    var V = list(st.vols), G = list(st.guests), r = remain();
+    var V = volList(), G = list(st.guests), r = remain(), H = hosts();
+    $('hostLabel').textContent = H.length ? '主場：' + H.join('、') : '';
+    $('hostInfo').textContent = H.length ? '主場（顧場，不參加抽籤）：' + H.join('、') : '';
     $('volCount').textContent = V.length + ' 位';
     $('guestCount').textContent = G.length + ' 位';
     $('countWarn').textContent = (V.length && G.length && V.length !== G.length)
-      ? '人數不一樣：志工 ' + V.length + ' 位、被調整者 ' + G.length + ' 位，會有 ' + Math.abs(V.length - G.length) + ' 位配不到。' : '';
+      ? (V.length > G.length
+        ? '抽籤的志工 ' + V.length + ' 位、被調整者 ' + G.length + ' 位：會有 ' + (V.length - G.length) + ' 位志工當機動支援。'
+        : '抽籤的志工 ' + V.length + ' 位、被調整者 ' + G.length + ' 位：會有 ' + (G.length - V.length) + ' 位被調整者配不到，請主場安排。') : '';
     var can = r.v.length > 0 && r.g.length > 0;
     $('goBtn').disabled = busy || !can;
     $('allBtn').disabled = busy || !can;
@@ -165,10 +178,10 @@
     $('noRes').hidden = !!st.pairs.length;
     var un = [];
     if (st.pairs.length && !can) {
-      if (r.v.length) un.push('志工：' + r.v.join('、'));
-      if (r.g.length) un.push('被調整者：' + r.g.join('、'));
+      if (r.v.length) un.push('機動支援 → ' + r.v.join('、'));
+      if (r.g.length) un.push('還沒配到的被調整者 → ' + r.g.join('、'));
     }
-    $('unpaired').textContent = un.length ? '還沒配到 → ' + un.join('；') : '';
+    $('unpaired').textContent = un.join('；');
   }
 
   function show(v, g, win) {
@@ -219,14 +232,18 @@
     render();
   });
   $('copyBtn').onclick = function () {
+    var H = hosts(), r = remain();
     var txt = (st.session ? st.session + ' 配對結果\n' : '配對結果\n') +
-      st.pairs.map(function (p, i) { return (i + 1) + '. ' + p.v + ' → ' + p.g; }).join('\n');
+      (H.length ? '主場：' + H.join('、') + '\n' : '') +
+      st.pairs.map(function (p, i) { return (i + 1) + '. ' + p.v + ' → ' + p.g; }).join('\n') +
+      (r.v.length ? '\n機動支援：' + r.v.join('、') : '') +
+      (r.g.length ? '\n還沒配到：' + r.g.join('、') : '');
     var ok = function () { $('copyBtn').textContent = '已複製'; setTimeout(function () { $('copyBtn').textContent = '複製結果'; }, 1500); };
     if (navigator.clipboard) navigator.clipboard.writeText(txt).then(ok, function () {});
   };
   $('hideBtn').onclick = function () { document.body.classList.add('show'); $('showSetup').hidden = false; };
   $('showSetup').onclick = function (e) { e.preventDefault(); document.body.classList.remove('show'); $('showSetup').hidden = true; };
-  ['session', 'vols', 'guests'].forEach(function (k) {
+  ['session', 'host', 'vols', 'guests'].forEach(function (k) {
     $(k).value = st[k];
     $(k).addEventListener('input', function () { st[k] = $(k).value; save(); render(); });
   });
