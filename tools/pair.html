@@ -157,6 +157,7 @@
   var KEY = 'wuyi-pair-v1';
   // 報名系統（Apps Script）網址：?pair=1&k=密碼 只回傳名字
   var SOURCES = [
+    { name: '武醫守護日', url: 'https://script.google.com/macros/s/AKfycbw2Knkx5wC8Yk0U3_7sbbo0iNup36JHs2iOvB0OUtRn3tMtEF2w6Zxh4KQ2P_DRRnZ8/exec' },
     { name: 'BNI 守護日', url: 'https://script.google.com/macros/s/AKfycbzjSnY7JeBOymDgW6GiGi4mEOjtQJAxwwrVJ5hM9o6JsLtdlYPavfkdE7jh4DU1PW8FaQ/exec' }
   ];
   var $ = function (id) { return document.getElementById(id); };
@@ -318,8 +319,10 @@
             x.n++; sl.vols.forEach(function (n) { if (x.vols.indexOf(n) < 0) x.vols.push(n); }); sl.guests.forEach(function (n) { if (x.guests.indexOf(n) < 0) x.guests.push(n); });
           });
           Object.keys(byDay).forEach(function (k2) { if (byDay[k2].n > 1) loaded.push(byDay[k2]); });
-        });
-    })).then(function () {
+          return 'ok';
+        }).catch(function (e) { return (e && e.message) || 'fail'; });
+    })).then(function (res) {
+      if (res.indexOf('ok') < 0) throw new Error(res.every(function (x) { return x === '密碼不對'; }) ? '密碼不對' : 'fail');
       var sel = $('slotSel'); sel.innerHTML = '';
       if (!loaded.length) { $('loadMsg').textContent = '目前沒有今天以後的場次名單。'; sel.hidden = true; return; }
       var o0 = document.createElement('option'); o0.textContent = '選擇場次'; o0.value = ''; sel.appendChild(o0);
