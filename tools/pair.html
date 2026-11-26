@@ -52,7 +52,12 @@
   .nm.win { animation: pop .5s ease-out; }
   @keyframes pop { 0% { transform: scale(.7); } 70% { transform: scale(1.08); } 100% { transform: scale(1); } }
   .ctrl { text-align: center; }
-  .go { font-size: 22px; padding: 14px 40px; }
+  .go { font-size: 22px; padding: 14px 40px; margin-top: 4px; }
+  .seg { display: inline-flex; border: 1px solid var(--accent); border-radius: 999px; overflow: hidden; margin: 0 0 12px; }
+  .seg button { background: transparent; color: var(--accent); border-radius: 0; padding: 8px 16px; }
+  .seg button.on { background: var(--accent); color: #fff; }
+  .guests { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 10px 0 6px; }
+  .guests button { font-size: 20px; padding: 12px 20px; min-width: 7em; }
   .left { margin-top: 8px; }
   table { width: 100%; border-collapse: collapse; }
   th, td { text-align: left; padding: 6px 4px; border-bottom: 1px solid var(--line); }
@@ -78,9 +83,21 @@
   </div>
 
   <div class="ctrl">
-    <button class="go" id="goBtn">抽一組</button>
+    <div class="seg" id="modeSeg">
+      <button data-mode="self">被調整者自己抽</button>
+      <button data-mode="host">主持人抽</button>
+    </div>
+    <div id="selfBox">
+      <div class="muted">請被調整者點自己的名字，抽出幫你調整的志工</div>
+      <div class="guests" id="guestBtns"></div>
+    </div>
+    <div id="hostBox">
+      <button class="go" id="allBtn">一次全部抽完</button>
+      <div class="row" style="justify-content:center">
+        <button class="secondary" id="goBtn">抽一組</button>
+      </div>
+    </div>
     <div class="row" style="justify-content:center">
-      <button class="secondary" id="allBtn">剩下的一次抽完</button>
       <button class="secondary" id="undoBtn">取消上一組</button>
     </div>
     <div class="muted left" id="leftInfo"></div>
@@ -161,6 +178,16 @@
         ? '抽籤的志工 ' + V.length + ' 位、被調整者 ' + G.length + ' 位：會有 ' + (V.length - G.length) + ' 位志工當機動支援。'
         : '抽籤的志工 ' + V.length + ' 位、被調整者 ' + G.length + ' 位：會有 ' + (G.length - V.length) + ' 位被調整者配不到，請駐場安排。') : '';
     var can = r.v.length > 0 && r.g.length > 0;
+    var mode = st.mode === 'host' ? 'host' : 'self';
+    Array.prototype.forEach.call($('modeSeg').children, function (b) { b.classList.toggle('on', b.getAttribute('data-mode') === mode); });
+    $('selfBox').hidden = mode !== 'self';
+    $('hostBox').hidden = mode !== 'host';
+    var gb = $('guestBtns'); gb.innerHTML = '';
+    if (r.v.length) r.g.forEach(function (g) {
+      var b = document.createElement('button'); b.textContent = g; b.disabled = busy;
+      b.onclick = function () { drawOne(false, render, g); };
+      gb.appendChild(b);
+    });
     $('goBtn').disabled = busy || !can;
     $('allBtn').disabled = busy || !can;
     $('undoBtn').disabled = busy || !st.pairs.length;
@@ -191,22 +218,25 @@
     if (win) { void a.offsetWidth; a.classList.add('win'); b.classList.add('win'); }
   }
 
-  function drawOne(fast, done) {
+  function drawOne(fast, done, fixedG) {
     var r = remain(); if (!r.v.length || !r.g.length) { done && done(); return; }
-    var v = r.v[rnd(r.v.length)], g = r.g[rnd(r.g.length)];
+    var v = r.v[rnd(r.v.length)], g = fixedG || r.g[rnd(r.g.length)];
     var finish = function () { st.pairs.push({ v: v, g: g }); save(); show(v, g, true); done && done(); };
     if (fast) { finish(); return; }
     busy = true; render();
     var t = 0, steps = 22;
     (function tick() {
       t++;
-      show(r.v[rnd(r.v.length)], r.g[rnd(r.g.length)], false);
+      show(r.v[rnd(r.v.length)], fixedG || r.g[rnd(r.g.length)], false);
       if (t < steps) setTimeout(tick, 40 + t * 6);
       else { busy = false; finish(); render(); }
     })();
   }
 
   $('goBtn').onclick = function () { drawOne(false, render); };
+  Array.prototype.forEach.call($('modeSeg').children, function (b) {
+    b.onclick = function () { if (busy) return; st.mode = b.getAttribute('data-mode'); save(); render(); };
+  });
   $('allBtn').onclick = function () {
     var r = remain(), n = Math.min(r.v.length, r.g.length);
     for (var i = 0; i < n; i++) drawOne(true);
