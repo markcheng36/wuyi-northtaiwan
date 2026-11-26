@@ -36,6 +36,8 @@
   button.ghost { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
   button.link { background: none; color: var(--muted); padding: 4px 6px; font-weight: 400; font-size: 15px; text-decoration: underline; }
   button:disabled { opacity: .4; cursor: default; }
+  .row3 { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+  select { font: inherit; color: var(--text); width: 100%; margin-top: 10px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
   .big { width: 100%; font-size: 21px; padding: 16px; }
   .warn { color: var(--hot); font-size: 15px; margin-top: 10px; }
   .stage, .stage *, .ctrl, .ctrl * { -webkit-user-select: none; user-select: none;
@@ -78,6 +80,15 @@
 
   <!-- 第一步：填名單 -->
   <section id="setupView">
+    <div class="card">
+      <label class="f">從報名系統帶入名單</label>
+      <div class="row3">
+        <input id="key" type="password" placeholder="夥伴或管理密碼" autocomplete="off">
+        <button class="ghost" id="loadBtn">讀取</button>
+      </div>
+      <select id="slotSel" hidden></select>
+      <div class="muted" id="loadMsg">帶入後，現場報名的人直接加在下面名單就好。</div>
+    </div>
     <div class="card">
       <label class="f" for="session">今天場次 <span>（選填）</span></label>
       <input id="session" placeholder="例如：12/10 BNI 守護日">
@@ -144,6 +155,10 @@
 <script>
 (function () {
   var KEY = 'wuyi-pair-v1';
+  // 報名系統（Apps Script）網址：?pair=1&k=密碼 只回傳名字
+  var SOURCES = [
+    { name: 'BNI 守護日', url: 'https://script.google.com/macros/s/AKfycbzjSnY7JeBOymDgW6GiGi4mEOjtQJAxwwrVJ5hM9o6JsLtdlYPavfkdE7jh4DU1PW8FaQ/exec' }
+  ];
   var $ = function (id) { return document.getElementById(id); };
   var st = { session: '', host: '', vols: '', guests: '', pairs: [], mode: 'self', view: 'setup' };
   try { var s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) st = Object.assign(st, s); } catch (e) {}
@@ -282,6 +297,51 @@
       (r.g.length ? '\n還沒配到：' + r.g.join('、') : '');
     var ok = function () { $('copyBtn').textContent = '已複製'; setTimeout(function () { $('copyBtn').textContent = '複製'; }, 1500); };
     if (navigator.clipboard) navigator.clipboard.writeText(txt).then(ok, function () {});
+  };
+  var loaded = [];
+  try { $('key').value = localStorage.getItem(KEY + '-k') || ''; } catch (e) {}
+  $('loadBtn').onclick = function () {
+    var k = $('key').value.trim();
+    if (!k) { $('loadMsg').textContent = '請先輸入密碼'; return; }
+    try { localStorage.setItem(KEY + '-k', k); } catch (e) {}
+    $('loadMsg').textContent = '讀取中…'; $('loadBtn').disabled = true;
+    loaded = [];
+    Promise.all(SOURCES.map(function (src) {
+      return fetch(src.url + '?pair=1&k=' + encodeURIComponent(k)).then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (d.error) throw new Error(d.error);
+          var byDay = {};
+          (d.slots || []).forEach(function (sl) {
+            loaded.push({ label: src.name + ' ' + sl.label.replace(/^\d{4}\//, ''), vols: sl.vols, guests: sl.guests });
+            var day = sl.label.replace(/\s*\d{1,2}:\d{2}\s*場$/, '');
+            var x = byDay[day] || (byDay[day] = { label: src.name + ' ' + day.replace(/^\d{4}\//, '') + '（整天）', vols: [], guests: [], n: 0 });
+            x.n++; sl.vols.forEach(function (n) { if (x.vols.indexOf(n) < 0) x.vols.push(n); }); sl.guests.forEach(function (n) { if (x.guests.indexOf(n) < 0) x.guests.push(n); });
+          });
+          Object.keys(byDay).forEach(function (k2) { if (byDay[k2].n > 1) loaded.push(byDay[k2]); });
+        });
+    })).then(function () {
+      var sel = $('slotSel'); sel.innerHTML = '';
+      if (!loaded.length) { $('loadMsg').textContent = '目前沒有今天以後的場次名單。'; sel.hidden = true; return; }
+      var o0 = document.createElement('option'); o0.textContent = '選擇場次'; o0.value = ''; sel.appendChild(o0);
+      loaded.forEach(function (x, i) {
+        var o = document.createElement('option'); o.value = i;
+        o.textContent = x.label + '（志工 ' + x.vols.length + '、被調整者 ' + x.guests.length + '）';
+        sel.appendChild(o);
+      });
+      sel.hidden = false;
+      $('loadMsg').textContent = '選好場次，名單會自動填進下面。';
+    }).catch(function (e) {
+      $('loadMsg').textContent = '讀取失敗：' + (e && e.message === '密碼不對' ? '密碼不對' : '請確認網路，或稍後再試');
+    }).then(function () { $('loadBtn').disabled = false; });
+  };
+  $('slotSel').onchange = function () {
+    var x = loaded[this.value]; if (!x) return;
+    var uniq = function (a) { var o = {}; return a.filter(function (n) { return o[n] ? false : (o[n] = 1); }); };
+    st.session = x.label; st.vols = uniq(x.vols).join('\n'); st.guests = uniq(x.guests).join('\n');
+    if (st.pairs.length) st.pairs = [];
+    ['session', 'vols', 'guests'].forEach(function (k) { $(k).value = st[k]; });
+    save(); clearStage(); render();
+    $('loadMsg').textContent = '已帶入。現場報名的人，直接加在下面名單。';
   };
   ['session', 'host', 'vols', 'guests'].forEach(function (k) {
     $(k).value = st[k];
