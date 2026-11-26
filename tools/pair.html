@@ -102,7 +102,7 @@
       <summary><b>設定（抽之前先確認）</b></summary>
       <div class="row"><label>場次</label>
         <input class="wide" id="session" placeholder="例如 12/10（四）10:00 BNI 守護日"></div>
-      <div class="row"><label>主場</label>
+      <div class="row"><label>駐場</label>
         <input class="wide" id="host" placeholder="顧場的人，不參加抽籤，可以填多位，用逗號隔開">
       </div>
       <div class="cols">
@@ -112,7 +112,7 @@
           <textarea id="guests" placeholder="一行一個名字"></textarea></div>
       </div>
       <div class="warn" id="countWarn"></div>
-      <p class="muted">從報名系統的名單複製貼上就好，一行一個名字。主場的人就算也貼在志工名單裡，也會自動排除，不會被抽到。名單只存在這台手機或電腦，不會傳到網路上。人數不一樣時，多出來的志工列為「機動支援」，多出來的被調整者列為「還沒配到」，由主場安排。</p>
+      <p class="muted">從報名系統的名單複製貼上就好，一行一個名字。駐場的人就算也貼在志工名單裡，也會自動排除，不會被抽到。名單只存在這台手機或電腦，不會傳到網路上。人數不一樣時，多出來的志工列為「機動支援」，多出來的被調整者列為「還沒配到」，由駐場安排。</p>
       <div class="row">
         <button class="secondary" id="hideBtn">投影模式（藏起設定）</button>
         <button class="danger" id="resetBtn">清空配對結果</button>
@@ -152,14 +152,14 @@
   function render() {
     $('sessLabel').textContent = st.session;
     var V = volList(), G = list(st.guests), r = remain(), H = hosts();
-    $('hostLabel').textContent = H.length ? '主場：' + H.join('、') : '';
-    $('hostInfo').textContent = H.length ? '主場（顧場，不參加抽籤）：' + H.join('、') : '';
+    $('hostLabel').textContent = H.length ? '駐場：' + H.join('、') : '';
+    $('hostInfo').textContent = H.length ? '駐場（顧場，不參加抽籤）：' + H.join('、') : '';
     $('volCount').textContent = V.length + ' 位';
     $('guestCount').textContent = G.length + ' 位';
     $('countWarn').textContent = (V.length && G.length && V.length !== G.length)
       ? (V.length > G.length
         ? '抽籤的志工 ' + V.length + ' 位、被調整者 ' + G.length + ' 位：會有 ' + (V.length - G.length) + ' 位志工當機動支援。'
-        : '抽籤的志工 ' + V.length + ' 位、被調整者 ' + G.length + ' 位：會有 ' + (G.length - V.length) + ' 位被調整者配不到，請主場安排。') : '';
+        : '抽籤的志工 ' + V.length + ' 位、被調整者 ' + G.length + ' 位：會有 ' + (G.length - V.length) + ' 位被調整者配不到，請駐場安排。') : '';
     var can = r.v.length > 0 && r.g.length > 0;
     $('goBtn').disabled = busy || !can;
     $('allBtn').disabled = busy || !can;
@@ -234,7 +234,7 @@
   $('copyBtn').onclick = function () {
     var H = hosts(), r = remain();
     var txt = (st.session ? st.session + ' 配對結果\n' : '配對結果\n') +
-      (H.length ? '主場：' + H.join('、') + '\n' : '') +
+      (H.length ? '駐場：' + H.join('、') + '\n' : '') +
       st.pairs.map(function (p, i) { return (i + 1) + '. ' + p.v + ' → ' + p.g; }).join('\n') +
       (r.v.length ? '\n機動支援：' + r.v.join('、') : '') +
       (r.g.length ? '\n還沒配到：' + r.g.join('、') : '');
