@@ -146,7 +146,7 @@
       <div class="extra" id="extra"></div>
       <div class="center" style="margin-top:10px">
         <button class="link" id="undoBtn">收回上一組</button>
-        <button class="link" id="editBtn">改名單</button>
+        <button class="link" id="editBtn">換時段／改名單</button>
         <button class="link" id="resetBtn">全部重抽</button>
       </div>
     </div>
@@ -161,7 +161,7 @@
     { name: 'BNI 守護日', url: 'https://script.google.com/macros/s/AKfycbzjSnY7JeBOymDgW6GiGi4mEOjtQJAxwwrVJ5hM9o6JsLtdlYPavfkdE7jh4DU1PW8FaQ/exec' }
   ];
   var $ = function (id) { return document.getElementById(id); };
-  var st = { session: '', host: '', vols: '', guests: '', pairs: [], mode: 'self', view: 'setup' };
+  var st = { session: '', host: '', vols: '', guests: '', pairs: [], mode: 'self', view: 'setup', saved: {} };
   try { var s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) st = Object.assign(st, s); } catch (e) {}
   function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
   function list(t) {
@@ -265,7 +265,7 @@
   }
 
   $('startBtn').onclick = function () { st.view = 'draw'; save(); render(); window.scrollTo(0, 0); };
-  $('editBtn').onclick = function () { st.view = 'setup'; save(); render(); window.scrollTo(0, 0); };
+  $('editBtn').onclick = function () { st.view = 'setup'; save(); render(); if (loaded.length) fillSel(); window.scrollTo(0, 0); };
   Array.prototype.forEach.call($('tabs').children, function (b) {
     b.onclick = function () { if (busy) return; st.mode = b.getAttribute('data-mode'); save(); render(); };
   });
@@ -323,28 +323,41 @@
         }).catch(function (e) { return (e && e.message) || 'fail'; });
     })).then(function (res) {
       if (res.indexOf('ok') < 0) throw new Error(res.every(function (x) { return x === '密碼不對'; }) ? '密碼不對' : 'fail');
-      var sel = $('slotSel'); sel.innerHTML = '';
+      var sel = $('slotSel');
       if (!loaded.length) { $('loadMsg').textContent = '目前沒有今天以後的場次名單。'; sel.hidden = true; return; }
-      var o0 = document.createElement('option'); o0.textContent = '選擇場次'; o0.value = ''; sel.appendChild(o0);
-      loaded.forEach(function (x, i) {
-        var o = document.createElement('option'); o.value = i;
-        o.textContent = x.label + '（志工 ' + x.vols.length + '、被調整者 ' + x.guests.length + '）';
-        sel.appendChild(o);
-      });
+      fillSel();
       sel.hidden = false;
       $('loadMsg').textContent = '選好場次，名單會自動填進下面。';
     }).catch(function (e) {
       $('loadMsg').textContent = '讀取失敗：' + (e && e.message === '密碼不對' ? '密碼不對' : '請確認網路，或稍後再試');
     }).then(function () { $('loadBtn').disabled = false; });
   };
+  function fillSel() {
+    var sel = $('slotSel'); sel.innerHTML = '';
+    var o0 = document.createElement('option'); o0.textContent = '選擇時段'; o0.value = ''; sel.appendChild(o0);
+    var saved = st.saved || {};
+    loaded.forEach(function (x, i) {
+      var o = document.createElement('option'); o.value = i;
+      var done = x.label === st.session ? st.pairs.length : (saved[x.label] && saved[x.label].pairs ? saved[x.label].pairs.length : 0);
+      o.textContent = x.label + '（志工 ' + x.vols.length + '、被調整者 ' + x.guests.length + '）' + (done ? '　✓已抽 ' + done + ' 組' : '');
+      if (x.label === st.session) o.selected = true;
+      sel.appendChild(o);
+    });
+  }
   $('slotSel').onchange = function () {
     var x = loaded[this.value]; if (!x) return;
     var uniq = function (a) { var o = {}; return a.filter(function (n) { return o[n] ? false : (o[n] = 1); }); };
-    st.session = x.label; st.vols = uniq(x.vols).join('\n'); st.guests = uniq(x.guests).join('\n');
-    if (st.pairs.length) st.pairs = [];
+    // 每個時段的名單和抽籤結果分開記，切回來還在
+    st.saved = st.saved || {};
+    if (st.session) st.saved[st.session] = { vols: st.vols, guests: st.guests, pairs: st.pairs };
+    var old = st.saved[x.label];
+    st.session = x.label;
+    if (old) { st.vols = old.vols; st.guests = old.guests; st.pairs = old.pairs || []; }
+    else { st.vols = uniq(x.vols).join('\n'); st.guests = uniq(x.guests).join('\n'); st.pairs = []; }
+    var lp = st.pairs[st.pairs.length - 1];
     ['session', 'vols', 'guests'].forEach(function (k) { $(k).value = st[k]; });
-    save(); clearStage(); render();
-    $('loadMsg').textContent = '已帶入。現場報名的人，直接加在下面名單。';
+    save(); if (lp) show(lp.v, lp.g, false); else clearStage(); render(); fillSel();
+    $('loadMsg').textContent = old ? '這個時段之前抽過，結果還在。' : '已帶入。現場報名的人，直接加在下面名單。';
   };
   ['session', 'host', 'vols', 'guests'].forEach(function (k) {
     $(k).value = st[k];
